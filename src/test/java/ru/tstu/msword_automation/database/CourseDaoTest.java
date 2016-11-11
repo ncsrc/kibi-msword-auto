@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.tstu.msword_automation.database.datasets.Course;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -41,8 +42,8 @@ public class CourseDaoTest
 		assertEquals(this.course, read);
 	}
 
-	@Test
-	public void SelectionReturnsNullIfKeyNotFound() throws Exception
+	@Test(expected = SQLException.class)
+	public void SelectionThrowsExceptionWhenSpecifiedPrimaryKeyNotFoundInTable() throws Exception
 	{
 		assertNull(dao.read("1"));
 	}
