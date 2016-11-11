@@ -48,11 +48,10 @@ public class DateDaoTest
 		assertEquals(this.date, read);
 	}
 
-	@Test
-	public void SelectionReturnsNullIfKeyNotFound() throws Exception
+	@Test(expected = SQLException.class)
+	public void SelectionThrowsExceptionWhenPrimaryKeyNotFoundInTable() throws Exception
 	{
-		Date read = dao.read(1);
-		assertNull(read);
+		dao.read(1);
 	}
 
 	@Test
