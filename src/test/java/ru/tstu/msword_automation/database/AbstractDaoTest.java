@@ -93,7 +93,7 @@ public abstract class AbstractDaoTest<T extends Dao<D, K>, D, K>
 	@Test
 	public void TestUpdatingOldDateWithNewOne() throws Exception
 	{
-		dao.update(this.secondSetPk, this.secondDataset);
+		dao.update(this.firstSetPk, this.secondDataset);
 		List<D> list = dao.readAll();
 		assertEquals(1, list.size());
 		D d0 = list.get(0);
