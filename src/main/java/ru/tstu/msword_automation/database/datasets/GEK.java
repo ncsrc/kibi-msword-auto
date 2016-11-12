@@ -80,4 +80,51 @@ public class GEK	// stands for "Государственная экзамена�
 				getFifthMember() + ", " + getSixthMember();
 	}
 
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(this == obj){
+			return true;
+		}
+
+		if(obj == null){
+			return false;
+		}
+
+		if(this.getClass() != obj.getClass()){
+			return false;
+		}
+
+		GEK other = (GEK) obj;
+		if(this.head.equals(other.head) && this.subhead.equals(other.subhead) && this.secretary.equals(other.secretary)
+				&& this.first.equals(other.first) && this.second.equals(other.second) && this.third.equals(other.third)
+				&& this.fourth.equals(other.fourth) && this.fifth.equals(other.fifth) && this.sixth.equals(other.sixth)){
+
+			return true;
+		}
+
+		return false;
+	}
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
