@@ -3,7 +3,6 @@ package ru.tstu.msword_automation.database;
 
 import org.junit.Before;
 import org.junit.Test;
-import ru.tstu.msword_automation.database.datasets.GEK;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -34,11 +33,14 @@ public abstract class AbstractDaoTest<T extends Dao<D, K>, D, K>
 		this.dao.deleteAll();
 		this.dao.create(this.dataset);
 		this.firstSetPk = getPkOfFirst();
+		this.secondSetPk = getPkOfSecond();
 	}
 
+	// cannot do set all this data through constructor,
+	// because @Before method used on each test, not new instance of object
 	protected abstract D getDataset();
 	protected abstract D getSecondDataset();
-	protected abstract T getDao();
+	protected abstract T getDao() throws SQLException;
 	protected abstract K getPkOfFirst();
 	protected abstract K getPkOfSecond();
 
