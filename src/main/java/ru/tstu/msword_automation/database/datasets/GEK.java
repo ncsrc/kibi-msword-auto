@@ -46,7 +46,8 @@ public class GEK	// stands for "Государственная экзамена�
 	public String getFirstMember()
 	{
 		return this.first;
-	}
+	}	// TODO refactor to returning list of members
+															// TODO think of another way of db storage of members(head - foreign key)
 
 	public String getSecondMember()
 	{
