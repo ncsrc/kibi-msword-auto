@@ -63,7 +63,7 @@ class StudentDao extends AbstractDao<Student, Integer>
 		statement.setString(6, dataset.getCourseCode());
 		statement.setInt(7, pk);
 
-		return null;
+		return statement;
 	}
 
 	@Override
