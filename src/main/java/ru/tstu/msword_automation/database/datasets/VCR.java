@@ -3,16 +3,23 @@ package ru.tstu.msword_automation.database.datasets;
 
 public class VCR	// stands for "Выпускная квалификационная работа"
 {
+	private final int student_id;
 	private final String name;
 	private final String head;
 	private final String reviewer;
 
 
-	public VCR(String name, String head, String reviewer)
+	public VCR(int student_id, String name, String head, String reviewer)
 	{
+		this.student_id = student_id;
 		this.name = name;
 		this.head = head;
 		this.reviewer = reviewer;
+	}
+
+	public int getStudentId()
+	{
+		return this.student_id;
 	}
 
 	public String getName()
