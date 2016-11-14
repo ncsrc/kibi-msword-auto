@@ -8,7 +8,7 @@ import java.sql.SQLException;
 public class StudentDaoTest extends AbstractDaoTest<StudentDao, Student, Integer>
 {
 
-	// TODO implenet class
+
 
 	@Override
 	protected Student getDataset()
