@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-class VcrDao extends AbstractDao<VCR, String>
+class VcrDao extends AbstractDao<VCR, String> implements ForeignKeyReadableDao<VCR, Integer>
 {
 
 
@@ -19,6 +19,17 @@ class VcrDao extends AbstractDao<VCR, String>
 		super(connectionPool);
 	}
 
+
+	@Override
+	public VCR readByForeignKey(Integer fk) throws SQLException
+	{
+		PreparedStatement statement = connectionPool.getConnection().prepareStatement("SELECT student_id, vcr_name, vcr_head, vcr_reviewer FROM VCRs WHERE student_id = ?");
+		statement.setInt(1, fk);
+		ResultSet resultSet = statement.executeQuery();
+		resultSet.next();
+		return new VCR(resultSet.getInt("student_id"), resultSet.getString("vcr_name"),
+				resultSet.getString("vcr_head"), resultSet.getString("vcr_reviewer"));
+	}
 
 	@Override
 	protected PreparedStatement getCreationStatement(Connection connection, VCR dataset) throws SQLException

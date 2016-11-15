@@ -8,7 +8,9 @@ import java.util.List;
 
 abstract class AbstractDao<T, K> implements Dao<T, K>
 {
-	private ConnectionPool connectionPool;
+	// protected in case you need direct access for connections
+	// for implementation of custom functionality not defined in Dao
+	protected ConnectionPool connectionPool;
 
 
 	AbstractDao(ConnectionPool connectionPool)

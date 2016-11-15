@@ -1,6 +1,7 @@
 package ru.tstu.msword_automation.database.datasets;
 
 
+
 public class Student
 {
 	private final int id;
@@ -19,9 +20,9 @@ public class Student
 		this.fName = firstName;
 		this.lName = lastName;
 		this.midName = middleName;
+		this.initials = this.fName.charAt(0) + "." + this.midName.charAt(0) +". " + this.lName;
 		this.qualification = qualification;
 		this.courseCode = courseCode;
-		this.initials = this.fName.charAt(0) + "." + this.midName.charAt(0) +". " + this.lName;
 	}
 
 	public int getId()

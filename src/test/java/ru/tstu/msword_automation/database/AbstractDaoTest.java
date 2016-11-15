@@ -17,8 +17,9 @@ import static org.junit.Assert.assertEquals;
  */
 public abstract class AbstractDaoTest<T extends Dao<D, K>, D, K>
 {
-	private T dao;
-	private D dataset;
+	// protected if direct access needed for custom tests
+	protected T dao;
+	protected D dataset;
 	private K firstSetPk;
 	private D secondDataset;
 	private K secondSetPk;

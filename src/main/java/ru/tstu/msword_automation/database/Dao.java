@@ -9,7 +9,7 @@ import java.util.List;
  * @param <T> specifies dataset
  * @param <K> specifies type of primary key
  */
-interface Dao<T, K>
+public interface Dao<T, K>
 {
 
 	void create(T dataset) throws SQLException;
