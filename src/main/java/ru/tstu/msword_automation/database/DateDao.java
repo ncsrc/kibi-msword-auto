@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-class DateDao extends AbstractDao<Date, Integer>
+public class DateDao extends AbstractDao<Date, Integer>
 {
 
 	DateDao(ConnectionPool pool)

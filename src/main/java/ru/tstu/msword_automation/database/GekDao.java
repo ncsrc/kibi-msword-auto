@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-class GekDao extends AbstractDao<GEK, String>
+public class GekDao extends AbstractDao<GEK, String>
 {
 
 	GekDao(ConnectionPool pool)

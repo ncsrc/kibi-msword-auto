@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-class StudentDao extends AbstractDao<Student, Integer>
+public class StudentDao extends AbstractDao<Student, Integer>
 {
 
 

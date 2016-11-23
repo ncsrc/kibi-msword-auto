@@ -10,7 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-class VcrDao extends AbstractDao<VCR, String> implements ForeignKeyReadableDao<VCR, Integer>
+public class VcrDao extends AbstractDao<VCR, String> implements ForeignKeyReadableDao<VCR, Integer>
 {
 
 

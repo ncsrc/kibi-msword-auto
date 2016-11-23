@@ -7,7 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-class CourseDao extends AbstractDao<Course, String>
+public class CourseDao extends AbstractDao<Course, String>
 {
 
 	CourseDao(ConnectionPool pool)
