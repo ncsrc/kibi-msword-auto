@@ -1,6 +1,10 @@
 package ru.tstu.msword_automation.database;
 
 
+
+import com.mysql.jdbc.Driver;
+
+import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseService
@@ -18,6 +22,7 @@ public class DatabaseService
 	public static DatabaseService getInstance() throws SQLException
 	{
 		if(self == null){
+			DriverManager.registerDriver(new Driver());
 			self = new DatabaseService();
 		}
 		return self;
@@ -47,6 +52,16 @@ public class DatabaseService
 	{
 		return new VcrDao(connectionPool);
 	}
+
+
+
+
+	// TODO refactoring notes:
+	/*
+		1 Student has VCR and Course. DB Service should extract it and save.
+		2 What needed: save(dataset), get student, get gek, get date
+	 */
+
 
 
 	/*
