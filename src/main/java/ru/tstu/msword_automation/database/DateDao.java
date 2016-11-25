@@ -10,8 +10,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class DateDao extends AbstractDao<Date, Integer>
 {
+	// TODO refactor all this wicked date thing
 
 	DateDao(ConnectionPool pool)
 	{
@@ -19,12 +21,11 @@ public class DateDao extends AbstractDao<Date, Integer>
 	}
 
 	@Override
-	protected PreparedStatement getCreationStatement(Connection connection, Date dataset) throws SQLException // expected only 1 row in Date table, so throws exception, if table is not empty
+	protected PreparedStatement getCreationStatement(Connection connection, Date dataset) throws SQLException
 	{
-		PreparedStatement statement = connection.prepareStatement("INSERT INTO Date VALUES(?, ?, ?)");
-		statement.setInt(1, dataset.getDay());
-		statement.setString(2, dataset.getMonth());
-		statement.setInt(3, dataset.getYear());
+		PreparedStatement statement = connection.prepareStatement("INSERT INTO Date(date_gos, date_vcr) VALUES(?, ?)");
+		statement.setDate(1, new java.sql.Date(dataset.getRawGosDate().getTime()));
+		statement.setDate(2, new java.sql.Date(dataset.getRawVcrDate().getTime()));
 		return statement;
 	}
 
@@ -32,7 +33,7 @@ public class DateDao extends AbstractDao<Date, Integer>
 	@Override
 	protected PreparedStatement getReadingByPkStatement(Connection connection, Integer pk) throws SQLException
 	{
-		PreparedStatement statement = connection.prepareStatement("SELECT day, month, year FROM Date WHERE year = ?");
+		PreparedStatement statement = connection.prepareStatement("SELECT id, date_gos, date_vcr FROM Date WHERE id = ?");
 		statement.setInt(1, pk);
 		return statement;
 	}
@@ -40,23 +41,23 @@ public class DateDao extends AbstractDao<Date, Integer>
 	@Override
 	protected PreparedStatement getReadingAllStatement(Connection connection) throws SQLException
 	{
-		return connection.prepareStatement("SELECT day, month, year FROM Date");
+		return connection.prepareStatement("SELECT id, date_gos, date_vcr FROM Date");
 	}
 
 	@Override
 	protected PreparedStatement getUpdateStatement(Connection connection, Date dataset, Integer pk) throws SQLException
 	{
-		PreparedStatement statement = connection.prepareStatement("UPDATE Date SET day = ?, month = ?, year = ?");
-		statement.setInt(1, dataset.getDay());
-		statement.setString(2, dataset.getMonth());
-		statement.setInt(3, dataset.getYear());
+		PreparedStatement statement = connection.prepareStatement("UPDATE Date SET date_gos = ?, date_vcr = ? WHERE id= ?");
+		statement.setDate(1, new java.sql.Date(dataset.getRawGosDate().getTime()));
+		statement.setDate(2, new java.sql.Date(dataset.getRawVcrDate().getTime()));
+		statement.setInt(3, pk);
 		return statement;
 	}
 
 	@Override
 	protected PreparedStatement getDeleteByPkStatement(Connection connection, Integer pk) throws SQLException
 	{
-		PreparedStatement statement = connection.prepareStatement("DELETE FROM Date WHERE year = ?");
+		PreparedStatement statement = connection.prepareStatement("DELETE FROM Date WHERE id = ?");
 		statement.setInt(1, pk);
 		return statement;
 	}
@@ -72,7 +73,7 @@ public class DateDao extends AbstractDao<Date, Integer>
 	{
 		List<Date> dates = new ArrayList<>();
 		while(resultSet.next()){
-			dates.add(new Date(resultSet.getInt("day"), resultSet.getString("month"), resultSet.getInt("year")));
+			dates.add(new Date(resultSet.getInt("id"), resultSet.getDate("date_gos"), resultSet.getDate("date_vcr")));
 		}
 		return dates;
 	}

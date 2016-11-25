@@ -50,11 +50,19 @@ CREATE TABLE GEK
   gek_member6 VARCHAR(60) NOT NULL
 ) CHARACTER SET utf8;
 
+-- old one
+# CREATE TABLE Date
+# (
+#   day INT NOT NULL,
+#   month VARCHAR(20) NOT NULL,
+#   year INT NOT NULL PRIMARY KEY
+# ) CHARACTER SET utf8;
+
 CREATE TABLE Date
 (
-  day INT NOT NULL,
-  month VARCHAR(20) NOT NULL,
-  year INT NOT NULL PRIMARY KEY
+  id INT PRIMARY KEY,
+  date_gos DATE,
+  date_vcr DATE
 ) CHARACTER SET utf8;
 
 
@@ -65,8 +73,8 @@ INSERT INTO Students VALUES(1, 'Иван', 'Иванов', 'Иванович', '
 INSERT INTO VCRs VALUES(1, 'выпускная квалификационная работа', 'Руководитель Р.Р.', 'Ревьювер Р.Р');
 INSERT INTO GEK VALUES('Главный Г.Г.', 'Заместитель З.З.', 'Секретарь С.С.',
                        'Первый', 'Второй', 'Третий', 'Четвертый', 'Пятый', 'Шестой');
-INSERT INTO Date VALUES(12, 'апреля', 15);
-
+# INSERT INTO Date VALUES(12, 'апреля', 15);
+INSERT INTO Date VALUES(1, '2015-03-12', '2014-01-21');
 
 
 
