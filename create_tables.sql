@@ -37,17 +37,32 @@ CREATE TABLE VCRs
   FOREIGN KEY(student_id) REFERENCES Students(student_id) ON DELETE CASCADE
 ) CHARACTER SET utf8;
 
-CREATE TABLE GEK
+-- old one
+# CREATE TABLE GekHead
+# (
+#   gek_head VARCHAR(60) NOT NULL PRIMARY KEY,
+#   gek_subhead VARCHAR(60) NOT NULL,
+#   gek_secretary VARCHAR(60) NOT NULL,
+#   gek_member1 VARCHAR(60) NOT NULL,
+#   gek_member2 VARCHAR(60) NOT NULL,
+#   gek_member3 VARCHAR(60) NOT NULL,
+#   gek_member4 VARCHAR(60) NOT NULL,
+#   gek_member5 VARCHAR(60) NOT NULL,
+#   gek_member6 VARCHAR(60) NOT NULL
+# ) CHARACTER SET utf8;
+
+CREATE TABLE Gek_Head
 (
   gek_head VARCHAR(60) NOT NULL PRIMARY KEY,
   gek_subhead VARCHAR(60) NOT NULL,
-  gek_secretary VARCHAR(60) NOT NULL,
-  gek_member1 VARCHAR(60) NOT NULL,
-  gek_member2 VARCHAR(60) NOT NULL,
-  gek_member3 VARCHAR(60) NOT NULL,
-  gek_member4 VARCHAR(60) NOT NULL,
-  gek_member5 VARCHAR(60) NOT NULL,
-  gek_member6 VARCHAR(60) NOT NULL
+  gek_secretary VARCHAR(60) NOT NULL
+) CHARACTER SET utf8;
+
+CREATE TABLE Gek_Members
+(
+  gek_head VARCHAR(60) NOT NULL,
+  gek_member VARCHAR(60) NOT NULL PRIMARY KEY,
+  FOREIGN KEY(gek_head) REFERENCES Gek_Head(gek_head) ON UPDATE CASCADE ON DELETE CASCADE # set on update cascade and remove on delete, test
 ) CHARACTER SET utf8;
 
 -- old one
