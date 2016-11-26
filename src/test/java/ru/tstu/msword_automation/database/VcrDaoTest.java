@@ -5,6 +5,7 @@ import org.junit.Test;
 import ru.tstu.msword_automation.database.datasets.VCR;
 
 import java.sql.SQLException;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
@@ -62,8 +63,32 @@ public class VcrDaoTest extends AbstractDaoTest<VcrDao, VCR, String>
 	@Test
 	public void CorrectReadByForeignKey() throws Exception
 	{
-		assertEquals(dataset, dao.readByForeignKey(1));
+		List<VCR> list = dao.readByForeignKey(1);
+		assertEquals(dataset, list.get(0));
+//		assertEquals(secondDataset, list.get(1));
 	}
 
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
