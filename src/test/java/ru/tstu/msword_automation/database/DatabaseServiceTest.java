@@ -2,7 +2,7 @@ package ru.tstu.msword_automation.database;
 
 import org.junit.Before;
 import org.junit.Test;
-import ru.tstu.msword_automation.database.datasets.GEK;
+import ru.tstu.msword_automation.database.datasets.GekMember;
 
 import static org.junit.Assert.*;
 
@@ -64,8 +64,8 @@ public class DatabaseServiceTest
 	@Test
 	public void AssertThatInstancesOfGekDaoCreates() throws Exception
 	{
-		GekDao gekDao0 = db.getGekDao();
-		GekDao gekDao1 = db.getGekDao();
+		GekHeadDao gekDao0 = db.getGekHeadDao();
+		GekHeadDao gekDao1 = db.getGekHeadDao();
 
 		assertNotNull(gekDao0);
 		assertNotNull(gekDao1);
@@ -80,6 +80,17 @@ public class DatabaseServiceTest
 		assertNotNull(vcrDao0);
 		assertNotNull(vcrDao1);
 		assertNotEquals(vcrDao0, vcrDao1);
+	}
+
+	@Test
+	public void AssertThatInstancesOfGekMemberDaoCreates() throws Exception
+	{
+		GekMemberDao g0 = db.getGekMemberDao();
+		GekMemberDao g1 = db.getGekMemberDao();
+
+		assertNotNull(g0);
+		assertNotNull(g1);
+		assertNotEquals(g0, g1);
 	}
 
 

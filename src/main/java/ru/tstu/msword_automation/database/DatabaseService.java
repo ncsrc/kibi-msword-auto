@@ -3,6 +3,7 @@ package ru.tstu.msword_automation.database;
 
 
 import com.mysql.jdbc.Driver;
+import ru.tstu.msword_automation.database.datasets.GekMember;
 
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -38,9 +39,14 @@ public class DatabaseService
 		return new DateDao(connectionPool);
 	}
 
-	public GekDao getGekDao() throws SQLException
+	public GekHeadDao getGekHeadDao() throws SQLException
 	{
-		return new GekDao(connectionPool);
+		return new GekHeadDao(connectionPool);
+	}
+
+	public GekMemberDao getGekMemberDao() throws SQLException
+	{
+		return new GekMemberDao(connectionPool);
 	}
 
 	public CourseDao getCourseDao() throws SQLException

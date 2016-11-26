@@ -1,21 +1,20 @@
 package ru.tstu.msword_automation.database;
 
 
-import ru.tstu.msword_automation.database.datasets.GEK;
+import ru.tstu.msword_automation.database.datasets.GekHead;
 
 import java.sql.SQLException;
 
 
-public class GekDaoTest extends AbstractDaoTest<GekDao, GEK, String>
+public class GekHeadDaoTest extends AbstractDaoTest<GekHeadDao, GekHead, String>
 {
 
 
 
 	@Override
-	protected GEK getDataset()
+	protected GekHead getDataset()
 	{
-		return new GEK("qwe", "asd", "zxc", "1", "2", "3"
-						, "4", "5", "6");
+		return new GekHead("qwe", "asd", "zxc");
 	}
 
 	@Override
@@ -25,10 +24,9 @@ public class GekDaoTest extends AbstractDaoTest<GekDao, GEK, String>
 	}
 
 	@Override
-	protected GEK getSecondDataset()
+	protected GekHead getSecondDataset()
 	{
-		return new GEK("test", "test", "test",
-				"test", "test", "test", "test", "test", "test");
+		return new GekHead("test", "test", "test");
 	}
 
 	@Override
@@ -38,9 +36,9 @@ public class GekDaoTest extends AbstractDaoTest<GekDao, GEK, String>
 	}
 
 	@Override
-	protected GekDao getDao() throws SQLException
+	protected GekHeadDao getDao() throws SQLException
 	{
-		return DatabaseService.getInstance().getGekDao();	// do not instantiate directly, because ConnectionPool overflow may occur then
+		return DatabaseService.getInstance().getGekHeadDao();	// do not instantiate directly, because ConnectionPool overflow may occur then
 	}
 
 	@Override

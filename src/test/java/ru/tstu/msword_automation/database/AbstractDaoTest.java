@@ -20,8 +20,8 @@ public abstract class AbstractDaoTest<T extends Dao<D, K>, D, K>
 	// protected if direct access needed for custom tests
 	protected T dao;
 	protected D dataset;
+	protected D secondDataset;
 	private K firstSetPk;
-	private D secondDataset;
 	private K secondSetPk;
 
 

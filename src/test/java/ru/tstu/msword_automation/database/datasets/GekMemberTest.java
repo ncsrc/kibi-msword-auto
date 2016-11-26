@@ -4,15 +4,17 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class GekHeadTest
+
+public class GekMemberTest
 {
+
 
 	@Test
 	public void equalsCorrectness() throws Exception
 	{
-		GekHead g0 = new GekHead("qwe", "asd", "zxc");
-		GekHead g1 = new GekHead("qwe", "asd", "zxc");
-		GekHead g2 = new GekHead("qweasdas", "asd", "zxc");
+		GekMember g0 = new GekMember("test", "qwz");
+		GekMember g1 = new GekMember("test", "qwz");
+		GekMember g2 = new GekMember("zxc", "qwz");
 
 		assertEquals(g0, g1);
 		assertNotEquals(g1, g2);
