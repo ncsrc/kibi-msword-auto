@@ -38,14 +38,6 @@ public class DateDaoTest
 		assertEquals(data, createdData);
 	}
 
-	@Ignore // not need this after refactor
-	@Test(expected = SQLException.class)
-	public void ExceptionThrownWhenTryingToInsertInNonEmptyTableWithSamePrimaryKey() throws Exception
-	{
-		Date data = new Date(1, "2003-03-03", "2004-01-10");
-		dao.create(data);
-	}
-
 	@Test
 	public void SelectionByPrimaryKeyCorrectness() throws Exception
 	{
@@ -54,13 +46,6 @@ public class DateDaoTest
 
 		Date read = dao.read(id);
 		assertEquals(date, read);
-	}
-
-	@Ignore // TODO dumb test, remove
-	@Test(expected = SQLException.class)
-	public void SelectionThrowsExceptionWhenPrimaryKeyNotFoundInTable() throws Exception
-	{
-		dao.read(12);
 	}
 
 	@Test
