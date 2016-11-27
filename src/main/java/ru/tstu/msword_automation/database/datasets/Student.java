@@ -4,6 +4,7 @@ package ru.tstu.msword_automation.database.datasets;
 
 public class Student
 {
+	@PrimaryKey
 	private final int id;
 	private final String fName;
 	private final String lName;

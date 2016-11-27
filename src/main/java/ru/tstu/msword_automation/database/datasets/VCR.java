@@ -3,7 +3,9 @@ package ru.tstu.msword_automation.database.datasets;
 
 public class VCR	// stands for "Выпускная квалификационная работа"
 {
-	private final int student_id;
+	private final int student_id; // foreign key
+
+	@PrimaryKey
 	private final String name;
 	private final String head;
 	private final String reviewer;

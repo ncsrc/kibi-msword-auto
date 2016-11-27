@@ -3,6 +3,7 @@ package ru.tstu.msword_automation.database.datasets;
 
 public class GekMember
 {
+	@PrimaryKey
 	private final String member;
 	private final String head; // foreign key
 

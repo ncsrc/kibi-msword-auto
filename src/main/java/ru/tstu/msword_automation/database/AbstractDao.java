@@ -1,5 +1,9 @@
 package ru.tstu.msword_automation.database;
 
+import ru.tstu.msword_automation.database.datasets.PrimaryKey;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,7 +15,7 @@ abstract class AbstractDao<T, K> implements Dao<T, K>
 	// protected in case you need direct access for connections
 	// for implementation of custom functionality not defined in Dao
 	protected ConnectionPool connectionPool;
-
+	protected K lastInsertId; // this assigned in create() method after successful sql-statement execution
 
 	AbstractDao(ConnectionPool connectionPool)
 	{
@@ -20,11 +24,12 @@ abstract class AbstractDao<T, K> implements Dao<T, K>
 
 
 	@Override
-	public void create(T dataset) throws SQLException
+	public void create(T dataset) throws SQLException, DaoException
 	{
 		Connection connection = connectionPool.getConnection();
 		PreparedStatement statement = this.getCreationStatement(connection, dataset);
 		statement.executeUpdate();
+		setLastInsertId(dataset);
 		statement.close();
 		connectionPool.putBackConnection(connection);
 	}
@@ -108,4 +113,63 @@ abstract class AbstractDao<T, K> implements Dao<T, K>
 
 	protected abstract PreparedStatement getDeleteAllStatement(Connection connection) throws SQLException;
 
+
+	@Override
+	public K lastInsertId() throws SQLException
+	{
+		return this.lastInsertId;
+	}
+
+
+	// TODO refactor method, fix unchecked casting and null returning
+	private void setLastInsertId(T dataset) throws DaoException
+	{
+		Class clazz = dataset.getClass();
+		Field[] fields = clazz.getDeclaredFields();
+
+		Field target = null;
+		for(Field field : fields){
+			Annotation pk = field.getAnnotation(PrimaryKey.class);
+			if(pk != null){
+				target = field;
+				break;
+			}
+		}
+
+		K value;
+		try{
+			target.setAccessible(true);
+			value = (K) target.get(dataset); // TODO fix unchecked casting
+		}catch(IllegalAccessException e){
+			throw new DaoException("Can't reflectively get lastInsertId value, access denied"); // TODO think of more precise exception
+		}
+
+		this.lastInsertId = value;
+	}
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

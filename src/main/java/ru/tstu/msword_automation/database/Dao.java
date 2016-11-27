@@ -12,7 +12,7 @@ import java.util.List;
 public interface Dao<T, K>
 {
 
-	void create(T dataset) throws SQLException;
+	void create(T dataset) throws SQLException, DaoException;
 
 	T read(K pk) throws SQLException;
 
@@ -24,6 +24,7 @@ public interface Dao<T, K>
 
 	void deleteAll() throws SQLException;
 
+	K lastInsertId() throws SQLException;
 
 }
 

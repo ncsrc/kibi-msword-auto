@@ -3,6 +3,7 @@ package ru.tstu.msword_automation.database.datasets;
 
 public class Course
 {
+	@PrimaryKey
 	private final String code;
 	private final String name;
 	private final String spec;

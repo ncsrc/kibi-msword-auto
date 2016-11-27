@@ -7,6 +7,7 @@ import java.util.Calendar;
 // TODO refactor
 public class Date
 {
+	@PrimaryKey
 	private final int id;
 	private final String gosDate;
 	private final String vcrDate;

@@ -3,6 +3,7 @@ package ru.tstu.msword_automation.database.datasets;
 
 public class GekHead    // gek stands for "Государственная экзаменационная комиссия"
 {
+	@PrimaryKey
 	private final String head;
 	private final String subhead;
 	private final String secretary;

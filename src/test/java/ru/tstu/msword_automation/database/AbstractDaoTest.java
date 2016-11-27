@@ -117,6 +117,19 @@ public abstract class AbstractDaoTest<T extends Dao<D, K>, D, K>
 		assertEquals(true, list.isEmpty());
 	}
 
+	@Test
+	public void WhenRowCreatedAfterSetUpReturnsCorrectLastInsertId() throws Exception
+	{
+		assertEquals(this.firstSetPk, dao.lastInsertId());
+	}
+
+	@Test
+	public void WhenNewSecondRowCreatedReturnsCorrectLastInsertId() throws Exception
+	{
+		dao.create(this.secondDataset);
+		assertEquals(this.secondSetPk, dao.lastInsertId());
+	}
+
 
 	private boolean checkIfEquals(D dataset)
 	{
