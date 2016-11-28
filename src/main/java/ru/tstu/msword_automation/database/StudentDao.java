@@ -23,13 +23,11 @@ public class StudentDao extends AbstractDao<Student, Integer>
 	@Override
 	protected PreparedStatement getCreationStatement(Connection connection, Student dataset) throws SQLException
 	{
-		PreparedStatement statement = connection.prepareStatement("INSERT INTO Students VALUES(?, ?, ?, ?, ?, ?)");
+		PreparedStatement statement = connection.prepareStatement("INSERT INTO Students VALUES(?, ?, ?, ?)");
 		statement.setInt(1, dataset.getId());
 		statement.setString(2, dataset.getFirstName());
 		statement.setString(3, dataset.getLastName());
 		statement.setString(4, dataset.getMiddleName());
-		statement.setString(5, dataset.getQualification());
-		statement.setString(6, dataset.getCourseCode());
 
 		return statement;
 	}
@@ -37,8 +35,7 @@ public class StudentDao extends AbstractDao<Student, Integer>
 	@Override
 	protected PreparedStatement getReadingByPkStatement(Connection connection, Integer pk) throws SQLException
 	{
-		PreparedStatement statement = connection.prepareStatement("SELECT student_id, first_name, last_name, middle_name, qualification, course_code " +
-				"FROM Students WHERE student_id = ?");
+		PreparedStatement statement = connection.prepareStatement("SELECT student_id, first_name, last_name, middle_name FROM Students WHERE student_id = ?");
 		statement.setInt(1, pk);
 
 		return statement;
@@ -47,21 +44,18 @@ public class StudentDao extends AbstractDao<Student, Integer>
 	@Override
 	protected PreparedStatement getReadingAllStatement(Connection connection) throws SQLException
 	{
-		return connection.prepareStatement("SELECT student_id, first_name, last_name, middle_name, qualification, course_code FROM Students");
+		return connection.prepareStatement("SELECT student_id, first_name, last_name, middle_name FROM Students");
 	}
 
 	@Override
 	protected PreparedStatement getUpdateStatement(Connection connection, Student dataset, Integer pk) throws SQLException
 	{
-		PreparedStatement statement = connection.prepareStatement("UPDATE Students SET student_id = ?, first_name = ?, last_name = ?, middle_name = ?, qualification = ?," +
-				"  course_code = ? WHERE student_id = ?");
+		PreparedStatement statement = connection.prepareStatement("UPDATE Students SET student_id = ?, first_name = ?, last_name = ?, middle_name = ? WHERE student_id = ?");
 		statement.setInt(1, dataset.getId());
 		statement.setString(2, dataset.getFirstName());
 		statement.setString(3, dataset.getLastName());
 		statement.setString(4, dataset.getMiddleName());
-		statement.setString(5, dataset.getQualification());
-		statement.setString(6, dataset.getCourseCode());
-		statement.setInt(7, pk);
+		statement.setInt(5, pk);
 
 		return statement;
 	}
@@ -87,7 +81,7 @@ public class StudentDao extends AbstractDao<Student, Integer>
 		List<Student> list = new ArrayList<>();
 		while(resultSet.next()){
 			list.add(new Student(resultSet.getInt("student_id"), resultSet.getString("first_name"), resultSet.getString("last_name"),
-					resultSet.getString("middle_name"), resultSet.getString("qualification"), resultSet.getString("course_code")));
+					resultSet.getString("middle_name")));
 		}
 
 		return list;

@@ -5,21 +5,30 @@ public class Course
 {
 	@PrimaryKey
 	private final String code;
+	private final int studentId; // foreign key
+	private final String qualification;
 	private final String name;
-	private final String spec;
+	private final String profile;
 
 
-	public Course(String code, String name, String spec)
+	public Course(String code, int studentId, String qualification, String name, String profile)
 	{
 		this.name = name;
+		this.studentId = studentId;
+		this.qualification = qualification;
 		this.code = code;
-		this.spec = spec;
+		this.profile = profile;
 	}
 
 
 	public String getCode()
 	{
 		return this.code;
+	}
+
+	public int getStudentId()
+	{
+		return this.studentId;
 	}
 
 	public String getName()
@@ -32,11 +41,15 @@ public class Course
 //		return this.code + " – " + this.name;
 //	}
 
-	public String getSpec()
+	public String getProfile()
 	{
-		return this.spec;
+		return this.profile;
 	}
 
+	public String getQualification()
+	{
+		return this.qualification;
+	}
 
 	@Override
 	public boolean equals(Object obj)
@@ -54,7 +67,10 @@ public class Course
 		}
 
 		Course other = (Course) obj;
-		if(this.code.equals(other.code) && this.name.equals(other.name) && this.spec.equals(other.spec)){
+		if(this.code.equals(other.code) && this.studentId == other.studentId
+				&& this.name.equals(other.name) && this.profile.equals(other.profile)
+				&& this.qualification.equals(other.qualification)){
+
 			return true;
 		}
 

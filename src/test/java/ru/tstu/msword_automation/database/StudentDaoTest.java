@@ -13,15 +13,13 @@ public class StudentDaoTest extends AbstractDaoTest<StudentDao, Student, Integer
 	@Override
 	protected Student getDataset()
 	{
-		return new Student(1, "Иван", "Иванов", "Иванович",
-				"бакалавр", "11.11.11.11");
+		return new Student(1, "Иван", "Иванов", "Иванович");
 	}
 
 	@Override
 	protected Student getSecondDataset()
 	{
-		return new Student(2, "qwe", "test", "test",
-				"sdtest", "11.11.11.11");
+		return new Student(2, "qwe", "test", "test");
 	}
 
 	@Override

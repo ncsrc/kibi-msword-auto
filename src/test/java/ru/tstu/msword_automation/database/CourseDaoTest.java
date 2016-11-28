@@ -14,11 +14,12 @@ public class CourseDaoTest
 	private CourseDao dao;
 	private Course course;
 
+	// TODO probably need to add @BeforeClass to get rid of foreign key constraints
 
 	@Before
 	public void init() throws Exception
 	{
-		this.course = new Course("11.11.11.11", "Б-И", "Б-И в сфере ИТ");
+		this.course = new Course("11.11.11.11", 1, "бакалавр", "Б-И", "Б-И в сфере ИТ");
 		DatabaseService db = DatabaseService.getInstance();
 		this.dao = db.getCourseDao();
 		this.dao.deleteAll();
@@ -29,7 +30,7 @@ public class CourseDaoTest
 	@Test
 	public void TestInsertion() throws Exception
 	{
-		Course data = new Course("1.1.1.1", "из тестов", "спек из тестов");
+		Course data = new Course("1.1.1.1", 1, "бакалавр", "из тестов", "спек из тестов");
 		dao.create(data);
 		Course createdData = dao.read("1.1.1.1");
 		assertEquals(data, createdData);
@@ -51,7 +52,7 @@ public class CourseDaoTest
 	@Test
 	public void TestSelectionOfAllTable() throws Exception
 	{
-		Course newCourse = new Course("1.1.1.1", "from-tests", "spec-from-tests");
+		Course newCourse = new Course("1.1.1.1", 1, "бакалавр", "from-tests", "spec-from-tests");
 		dao.create(newCourse);
 		List<Course> list = dao.readAll();
 
@@ -65,7 +66,7 @@ public class CourseDaoTest
 	@Test
 	public void TestUpdatingOldCourseWithNewOne() throws Exception
 	{
-		Course update = new Course("1.1.1.1", "from-tests", "spec-from-tests");
+		Course update = new Course("1.1.1.1", 1, "бакалавр", "from-tests", "spec-from-tests");
 		dao.update("11.11.11.11", update);
 
 		List<Course> list = dao.readAll();

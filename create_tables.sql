@@ -10,22 +10,43 @@ DROP TABLE IF EXISTS Date;
 
 -- Tables creation
 
+-- old one
+# CREATE TABLE Courses
+# (
+#   course_code VARCHAR(30) PRIMARY KEY NOT NULL,
+#   course_name VARCHAR(60) NOT NULL,
+#   course_specialization VARCHAR(60) NOT NULL
+# ) CHARACTER SET utf8;
+
 CREATE TABLE Courses
 (
+  student_id INT NOT NULL,
   course_code VARCHAR(30) PRIMARY KEY NOT NULL,
   course_name VARCHAR(60) NOT NULL,
-  course_specialization VARCHAR(60) NOT NULL
+  course_profile VARCHAR(60) NOT NULL,
+  qualification VARCHAR(60) NOT NULL,
+  FOREIGN KEY(student_id) REFERENCES Students(student_id) ON DELETE CASCADE ON UPDATE CASCADE
 ) CHARACTER SET utf8;
 
+-- old one
+# CREATE TABLE Students
+# (
+#   student_id INT PRIMARY KEY NOT NULL,
+#   first_name VARCHAR(60) NOT NULL,
+#   last_name VARCHAR(60) NOT NULL,
+#   middle_name VARCHAR(60) NOT NULL,
+#   qualification VARCHAR(60) NOT NULL,
+#   course_code VARCHAR(30),
+#   FOREIGN KEY(course_code) REFERENCES Courses(course_code) ON DELETE CASCADE
+# ) CHARACTER SET utf8;
+
+-- TODO change tables and database service
 CREATE TABLE Students
 (
   student_id INT PRIMARY KEY NOT NULL,
   first_name VARCHAR(60) NOT NULL,
   last_name VARCHAR(60) NOT NULL,
-  middle_name VARCHAR(60) NOT NULL,
-  qualification VARCHAR(60) NOT NULL,
-  course_code VARCHAR(30),
-  FOREIGN KEY(course_code) REFERENCES Courses(course_code) ON DELETE CASCADE
+  middle_name VARCHAR(60) NOT NULL
 ) CHARACTER SET utf8;
 
 CREATE TABLE VCRs
