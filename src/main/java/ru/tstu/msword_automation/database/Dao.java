@@ -24,7 +24,7 @@ public interface Dao<T, K>
 
 	void deleteAll() throws SQLException;
 
-	K lastInsertId() throws SQLException;
+	K lastInsertId() throws SQLException;	// works only after creation of new row by dao, otherwise returns null
 
 }
 

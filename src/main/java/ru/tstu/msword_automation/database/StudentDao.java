@@ -50,12 +50,11 @@ public class StudentDao extends AbstractDao<Student, Integer>
 	@Override
 	protected PreparedStatement getUpdateStatement(Connection connection, Student dataset, Integer pk) throws SQLException
 	{
-		PreparedStatement statement = connection.prepareStatement("UPDATE Students SET student_id = ?, first_name = ?, last_name = ?, middle_name = ? WHERE student_id = ?");
-		statement.setInt(1, dataset.getId());
-		statement.setString(2, dataset.getFirstName());
-		statement.setString(3, dataset.getLastName());
-		statement.setString(4, dataset.getMiddleName());
-		statement.setInt(5, pk);
+		PreparedStatement statement = connection.prepareStatement("UPDATE Students SET first_name = ?, last_name = ?, middle_name = ? WHERE student_id = ?");
+		statement.setString(1, dataset.getFirstName());
+		statement.setString(2, dataset.getLastName());
+		statement.setString(3, dataset.getMiddleName());
+		statement.setInt(4, pk);
 
 		return statement;
 	}

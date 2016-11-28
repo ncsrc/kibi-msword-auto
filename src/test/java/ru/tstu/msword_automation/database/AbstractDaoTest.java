@@ -21,8 +21,8 @@ public abstract class AbstractDaoTest<T extends Dao<D, K>, D, K>
 	protected T dao;
 	protected D dataset;
 	protected D secondDataset;
-	private K firstSetPk;
-	private K secondSetPk;
+	protected K firstSetPk;
+	protected K secondSetPk;
 
 
 	@Before

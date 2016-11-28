@@ -1,9 +1,13 @@
 package ru.tstu.msword_automation.database;
 
 
+import org.junit.Test;
 import ru.tstu.msword_automation.database.datasets.Student;
 
 import java.sql.SQLException;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class StudentDaoTest extends AbstractDaoTest<StudentDao, Student, Integer>
 {
@@ -47,5 +51,19 @@ public class StudentDaoTest extends AbstractDaoTest<StudentDao, Student, Integer
 	}
 
 
+	// need to override this because of slight differ update logic of student entity
+	@Test
+	@Override
+	public void TestUpdatingOldDateWithNewOne() throws Exception
+	{
+		dao.update(this.firstSetPk, this.secondDataset);
+		List<Student> list = dao.readAll();
+		assertEquals(1, list.size());
+		Student s0 = list.get(0);
+		Student expected = new Student(firstSetPk, secondDataset.getFirstName(),
+				secondDataset.getLastName(), secondDataset.getMiddleName());
+
+		assertEquals(expected, s0);
+	}
 
 }
