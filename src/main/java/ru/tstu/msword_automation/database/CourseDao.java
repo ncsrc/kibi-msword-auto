@@ -58,13 +58,12 @@ public class CourseDao extends AbstractDao<Course, String> implements ForeignKey
 	@Override
 	protected PreparedStatement getUpdateStatement(Connection connection, Course dataset, String pk) throws SQLException
 	{
-		PreparedStatement statement = connection.prepareStatement("UPDATE Courses SET student_id = ?, course_code = ?, course_name = ?, course_profile = ?, qualification = ? WHERE course_code = ?");
-		statement.setInt(1, dataset.getStudentId());
-		statement.setString(2, dataset.getCode());
-		statement.setString(3, dataset.getName());
-		statement.setString(4, dataset.getProfile());
-		statement.setString(5, dataset.getQualification());
-		statement.setString(6, pk);
+		PreparedStatement statement = connection.prepareStatement("UPDATE Courses SET course_code = ?, course_name = ?, course_profile = ?, qualification = ? WHERE course_code = ?");
+		statement.setString(1, dataset.getCode());
+		statement.setString(2, dataset.getName());
+		statement.setString(3, dataset.getProfile());
+		statement.setString(4, dataset.getQualification());
+		statement.setString(5, pk);
 
 		return statement;
 	}
@@ -97,8 +96,28 @@ public class CourseDao extends AbstractDao<Course, String> implements ForeignKey
 					resultSet.getString("course_name"), resultSet.getString("course_profile")));
 		}
 
+		resultSet.close();
+		statement.close();
+		connectionPool.putBackConnection(connection);
 		return courses;
 	}
+
+	public void updateByForeignKey(int fk, Course dataset) throws SQLException	// TODO add test
+	{
+		Connection connection = connectionPool.getConnection();
+		PreparedStatement statement = connection.prepareStatement("UPDATE Courses SET course_code = ?, course_name = ?, course_profile = ?, qualification = ? WHERE student_id = ?");
+		statement.setString(1, dataset.getCode());
+		statement.setString(2, dataset.getName());
+		statement.setString(3, dataset.getProfile());
+		statement.setString(4, dataset.getQualification());
+		statement.setInt(5, fk);
+		statement.executeUpdate();
+
+		statement.close();
+		connectionPool.putBackConnection(connection);
+	}
+
+
 
 }
 
