@@ -117,7 +117,16 @@ public class CourseDao extends AbstractDao<Course, String> implements ForeignKey
 		connectionPool.putBackConnection(connection);
 	}
 
+	public void deleteByForeignKey(int fk) throws SQLException	// TODO add test
+	{
+		Connection connection = connectionPool.getConnection();
+		PreparedStatement statement = connection.prepareStatement("DELETE FROM Courses WHERE student_id = ?");
+		statement.setInt(1, fk);
+		statement.executeUpdate();
 
+		statement.close();
+		connectionPool.putBackConnection(connection);
+	}
 
 }
 
