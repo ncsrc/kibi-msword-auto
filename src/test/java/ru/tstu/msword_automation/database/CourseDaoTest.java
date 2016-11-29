@@ -92,6 +92,13 @@ public class CourseDaoTest
 		assertEquals(true, list.isEmpty());
 	}
 
+	@Test
+	public void CorrectReadByForeignKey() throws Exception
+	{
+		List<Course> list = dao.readByForeignKey(1);
+		assertEquals(course, list.get(0));
+	}
+
 }
 
 

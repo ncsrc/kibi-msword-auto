@@ -7,7 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CourseDao extends AbstractDao<Course, String>
+public class CourseDao extends AbstractDao<Course, String> implements ForeignKeyReadableDao<Course, Integer>
 {
 
 	CourseDao(ConnectionPool pool)
@@ -81,6 +81,23 @@ public class CourseDao extends AbstractDao<Course, String>
 	protected PreparedStatement getDeleteAllStatement(Connection connection) throws SQLException
 	{
 		return connection.prepareStatement("DELETE FROM Courses");
+	}
+
+	@Override
+	public List<Course> readByForeignKey(Integer fk) throws SQLException
+	{
+		Connection connection = connectionPool.getConnection();
+		PreparedStatement statement = connection.prepareStatement("SELECT student_id, course_code, course_name, course_profile, qualification FROM Courses WHERE student_id = ?");
+		statement.setInt(1, fk);
+
+		ResultSet resultSet = statement.executeQuery();
+		List<Course> courses = new ArrayList<>();
+		while(resultSet.next()){
+			courses.add(new Course(resultSet.getString("course_code"), resultSet.getInt("student_id"), resultSet.getString("qualification"),	// TODO fix 0 issue
+					resultSet.getString("course_name"), resultSet.getString("course_profile")));
+		}
+
+		return courses;
 	}
 
 }

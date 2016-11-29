@@ -11,3 +11,5 @@ public interface ForeignKeyReadableDao<T, K>
 
 
 }
+
+// TODO move to abstract class
