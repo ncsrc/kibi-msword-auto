@@ -68,12 +68,11 @@ public class VcrDao extends AbstractDao<VCR, String> implements ForeignKeyReadab
 	@Override
 	protected PreparedStatement getUpdateStatement(Connection connection, VCR dataset, String pk) throws SQLException
 	{
-		PreparedStatement statement = connection.prepareStatement("UPDATE VCRs SET student_id = ?, vcr_name = ?, vcr_head = ?, vcr_reviewer = ? WHERE vcr_name = ?");
-		statement.setInt(1, dataset.getStudentId());
-		statement.setString(2, dataset.getName());
-		statement.setString(3, dataset.getHeadName());
-		statement.setString(4, dataset.getReviewerName());
-		statement.setString(5, pk);
+		PreparedStatement statement = connection.prepareStatement("UPDATE VCRs SET vcr_name = ?, vcr_head = ?, vcr_reviewer = ? WHERE vcr_name = ?");
+		statement.setString(1, dataset.getName());
+		statement.setString(2, dataset.getHeadName());
+		statement.setString(3, dataset.getReviewerName());
+		statement.setString(4, pk);
 		return statement;
 	}
 
