@@ -53,10 +53,18 @@ public class WordAutomationService {
 
     // todo javadoc
     public Template getVcrTemplate() {
+        return Template.newVcrTemplate();
+    }
 
 
-        // todo implement
-        return null;
+    // This two methods are for internal usage.
+    // Template class use them to identify .doc files location
+    String getTemplateSourceFolder() {
+        return templateSrcFolder;
+    }
+
+    String getTemplateDestinationFolder() {
+        return templateDstFolder;
     }
 
 
