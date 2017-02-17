@@ -56,6 +56,19 @@ public class WordAutomationServiceTest {
         assertThat(actualDstFolder, is(templateDstFolder));
     }
 
+    @Test
+    public void whenGetGosTemplateCalledTwiceThenItIsDifferentObjects() throws Exception {
+        Template firstTpl = service.getGosTemplate();
+        Template secondTpl = service.getGosTemplate();
+        assertNotEquals(firstTpl, secondTpl);
+    }
+
+    @Test
+    public void whenGetVcrTemplateCalledTwiceThenItIsDifferentObjects() throws Exception {
+        Template firstTpl = service.getVcrTemplate();
+        Template secondTpl = service.getVcrTemplate();
+        assertNotEquals(firstTpl, secondTpl);
+    }
 
 
 }
