@@ -4,17 +4,17 @@ class TestableBasicDocument extends BasicDocument
 {
 
 
-    def TestableBasicDocument(String name)
+    TestableBasicDocument(String name)
     {
         super(name)
     }
 
-    public String getName()
+    String getName()
     {
-        return doc.Name;
+        return doc.Name
     }
 
-    public String getFullPath()
+    String getFullPath()
     {
         return doc.Path+application.PathSeparator+this.getName()
     }

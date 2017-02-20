@@ -58,7 +58,7 @@ public class WordAutomationService {
      * @return gos template
      */
     public Template getGosTemplate() {
-        return Template.newGosTemplate();
+        return Template.newGosTemplate(templateSrcFolder, templateDstFolder);
     }
 
     /**
@@ -66,19 +66,9 @@ public class WordAutomationService {
      * @return vcr template
      */
     public Template getVcrTemplate() {
-        return Template.newVcrTemplate();
+        return Template.newVcrTemplate(templateSrcFolder, templateDstFolder);
     }
 
-
-    // This two methods are for internal usage.
-    // Template class use them to identify .doc files location
-    String getTemplateSourceFolder() {
-        return templateSrcFolder;
-    }
-
-    String getTemplateDestinationFolder() {
-        return templateDstFolder;
-    }
 
 
 }

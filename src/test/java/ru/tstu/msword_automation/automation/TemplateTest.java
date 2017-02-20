@@ -17,12 +17,12 @@ public class TemplateTest
 
 
 	@Before
-	public void init()
+	public void setUp()
 	{
 		// TODO add records to bd
 
 		System.setProperty("template_folder", "C:\\Users\\user\\Desktop\\msword_automation\\automation\\src\\main\\resourses\\templates");
-		template = new Template();
+//		template = new Template();
 	}
 
 	@After
