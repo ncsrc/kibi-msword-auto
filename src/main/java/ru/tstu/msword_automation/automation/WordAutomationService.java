@@ -1,6 +1,8 @@
 package ru.tstu.msword_automation.automation;
 
 
+import com.jacob.com.LibraryLoader;
+
 /**
  * This is a service for filling ms word templates.
  * Should be initialized before usage. Initialization required for
@@ -48,6 +50,7 @@ public class WordAutomationService {
             throw new WordAutomationServiceSystemException("Word automation service was already initialized. Cannot initialize it twice.");
         }
 
+        System.setProperty(LibraryLoader.JACOB_DLL_PATH, getJacobDllPath());
         templateSrcFolder = templateSourceFolder;
         templateDstFolder = templateDestinationFolder;
         initialized = true;
@@ -70,6 +73,15 @@ public class WordAutomationService {
     }
 
 
+    private static String getJacobDllPath() {
+        ClassLoader classLoader = WordAutomationService.class.getClassLoader();
+        String cpArch = System.getProperty("os.arch");
+        if(cpArch.equals("amd64")) {
+            return classLoader.getResource("jacob-1.14.3-x64.dll").getPath();
+        } else {
+            return classLoader.getResource("jacob-1.14.3-x86.dll").getPath();
+        }
+    }
 
 }
 

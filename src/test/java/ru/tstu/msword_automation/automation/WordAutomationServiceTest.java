@@ -1,5 +1,6 @@
 package ru.tstu.msword_automation.automation;
 
+import com.jacob.com.LibraryLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -16,6 +17,7 @@ public class WordAutomationServiceTest {
     @BeforeClass
     public static void setUp() throws Exception {
         WordAutomationService.initializeService(templateSrcFolder, templateDstFolder);
+        service = WordAutomationService.getInstance();
     }
 
 
@@ -49,14 +51,6 @@ public class WordAutomationServiceTest {
     }
 
     @Test
-    public void whenGetTemplateFoldersThenReturnsCorrectLocations() throws Exception {
-        String actualSrcFolder = service.getTemplateSourceFolder();
-        String actualDstFolder = service.getTemplateDestinationFolder();
-        assertThat(actualSrcFolder, is(templateSrcFolder));
-        assertThat(actualDstFolder, is(templateDstFolder));
-    }
-
-    @Test
     public void whenGetGosTemplateCalledTwiceThenItIsDifferentObjects() throws Exception {
         Template firstTpl = service.getGosTemplate();
         Template secondTpl = service.getGosTemplate();
@@ -70,6 +64,12 @@ public class WordAutomationServiceTest {
         assertNotEquals(firstTpl, secondTpl);
     }
 
+    @Test
+    public void jacobDllPropertyIsSetUp() throws Exception {
+        String dllPath = System.getProperty(LibraryLoader.JACOB_DLL_PATH);
+        String expected = WordAutomationServiceTest.class.getClassLoader().getResource("jacob-1.14.3-x64.dll").getPath();
+        assertEquals(expected, dllPath);
+    }
 
 }
 
