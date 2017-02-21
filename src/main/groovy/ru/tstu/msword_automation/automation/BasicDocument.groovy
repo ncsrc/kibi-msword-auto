@@ -9,10 +9,10 @@ import ru.tstu.msword_automation.automation.constants.SaveFormat
 import ru.tstu.msword_automation.automation.constants.SaveOptions
 
 // todo javadocs
-@PackageScope class BasicDocument implements Document  {
-    // package access for testing extended class
-    @PackageScope final def doc
-    @PackageScope final def application
+@PackageScope class BasicDocument implements Document {
+    // protected access for testing extended class
+    final def doc
+    final def application
 
 
     BasicDocument(String path) {
@@ -21,16 +21,18 @@ import ru.tstu.msword_automation.automation.constants.SaveOptions
     }
 
 
-    // todo add test ?
     void replace(String key, String replacement) {
         this.replace(key, replacement, ReplacementStrategy.REPLACE_ALL)
     }
 
-    // todo another replace with default strategy
     void replace(String key, String replacement, ReplacementStrategy strategy) {
         def find = getFindObject(key, FindStrategy.CONTINUE)
         setReplacementObject(replacement, find)
         executeReplacement(find, strategy)
+    }
+
+    boolean find(String key) {
+        return this.find(key, FindStrategy.STOP)
     }
 
     boolean find(String key, FindStrategy strategy) {
@@ -38,9 +40,14 @@ import ru.tstu.msword_automation.automation.constants.SaveOptions
         return find.Execute()
     }
 
-    void close(SaveOptions options) {
-        application.quit(options.value())   // todo change to closing document
+    void close() {
+        this.close(SaveOptions.DO_NOT_SAVE)
     }
+
+    void close(SaveOptions options) {
+        doc.close(options.value())
+    }
+
 
     void save() {
         doc.save() // TODO change save option to format with macro
@@ -50,7 +57,6 @@ import ru.tstu.msword_automation.automation.constants.SaveOptions
         application.ChangeFileOpenDirectory(location)
         doc.SaveAs(name, format.value())
     }
-
 
     private def getFindObject(String key, FindStrategy findStrategy) {
         def find = application.Selection.Find
@@ -67,6 +73,7 @@ import ru.tstu.msword_automation.automation.constants.SaveOptions
         replacementObject.Text = replacement
     }
 
+
     private void executeReplacement(def findObject, ReplacementStrategy strategy) {
         findObject.Execute(Scriptom.MISSING, Scriptom.MISSING, Scriptom.MISSING,
                 Scriptom.MISSING, Scriptom.MISSING, Scriptom.MISSING, Scriptom.MISSING,
@@ -74,13 +81,7 @@ import ru.tstu.msword_automation.automation.constants.SaveOptions
     }
 
 
-
-
     // TODO replace names in constants to human-readable, place links to ms docs, opt - brief description
-
-
-
-
 
 
 }
