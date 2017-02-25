@@ -10,6 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+// TODO change template methods to lambdas(executor class, composite in daos)
+
 abstract class AbstractDao<T, K> implements Dao<T, K>
 {
 	// protected in case you need direct access for connections
@@ -21,6 +23,9 @@ abstract class AbstractDao<T, K> implements Dao<T, K>
 	{
 		this.connectionPool = connectionPool;
 	}
+
+
+	// TODO in all methods change throws to try-catch. catch SQLException should close resourses, put back connections and throw some custom exception
 
 
 	@Override

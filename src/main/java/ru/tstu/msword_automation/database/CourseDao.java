@@ -7,7 +7,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CourseDao extends AbstractDao<Course, String> implements ForeignKeyReadableDao<Course, Integer>
+public class CourseDao extends AbstractDao<Course, Integer> implements ForeignKeyReadableDao<Course, Integer>
 {
 
 	CourseDao(ConnectionPool pool)
@@ -29,11 +29,11 @@ public class CourseDao extends AbstractDao<Course, String> implements ForeignKey
 		return statement;
 	}
 
-	@Override
-	protected PreparedStatement getReadingByPkStatement(Connection connection, String pk) throws SQLException
+	@Override	// TODO changed pk, test
+	protected PreparedStatement getReadingByPkStatement(Connection connection, Integer pk) throws SQLException
 	{
-		PreparedStatement statement = connection.prepareStatement("SELECT student_id, course_code, course_name, course_profile, qualification FROM Courses WHERE course_code = ?");
-		statement.setString(1, pk);
+		PreparedStatement statement = connection.prepareStatement("SELECT student_id, course_code, course_name, course_profile, qualification FROM Courses WHERE student_id = ?");
+		statement.setInt(1, pk);
 		return statement;
 	}
 
@@ -55,24 +55,24 @@ public class CourseDao extends AbstractDao<Course, String> implements ForeignKey
 		return connection.prepareStatement("SELECT student_id, course_code, course_name, course_profile, qualification FROM Courses");
 	}
 
-	@Override
-	protected PreparedStatement getUpdateStatement(Connection connection, Course dataset, String pk) throws SQLException
+	@Override	// TODO changed pk, test
+	protected PreparedStatement getUpdateStatement(Connection connection, Course dataset, Integer pk) throws SQLException
 	{
-		PreparedStatement statement = connection.prepareStatement("UPDATE Courses SET course_code = ?, course_name = ?, course_profile = ?, qualification = ? WHERE course_code = ?");
+		PreparedStatement statement = connection.prepareStatement("UPDATE Courses SET course_code = ?, course_name = ?, course_profile = ?, qualification = ? WHERE student_id = ?");
 		statement.setString(1, dataset.getCode());
 		statement.setString(2, dataset.getName());
 		statement.setString(3, dataset.getProfile());
 		statement.setString(4, dataset.getQualification());
-		statement.setString(5, pk);
+		statement.setInt(5, pk);
 
 		return statement;
 	}
 
-	@Override
-	protected PreparedStatement getDeleteByPkStatement(Connection connection, String pk) throws SQLException
+	@Override	// TODO changed pk, test
+	protected PreparedStatement getDeleteByPkStatement(Connection connection, Integer pk) throws SQLException
 	{
-		PreparedStatement statement = connection.prepareStatement("DELETE FROM Courses WHERE course_code = ?");
-		statement.setString(1, pk);
+		PreparedStatement statement = connection.prepareStatement("DELETE FROM Courses WHERE student_id = ?");
+		statement.setInt(1, pk);
 		return statement;
 	}
 

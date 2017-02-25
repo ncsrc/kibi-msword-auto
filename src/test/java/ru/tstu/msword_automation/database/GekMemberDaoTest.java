@@ -3,6 +3,7 @@ package ru.tstu.msword_automation.database;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import ru.tstu.msword_automation.database.datasets.GekHead;
 import ru.tstu.msword_automation.database.datasets.GekMember;
@@ -12,6 +13,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
+@Ignore
 public class GekMemberDaoTest extends AbstractDaoTest<GekMemberDao, GekMember, String>
 {
 

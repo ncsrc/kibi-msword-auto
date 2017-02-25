@@ -2,6 +2,7 @@ package ru.tstu.msword_automation.database;
 
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -15,6 +16,7 @@ import static org.junit.Assert.assertEquals;
  * @param <D> specifies Dataset
  * @param <K> specifies Primary Key for Dao
  */
+
 public abstract class AbstractDaoTest<T extends Dao<D, K>, D, K>
 {
 	// protected if direct access needed for custom tests
@@ -23,6 +25,9 @@ public abstract class AbstractDaoTest<T extends Dao<D, K>, D, K>
 	protected D secondDataset;
 	protected K firstSetPk;
 	protected K secondSetPk;
+
+
+	// TODO add beforeClass with init of all data in tables
 
 
 	@Before

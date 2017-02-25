@@ -1,6 +1,7 @@
 package ru.tstu.msword_automation.database;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import ru.tstu.msword_automation.database.datasets.VCR;
 
@@ -9,7 +10,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-
+@Ignore
 public class VcrDaoTest extends AbstractDaoTest<VcrDao, VCR, String>
 {
 

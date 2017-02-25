@@ -1,25 +1,29 @@
 package ru.tstu.msword_automation.database;
 
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 class ConnectionPool implements AutoCloseable
 {
 	private static final int DEFAULT_MIN_NUMBER_OF_CONNECTIONS = 3;
 	private static final int DEFAULT_MAX_NUMBER_OF_CONNECTIONS = 10;
-	private static final int DELAY_TIME = 10_000; // 10 seconds in ms
-	private static final String DB_NAME = "test";
-	private static final String USER = "test";
-	private static final String PASSWORD = "AD127flslbl969**_";
-	private static final String JDBC_URL = "jdbc:mysql://127.0.0.1:3306/" + DB_NAME + "?useSSL=false&characterEncoding=utf8";
+	private static final int DELAY_TIME = 10_000; // 10 seconds in ms	// TODO lower delay
+	private String dbUser;
+	private String dbPassword;
+	private String jdbc_url;
 	private int maxConnections;
 	private int numberOfOpenedConnections;
 	private List<Connection> availableConnections;
-//	private List<Connection> occupiedConnections;
+//	private List<Connection> occupiedConnections;	// TODO move here connections and return back if delay time exceeded(3-5s)
 	private boolean closed = false;
 
 
@@ -35,13 +39,42 @@ class ConnectionPool implements AutoCloseable
 
 	ConnectionPool(int initial, int max) throws SQLException
 	{
+		// getting user-pass-etc from property file
+		Properties dbInfo = new Properties();
+		try{
+			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+			InputStream in = classLoader.getResourceAsStream("db.properties");
+
+			// TODO add exceptions if some credentials not found or incorrect
+			dbInfo.load(in);
+			String dbName = dbInfo.getProperty("db.name");
+			this.dbUser = dbInfo.getProperty("db.user");
+
+			// sets empty password
+			this.dbPassword = dbInfo.getProperty("db.password");
+			if(dbPassword == null){
+				dbPassword = "";
+			}
+
+			String dbHost = dbInfo.getProperty("db.host");
+			String dbPort = dbInfo.getProperty("db.port");
+			this.jdbc_url = "jdbc:mysql://" + dbHost + ":" + dbPort + "/" + dbName + "?useSSL=false&characterEncoding=utf8";
+			in.close();
+
+			//			"jdbc:mysql://127.0.0.1:3306/" + DB_NAME + "?useSSL=false&characterEncoding=utf8";
+		}catch(java.io.IOException e){	// TODO throw high level exception with message about occurred error. handle separate file not found
+			e.printStackTrace();
+			System.exit(1);
+		}
+
+		// registering initial connection
 		this.maxConnections = max;
 		this.availableConnections = new ArrayList<>(max);
 		for(int i = 0; i < initial; i++){
 			this.availableConnections.add(this.openNewConnection());
 		}
 		this.numberOfOpenedConnections = initial;
-//		this.occupiedConnections = new ArrayList<>(max);
+//		this.occupiedConnections = new ArrayList<>(max); // TODO remove ?
 	}
 
 
@@ -89,9 +122,10 @@ class ConnectionPool implements AutoCloseable
 	}
 
 
+	// TODO catch exception and throw another with message
 	private Connection openNewConnection() throws SQLException
 	{
-		return DriverManager.getConnection(JDBC_URL, USER, PASSWORD);
+		return DriverManager.getConnection(jdbc_url, dbUser, dbPassword);
 	}
 
 	private boolean availableConnectionExists()

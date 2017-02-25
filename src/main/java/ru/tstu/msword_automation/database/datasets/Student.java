@@ -39,6 +39,7 @@ public class Student
 		return this.midName;
 	}
 
+	// todo move to model
 	public String getFullName()
 	{
 		return this.lName + " " + this.fName + " " + this.midName;

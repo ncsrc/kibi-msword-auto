@@ -1,11 +1,12 @@
 package ru.tstu.msword_automation.database;
 
 
+import org.junit.Ignore;
 import ru.tstu.msword_automation.database.datasets.GekHead;
 
 import java.sql.SQLException;
 
-
+@Ignore
 public class GekHeadDaoTest extends AbstractDaoTest<GekHeadDao, GekHead, String>
 {
 
