@@ -1,7 +1,6 @@
 package ru.tstu.msword_automation.automation
 
 import groovy.transform.PackageScope
-import org.codehaus.groovy.scriptom.ActiveXObject
 import org.codehaus.groovy.scriptom.Scriptom
 import ru.tstu.msword_automation.automation.constants.FindStrategy
 import ru.tstu.msword_automation.automation.constants.ReplacementStrategy

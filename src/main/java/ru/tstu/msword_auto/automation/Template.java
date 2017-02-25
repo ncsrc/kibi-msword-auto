@@ -83,6 +83,8 @@ public class Template {
 
 
 	public String getFilename() {
+		// if filename == null -> return default name
+
 		// todo remove magic string
 		return studentInitials + " - Протокол ГЭК по защите ВКР.docx";
 	}
