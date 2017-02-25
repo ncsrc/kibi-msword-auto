@@ -1,11 +1,11 @@
-package ru.tstu.msword_automation.automation
+package ru.tstu.msword_auto.automation
 
 import groovy.transform.PackageScope
 import org.codehaus.groovy.scriptom.Scriptom
-import ru.tstu.msword_automation.automation.constants.FindStrategy
-import ru.tstu.msword_automation.automation.constants.ReplacementStrategy
-import ru.tstu.msword_automation.automation.constants.SaveFormat
-import ru.tstu.msword_automation.automation.constants.SaveOptions
+import ru.tstu.msword_auto.automation.constants.FindStrategy
+import ru.tstu.msword_auto.automation.constants.ReplacementStrategy
+import ru.tstu.msword_auto.automation.constants.SaveFormat
+import ru.tstu.msword_auto.automation.constants.SaveOptions
 
 // todo javadocs
 @PackageScope class BasicDocument implements Document {

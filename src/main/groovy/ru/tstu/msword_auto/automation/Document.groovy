@@ -1,10 +1,10 @@
-package ru.tstu.msword_automation.automation
+package ru.tstu.msword_auto.automation
 
 import groovy.transform.PackageScope
-import ru.tstu.msword_automation.automation.constants.FindStrategy
-import ru.tstu.msword_automation.automation.constants.ReplacementStrategy
-import ru.tstu.msword_automation.automation.constants.SaveFormat
-import ru.tstu.msword_automation.automation.constants.SaveOptions
+import ru.tstu.msword_auto.automation.constants.FindStrategy
+import ru.tstu.msword_auto.automation.constants.ReplacementStrategy
+import ru.tstu.msword_auto.automation.constants.SaveFormat
+import ru.tstu.msword_auto.automation.constants.SaveOptions
 
 // This is created for scalability reasons.
 // Thus you can create multiple kinds of Document object(e.g. WritableDocument) or use Decorator pattern, or else.

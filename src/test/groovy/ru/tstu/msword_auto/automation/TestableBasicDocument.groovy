@@ -1,4 +1,4 @@
-package ru.tstu.msword_automation.automation
+package ru.tstu.msword_auto.automation
 
 class TestableBasicDocument extends BasicDocument {
 

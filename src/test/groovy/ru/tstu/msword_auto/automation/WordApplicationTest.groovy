@@ -1,4 +1,4 @@
-package ru.tstu.msword_automation.automation
+package ru.tstu.msword_auto.automation
 
 import com.jacob.com.ComFailException
 import org.codehaus.groovy.scriptom.ActiveXObject

@@ -1,4 +1,4 @@
-package ru.tstu.msword_automation.automation.constants
+package ru.tstu.msword_auto.automation.constants
 
 
 enum FindStrategy

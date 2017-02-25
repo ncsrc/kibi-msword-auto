@@ -1,4 +1,4 @@
-package ru.tstu.msword_automation.automation
+package ru.tstu.msword_auto.automation
 
 import groovy.transform.PackageScope
 import org.codehaus.groovy.scriptom.ActiveXObject

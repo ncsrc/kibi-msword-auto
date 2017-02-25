@@ -1,11 +1,11 @@
-package ru.tstu.msword_automation.automation;
+package ru.tstu.msword_auto.automation;
 
 import com.jacob.com.LibraryLoader;
 import org.junit.*;
 import org.junit.Test;
-import ru.tstu.msword_automation.automation.constants.ReplacementStrategy;
-import ru.tstu.msword_automation.automation.constants.SaveFormat;
-import ru.tstu.msword_automation.automation.constants.SaveOptions;
+import ru.tstu.msword_auto.automation.constants.ReplacementStrategy;
+import ru.tstu.msword_auto.automation.constants.SaveFormat;
+import ru.tstu.msword_auto.automation.constants.SaveOptions;
 
 import java.io.File;
 import java.io.IOException;
