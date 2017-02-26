@@ -24,7 +24,9 @@ public class StudentDataTest {
      */
 
     public StudentDataTest() {
-        this.student = new Student(1, "ads", "ads", "ads");
+        this.student = new Student(1, "ads", "ads", "ads",
+                "adss", "adss", "adss", "adsd",
+                "adsd", "adsd");
         this.course = new Course("ads", 1, "ads", "ads", "ads");
         this.vcr = new VCR(1, "ads", "ads", "ads");
         this.studentData = new StudentData(student, course, vcr);

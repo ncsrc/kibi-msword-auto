@@ -35,10 +35,11 @@ public class TemplateDataTest {
         this.date = new Date(1, "2013-11-12", "2013-11-12");
         this.gekHead = new GekHead("asd", "asd", "asd");
         this.gekMembers = Arrays.asList(new GekMember("asd", "asd"));
-        this.student = new Student(1, "asd", "asd", "asd");
+        this.student = new Student(1, "ads", "ads", "ads",
+                "adss", "adss", "adss", "adsd",
+                "adsd", "adsd");
         this.course = new Course("asd", 1, "asd", "asd", "asd");
         this.vcr = new VCR(1, "asd", "asd", "asd");
-
         Gek gek = new Gek(gekHead, gekMembers);
         StudentData studentData = new StudentData(student, course, vcr);
         this.data = new TemplateData(date, gek, studentData);
