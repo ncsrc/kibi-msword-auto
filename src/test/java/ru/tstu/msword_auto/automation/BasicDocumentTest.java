@@ -32,10 +32,6 @@ public class BasicDocumentTest {
 		System.setProperty(LibraryLoader.JACOB_DLL_PATH, jacobDllPath);
 		testingDocPath = classLoader.getResource(DOC_NAME).getPath();
 		resourcesRoot = classLoader.getResource(".").getPath();
-
-		// that needed to remove "/" at the beginning of the path
-		testingDocPath = testingDocPath.substring(1);
-		resourcesRoot = resourcesRoot.substring(1);
 	}
 
 	@Before
@@ -99,7 +95,9 @@ public class BasicDocumentTest {
 
 	@Test
 	public void CorrectPathWhenDocWasSavedAsToAnotherFolder() throws Exception {
-		Path saveAsFolder = Paths.get(resourcesRoot + "/" + "test_saved_as");
+		// to remove "/" in the beginning, otherwise Paths.get() will break
+		String resRoot = resourcesRoot.substring(1);
+		Path saveAsFolder = Paths.get(resRoot + "/" + "test_saved_as");
 		removeDirectoryRecursively(saveAsFolder);
 		Files.createDirectory(saveAsFolder);
 

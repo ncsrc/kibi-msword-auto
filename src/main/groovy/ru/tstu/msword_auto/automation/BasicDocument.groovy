@@ -56,6 +56,9 @@ import ru.tstu.msword_auto.automation.constants.SaveOptions
     }
 
     void saveAs(String location, String name, SaveFormat format) {
+        if(location.startsWith("/")) {
+            location = location.substring(1)
+        }
         application.ChangeFileOpenDirectory(location)
         doc.SaveAs(name, format.value())
     }

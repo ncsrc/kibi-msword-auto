@@ -22,7 +22,11 @@ public class TemplateTest {
 	private TemplateData data = mock(TemplateData.class);
 	private Date date = new Date(1, "2012-11-11", "2012-11-11");
 	private GekHead gekHead = new GekHead("asd", "asd", "asd");
-	private List<GekMember> gekMembers = Arrays.asList(new GekMember("asd", "asd"));
+	private List<GekMember> gekMembers = Arrays.asList(
+			new GekMember("asd", "asd"),
+			new GekMember("asd", "qwe"));
+
+	private String gekMembersStr = "asd, qwe";
 	private Student student = new Student(1, "asd", "asd", "asd");
 	private Course course = new Course("asd", 1, "asd", "asd", "asd");
 	private VCR vcr = new VCR(1, "asd", "asd", "asd");
@@ -54,6 +58,8 @@ public class TemplateTest {
 
 	@Before
 	public void setUp() {
+		System.setProperty("template_source", "templates");
+		System.setProperty("template_save", "templates/filled");
 		template = Template.newGosTemplate();
 		template.close();
 		template.doc = mock(Document.class);
@@ -64,10 +70,11 @@ public class TemplateTest {
 		when(data.getStudent()).thenReturn(this.student);
 		when(data.getStudentCourse()).thenReturn(this.course);
 		when(data.getStudentVcr()).thenReturn(this.vcr);
+		when(data.getGekMembersListInString()).thenReturn(this.gekMembersStr);
 	}
 
 	@AfterClass
-	public void tearDownClass() {
+	public static void tearDownClass() {
 		WordApplication.close();
 	}
 
@@ -80,7 +87,7 @@ public class TemplateTest {
 	@Test
 	public void whenGetFilenameAfterFillingThenCorrect() throws Exception {
 		// assign
-		String filename = "asd a. a. - Протокол ГЭК по защите ВКР.docx";
+		String filename = "asd A. A. - Протокол заседания ГЭК.docx";
 
 		// act
 		template.fulfillTemplate(data);
@@ -90,8 +97,10 @@ public class TemplateTest {
 		assertEquals(filename, actual);
 	}
 
+	// todo
+	@Ignore
 	@Test
-	public void whenFulfillTemplateWithFullDataThenFilledAndSaved() throws Exception {
+	public void whenFulfillTemplateWithFullDataThenFilled() throws Exception {
 		template.fulfillTemplate(data);
 
 		verify(data).getGekHead();
@@ -102,10 +111,27 @@ public class TemplateTest {
 		verify(data).getStudentVcr();
 	}
 
+	// todo
+	@Ignore
 	@Test(expected = TemplateException.class)
 	public void whenDateIsMissingThenException() throws Exception {
 		when(data.getDate()).thenReturn(null);
 
+	}
+
+	@Test
+	public void whenFulfillTemplateWithFullDataThenSaved() throws Exception {
+		String filename;
+		try(Template tpl = Template.newGosTemplate()) {
+			tpl.fulfillTemplate(data);
+			filename = tpl.getFilename();
+		}
+
+		String path = this.getClass().getClassLoader().getResource(System.getProperty("template_save")).getPath() +
+		File.separator + filename;
+
+		boolean actual = new File(path).exists();
+		assertEquals(true, actual);
 	}
 
 	// tests when some data are missing
