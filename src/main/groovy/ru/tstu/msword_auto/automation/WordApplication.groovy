@@ -11,7 +11,6 @@ import org.codehaus.groovy.scriptom.ActiveXObject
 @PackageScope class WordApplication {
     private static final def application = new ActiveXObject("Word.Application")
 
-
     /**
      * Returns msword application object.
      * @return word app

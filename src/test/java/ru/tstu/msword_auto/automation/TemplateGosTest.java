@@ -2,6 +2,7 @@ package ru.tstu.msword_auto.automation;
 
 import org.junit.*;
 import org.junit.Test;
+import org.junit.experimental.categories.Category;
 import ru.tstu.msword_auto.automation.entity_aggregation.Gek;
 import ru.tstu.msword_auto.automation.entity_aggregation.StudentData;
 import ru.tstu.msword_auto.automation.entity_aggregation.TemplateData;
@@ -78,7 +79,10 @@ public class TemplateGosTest {
 
 	@AfterClass
 	public static void tearDownClass() {
-		WordApplication.close();
+		if(WordAppStatus.prevTestPassed) {
+			WordApplication.close();
+		}
+		WordAppStatus.prevTestPassed = true;
 	}
 
 	@Test

@@ -46,7 +46,10 @@ public class BasicDocumentTest {
 
 	@AfterClass
 	public static void tearDownOnce() {
-		WordApplication.close();
+		if(WordAppStatus.prevTestPassed) {
+			WordApplication.close();
+		}
+		WordAppStatus.prevTestPassed = true;
 	}
 
 
@@ -161,10 +164,6 @@ public class BasicDocumentTest {
 		}
 
 	}
-
-
-
-	// TODO joint compilation in testing scope
 
 
 
