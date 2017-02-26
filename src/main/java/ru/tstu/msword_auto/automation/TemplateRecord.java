@@ -1,33 +1,24 @@
 package ru.tstu.msword_auto.automation;
 
 // todo javadoc
-enum TemplateRecord {
-    DATE_DAY("{Date_D}"),
-    DATE_MONTH("{Date_M}"),
-    DATE_YEAR("{Date_Y}"),
-    GEK_HEAD("{GEK_Head}"),
-    GEK_SUBHEAD("{GEK_Subhead}"),
-    GEK_SECRETARY("{GEK_Secretary}"),
-    GEK_MEMBERS("{GEK_Members}"),
-    STUDENT_NAME("{Student_Name}"),
-    STUDENT_INITIALS("{Student_Name_Initials}"),
-    STUDENT_COURSE_QUALIFICATION("{Student_Qualification}"),
-    STUDENT_COURSE_NAME("{Student_course}"),
-    STUDENT_COURSE_SPEC("{Course_specialization}"),
-    STUDENT_VCR_NAME("{Student_VCR_Name}"),
-    STUDENT_VCR_HEAD("{VCR_Head}"),
-    STUDENT_VCR_REVIEWER("{VCR_Reviewer}");
+class TemplateRecord {
+    public static final String DATE_DAY = "{Date_D}";
+    public static final String DATE_MONTH = "{Date_M}";
+    public static final String DATE_YEAR = "{Date_Y}";
+    public static final String GEK_HEAD = "{GEK_Head}";
+    public static final String GEK_SUBHEAD = "{GEK_Subhead}";
+    public static final String GEK_SECRETARY = "{GEK_Secretary}";
+    public static final String GEK_MEMBERS = "{GEK_Members}";
+    public static final String STUDENT_NAME_I = "{Student_Name_I}";
+    public static final String STUDENT_NAME_R = "{Student_Name_R}";
+    public static final String STUDENT_NAME_T = "{Student_Name_T}";
+    public static final String STUDENT_INITIALS = "{Student_Name_Initials}";
+    public static final String STUDENT_COURSE_QUALIFICATION = "{Student_Qualification}";
+    public static final String STUDENT_COURSE_NAME = "{Student_course}";
+    public static final String STUDENT_COURSE_SPEC = "{Course_specialization}";
+    public static final String STUDENT_VCR_NAME = "{Student_VCR_Name}";
+    public static final String STUDENT_VCR_HEAD = "{VCR_Head}";
+    public static final String STUDENT_VCR_REVIEWER = "{VCR_Reviewer}";
 
-
-    private String value;
-
-
-    TemplateRecord(String value) {
-        this.value = value;
-    }
-
-    public String getValue() {
-        return this.value;
-    }
 
 }

@@ -17,7 +17,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
-public class TemplateTest {
+public class TemplateGosTest {
 	private Template template;
 	private TemplateData data = mock(TemplateData.class);
 	private Date date = new Date(1, "2012-11-11", "2012-11-11");
@@ -27,7 +27,9 @@ public class TemplateTest {
 			new GekMember("asd", "qwe"));
 
 	private String gekMembersStr = "asd, qwe";
-	private Student student = new Student(1, "asd", "asd", "asd");
+	private Student student = new Student(1, "ads", "ads", "ads",
+									   "adss", "adss", "adss", "adsd",
+									   "adsd", "adsd");
 	private Course course = new Course("asd", 1, "asd", "asd", "asd");
 	private VCR vcr = new VCR(1, "asd", "asd", "asd");
 
@@ -58,12 +60,6 @@ public class TemplateTest {
 
 	@Before
 	public void setUp() {
-		System.setProperty("template_source", "templates");
-		System.setProperty("template_save", "templates/filled");
-		template = Template.newGosTemplate();
-		template.close();
-		template.doc = mock(Document.class);
-
 		when(data.getDate()).thenReturn(this.date);
 		when(data.getGekHead()).thenReturn(this.gekHead);
 		when(data.listOfGekMembers()).thenReturn(this.gekMembers);
@@ -71,6 +67,13 @@ public class TemplateTest {
 		when(data.getStudentCourse()).thenReturn(this.course);
 		when(data.getStudentVcr()).thenReturn(this.vcr);
 		when(data.getGekMembersListInString()).thenReturn(this.gekMembersStr);
+
+		System.setProperty("template_source", "templates");
+		System.setProperty("template_save", "templates/filled");
+
+		template = Template.newGosTemplate(data);
+		template.close();
+		template.doc = mock(Document.class);
 	}
 
 	@AfterClass
@@ -79,18 +82,20 @@ public class TemplateTest {
 	}
 
 	@Test
-	public void whenGetFilenameBeforeFillingThenNull() throws Exception {
-		String filename = template.getFilename();
-		assertNull(filename);
+	public void whenGetFilenameBeforeFillingThenCorrect() throws Exception {
+		String expected = "ads A. A. - Протокол заседания ГЭК.docx";
+		String actual = template.getFilename();
+		assertNotNull(actual);
+		assertEquals(expected, actual);
 	}
 
 	@Test
 	public void whenGetFilenameAfterFillingThenCorrect() throws Exception {
 		// assign
-		String filename = "asd A. A. - Протокол заседания ГЭК.docx";
+		String filename = "ads A. A. - Протокол заседания ГЭК.docx";
 
 		// act
-		template.fulfillTemplate(data);
+		template.fulfillTemplate();
 		String actual = template.getFilename();
 
 		// assert
@@ -101,7 +106,7 @@ public class TemplateTest {
 	@Ignore
 	@Test
 	public void whenFulfillTemplateWithFullDataThenFilled() throws Exception {
-		template.fulfillTemplate(data);
+		template.fulfillTemplate();
 
 		verify(data).getGekHead();
 		verify(data).listOfGekMembers();
@@ -122,8 +127,8 @@ public class TemplateTest {
 	@Test
 	public void whenFulfillTemplateWithFullDataThenSaved() throws Exception {
 		String filename;
-		try(Template tpl = Template.newGosTemplate()) {
-			tpl.fulfillTemplate(data);
+		try(Template tpl = Template.newGosTemplate(data)) {
+			tpl.fulfillTemplate();
 			filename = tpl.getFilename();
 		}
 

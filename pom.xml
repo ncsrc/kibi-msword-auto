@@ -4,17 +4,21 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>ru.tstu.msword_automation</groupId>
+    <parent>
+        <groupId>ru.tstu</groupId>
+        <artifactId>msword-auto</artifactId>
+        <version>${project.version}</version>
+    </parent>
+
     <artifactId>automation</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging>
 
     <dependencies>
-        <!--junit-->
+        <!--entities-->
         <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
+            <groupId>ru.tstu</groupId>
+            <artifactId>entity</artifactId>
+            <version>0.8</version>
         </dependency>
         <!--groovy-->
         <dependency>
@@ -37,27 +41,6 @@
             <version>1.14.3</version>
             <scope>compile</scope>
             <type>jar</type>
-        </dependency>
-        <!--jacob-dll-->
-        <dependency>
-            <groupId>net.sf.jacob-project</groupId>
-            <artifactId>jacob</artifactId>
-            <version>1.14.3</version>
-            <scope>runtime</scope>
-            <type>dll</type>
-            <classifier>x64</classifier>
-        </dependency>
-        <!--mysql-connector-->
-        <!--<dependency>-->
-            <!--<groupId>mysql</groupId>-->
-            <!--<artifactId>mysql-connector-java</artifactId>-->
-            <!--<version>5.1.39</version>-->
-        <!--</dependency>-->
-        <!--local db service-->
-        <dependency>
-            <groupId>ru.tstu.msword_automation</groupId>
-            <artifactId>msword_database</artifactId>
-            <version>1.1</version>
         </dependency>
     </dependencies>
 
@@ -97,18 +80,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
-                <configuration>
-                    <encoding>UTF-8</encoding>
-                    <source>1.8</source>
-                    <target>1.8</target>
-                </configuration>
-            </plugin>
-
         </plugins>
     </build>
 

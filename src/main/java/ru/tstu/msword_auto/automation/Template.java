@@ -2,6 +2,7 @@ package ru.tstu.msword_auto.automation;
 
 
 import com.jacob.com.LibraryLoader;
+import ru.tstu.msword_auto.automation.constants.SaveFormat;
 import ru.tstu.msword_auto.automation.constants.SaveOptions;
 import ru.tstu.msword_auto.automation.entity_aggregation.TemplateData;
 import ru.tstu.msword_auto.entity.*;
@@ -9,89 +10,139 @@ import ru.tstu.msword_auto.entity.*;
 import java.util.List;
 
 public abstract class Template implements AutoCloseable {
-//	private static final String TEMPLATE_GOS = "protocol_gos.docx";
     private static final String TEMPLATE_VCR = "protocol_vcr.doc";
     private static final String FOLDER_SOURCE;
     private static final String FOLDER_SAVE;
-//	protected final TemplateData data;
     protected Document doc;
+	protected String filename;
+	protected TemplateData data;
 
 
-    private Template() {
-
+    private Template(TemplateData data) {
+		this.data = data;
 	}
 
-	public static Template newGosTemplate() {
-		return new GosTemplate();
+	// -- Static factory methods, returning concrete templates --
+
+	public static Template newGosTemplate(TemplateData data) {
+		return new GosTemplate(data);
 	}
 
-	public static Template newVcrTemplate() {
-
+	public static Template newVcrTemplate(TemplateData data) {
 		return null;
 	}
 
 
-	public abstract void fulfillTemplate(TemplateData data) throws TemplateException;
+	// -- Protected common methods --
+
+	protected void fillCommonData() {
+    	this.fillDate();
+    	this.fillStudentData();
+    	this.fillGekData();
+	}
+
+	protected void save() {
+		String saveLocation = this.getClass().getClassLoader().getResource(FOLDER_SAVE).getPath();
+		doc.saveAs(saveLocation, this.filename, SaveFormat.DOCX);
+	}
+
+
+	// -- Abstract methods --
+
+	// todo add throws TemplateException later, and checks
+	public abstract void fulfillTemplate() throws TemplateException;
 
 	// e.g. initials - Протокол ГЭК по защите ВКР.docx
-	public abstract String getFilename();
+	public String getFilename() {
+		return this.filename;
+	}
 
+
+	// -- Autocloseable --
 
 	public void close() {
 		doc.close(SaveOptions.DO_NOT_SAVE);
 	}
 
 
+	// -- Private methods --
+
+	private void fillDate() {
+		Date dateInfo = data.getDate();
+		String day = String.valueOf(dateInfo.getGosDay());
+		String month = dateInfo.getGosMonth();
+		String year = String.valueOf(dateInfo.getGosYear()).substring(2);
+		doc.replace(TemplateRecord.DATE_DAY, day);
+		doc.replace(TemplateRecord.DATE_MONTH, month);
+		doc.replace(TemplateRecord.DATE_YEAR, year);
+	}
+
+	// fills common: fio in I case and in R case; course info and course profile
+	private void fillStudentData() {
+    	Student student = data.getStudent();
+		String fullNameI = student.getFullNameI();
+		doc.replace(TemplateRecord.STUDENT_NAME_I, fullNameI);
+
+		String fullNameR = student.getFullNameR();
+		doc.replace(TemplateRecord.STUDENT_NAME_R, fullNameR);
+
+		Course course = data.getStudentCourse();
+		String courseInfo = course.getInfo();
+		String profile = course.getProfile();
+		doc.replace(TemplateRecord.STUDENT_COURSE_NAME, courseInfo);
+		doc.replace(TemplateRecord.STUDENT_COURSE_SPEC, profile);
+	}
+
+	private void fillGekData() {
+		GekHead headInfo = data.getGekHead();
+		String head = headInfo.getHead();
+		String subHead = headInfo.getSubhead();
+		String secretary = headInfo.getSecretary();
+		doc.replace(TemplateRecord.GEK_HEAD, head);
+		doc.replace(TemplateRecord.GEK_SUBHEAD, subHead);
+		doc.replace(TemplateRecord.GEK_SECRETARY, secretary);
+
+		List<GekMember> members = data.listOfGekMembers();
+		for(int i = 1; i <= members.size(); i++) {
+			doc.replace("{GEK_Member" + i + "}", members.get(i-1).getMember());
+		}
+
+		String fullMembersList = data.getGekMembersListInString();
+		doc.replace(TemplateRecord.GEK_MEMBERS, fullMembersList);
+}
+
+
+
+
+	// -- Inner implementations --
+
 	private static class GosTemplate extends Template {
 		private static final String TEMPLATE_NAME = "protocol_gos.docx";
-		private String filename;
 
-		public GosTemplate() {
-			String templateLocation = this.getClass().getClassLoader().getResource(TEMPLATE_NAME).getPath();
+
+		public GosTemplate(TemplateData data) {
+			super(data);
+
+			// set filename
+			Student studentInfo = data.getStudent();
+			this.filename = studentInfo.getInitials() + " - Протокол заседания ГЭК.docx";
+
+			// open document
+			String templatePath = FOLDER_SOURCE + "/" + TEMPLATE_NAME;
+			String templateLocation = this.getClass().getClassLoader().getResource(templatePath).getPath();
 			this.doc = new BasicDocument(templateLocation);
 		}
 
 		@Override
-		public void fulfillTemplate(TemplateData data) throws TemplateException {
-			Student studentInfo = data.getStudent();
-			String fullName = studentInfo.getFullName();
-			doc.replace(TemplateRecord.STUDENT_NAME.getValue(), fullName);
-
-			Date dateInfo = data.getDate();
-			String day = String.valueOf(dateInfo.getGosDay());
-			String month = dateInfo.getGosMonth();
-			String year = String.valueOf(dateInfo.getGosYear());
-			doc.replace(TemplateRecord.DATE_DAY.getValue(), day);
-			doc.replace(TemplateRecord.DATE_MONTH.getValue(), month);
-			doc.replace(TemplateRecord.DATE_YEAR.getValue(), year);
-
-			Course course = data.getStudentCourse();
-			String courseInfo = course.getInfo();
-			String profile = course.getProfile();
-			doc.replace(TemplateRecord.STUDENT_COURSE_NAME.getValue(), courseInfo);
-			doc.replace(TemplateRecord.STUDENT_COURSE_SPEC.getValue(), profile);
-
-			GekHead headInfo = data.getGekHead();
-			String head = headInfo.getHead();
-			String subHead = headInfo.getSubhead();
-			String secretary = headInfo.getSecretary();
-			doc.replace(TemplateRecord.GEK_HEAD.getValue(), head);
-			doc.replace(TemplateRecord.GEK_SUBHEAD.getValue(), subHead);
-			doc.replace(TemplateRecord.GEK_SECRETARY.getValue(), secretary);
-
-			List<GekMember> members = data.listOfGekMembers();
-			for(int i = 1; i <= members.size(); i++) {
-				doc.replace("{GEK_Member" + i + "}", members.get(i-1).getMember());
-			}
-
+		public void fulfillTemplate() throws TemplateException {
+			this.fillCommonData();
+			this.save();
 		}
 
-		@Override
-		public String getFilename() {
-			return this.filename;
-		}
 	}
 
+
+	// -- Static init block --
 
 	static {
 		// jacob dll initialization
