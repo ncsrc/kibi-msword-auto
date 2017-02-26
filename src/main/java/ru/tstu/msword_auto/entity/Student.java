@@ -1,22 +1,50 @@
 package ru.tstu.msword_auto.entity;
 
 
-
 public class Student {
 	@PrimaryKey
 	private final int id;
-	private final String fName;
-	private final String lName;
-	private final String midName;
+
+	// Именительный падеж
+	private final String firstNameI;
+	private final String lastNameI;
+	private final String middleNameI;
+
+	// Родительный падеж
+	private final String firstNameR;
+	private final String lastNameR;
+	private final String middleNameR;
+
+	// Творительный падеж
+	private final String firstNameT;
+	private final String lastNameT;
+	private final String middleNameT;
+
 	private final transient String initials;
 
 
-	public Student(int id, String firstName, String lastName, String middleName) {
+	public Student(int id, String firstNameI, String lastNameI, String middleNameI,
+				   String firstNameR, String lastNameR, String middleNameR,
+				   String firstNameT, String lastNameT, String middleNameT) {
+
 		this.id = id;
-		this.fName = firstName;
-		this.lName = lastName;
-		this.midName = middleName;
-		this.initials = this.lName + " " + this.fName.substring(0, 1).toUpperCase() + ". " + this.midName.substring(0, 1).toUpperCase() + ".";
+
+		// Именительный падеж
+		this.firstNameI = firstNameI;
+		this.lastNameI = lastNameI;
+		this.middleNameI = middleNameI;
+
+		// Родительный падеж
+		this.firstNameR = firstNameR;
+		this.lastNameR = lastNameR;
+		this.middleNameR = middleNameR;
+
+		// Творительный падеж
+		this.firstNameT = firstNameT;
+		this.lastNameT = lastNameT;
+		this.middleNameT = middleNameT;
+
+		this.initials = this.lastNameI + " " + this.firstNameI.substring(0, 1).toUpperCase() + ". " + this.middleNameI.substring(0, 1).toUpperCase() + ".";
 	}
 
 	public int getId() {
@@ -24,19 +52,19 @@ public class Student {
 	}
 
 	public String getFirstName() {
-		return this.fName;
+		return this.firstNameI;
 	}
 
 	public String getLastName() {
-		return this.lName;
+		return this.lastNameI;
 	}
 
 	public String getMiddleName() {
-		return this.midName;
+		return this.middleNameI;
 	}
 
 	public String getFullName() {
-		return this.lName + " " + this.fName + " " + this.midName;
+		return this.lastNameI + " " + this.firstNameI + " " + this.middleNameI;
 	}
 
 	public String getInitials() {
@@ -59,8 +87,9 @@ public class Student {
 		}
 
 		Student other = (Student) obj;
-		if(this.id == other.id && this.fName.equals(other.fName) && this.lName.equals(other.lName)
-				&& this.midName.equals(other.midName)){
+		if(this.id == other.id && this.firstNameI.equals(other.firstNameI) && this.lastNameI.equals(other.lastNameI) && this.middleNameI.equals(other.middleNameI)
+				&& this.firstNameR.equals(other.firstNameR) && this.lastNameR.equals(other.lastNameR) && this.middleNameR.equals(other.middleNameR)
+				&& this.firstNameT.equals(other.firstNameT) && this.lastNameT.equals(other.lastNameT) && this.middleNameT.equals(other.middleNameT)){
 
 			return true;
 		}
