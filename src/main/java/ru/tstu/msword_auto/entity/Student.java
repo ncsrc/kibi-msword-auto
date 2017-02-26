@@ -51,20 +51,52 @@ public class Student {
 		return this.id;
 	}
 
-	public String getFirstName() {
+	public String getFirstNameI() {
 		return this.firstNameI;
 	}
 
-	public String getLastName() {
+	public String getLastNameI() {
 		return this.lastNameI;
 	}
 
-	public String getMiddleName() {
+	public String getMiddleNameI() {
 		return this.middleNameI;
 	}
 
-	public String getFullName() {
+	public String getFullNameI() {
 		return this.lastNameI + " " + this.firstNameI + " " + this.middleNameI;
+	}
+
+	public String getFirstNameR() {
+		return firstNameR;
+	}
+
+	public String getLastNameR() {
+		return lastNameR;
+	}
+
+	public String getMiddleNameR() {
+		return middleNameR;
+	}
+
+	public String getFullNameR() {
+		return this.lastNameR + " " + this.firstNameR + " " + this.middleNameR;
+	}
+
+	public String getFirstNameT() {
+		return firstNameT;
+	}
+
+	public String getLastNameT() {
+		return lastNameT;
+	}
+
+	public String getMiddleNameT() {
+		return middleNameT;
+	}
+
+	public String getFullNameT() {
+		return this.lastNameT + " " + this.firstNameT + " " + this.middleNameT;
 	}
 
 	public String getInitials() {
