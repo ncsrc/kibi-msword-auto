@@ -2,6 +2,8 @@ package ru.tstu.msword_auto.automation.entity_aggregation;
 
 import ru.tstu.msword_auto.entity.*;
 
+import java.util.List;
+
 // todo javadoc
 public class TemplateData {
     private final Date date;
@@ -23,8 +25,12 @@ public class TemplateData {
         return this.gek.getGekHead();
     }
 
-    public GekMember getGekMember() {
-        return this.gek.getGekMember();
+    public List<GekMember> listOfGekMembers() {
+        return this.gek.getListOfGekMembers();
+    }
+
+    public String getGekMembersListInString() {
+        return this.gek.getFullMembersList();
     }
 
     public Student getStudent() {

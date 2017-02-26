@@ -4,13 +4,17 @@ import org.junit.Test;
 import ru.tstu.msword_auto.entity.GekHead;
 import ru.tstu.msword_auto.entity.GekMember;
 
+import java.util.Arrays;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 
 
 public class GekTest {
+    private final static String MEMBERS_LIST = "asd, qwe, zxc";
     private final Gek gek;
     private final GekHead gekHead;
-    private final GekMember gekMember;
+    private final List<GekMember> gekMembers;
 
 
     /*
@@ -23,8 +27,12 @@ public class GekTest {
 
     public GekTest() {
         this.gekHead = new GekHead("ads", "ads", "ads");
-        this.gekMember = new GekMember("ads", "ads");
-        this.gek = new Gek(gekHead, gekMember);
+        this.gekMembers = Arrays.asList(
+                new GekMember("asd", "asd"),
+                new GekMember("asd", "qwe"),
+                new GekMember("asd", "zxc"));
+
+        this.gek = new Gek(gekHead, gekMembers);
     }
 
 
@@ -36,8 +44,14 @@ public class GekTest {
 
     @Test
     public void whenGetGekMemberThenCorrectData() throws Exception {
-        GekMember actual = this.gek.getGekMember();
-        assertEquals(this.gekMember, actual);
+        List<GekMember> actual = this.gek.getListOfGekMembers();
+        assertEquals(this.gekMembers, actual);
+    }
+
+    @Test
+    public void whenGetGekMembersInStringThenCorrectRepresentation() throws Exception {
+        String actual = gek.getFullMembersList();
+        assertEquals(MEMBERS_LIST, actual);
     }
 
 
