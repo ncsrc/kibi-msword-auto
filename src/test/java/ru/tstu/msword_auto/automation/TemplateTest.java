@@ -18,7 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 
-public class TemplateGosTest {
+public class TemplateTest {
 	private Template template;
 	private TemplateData data = mock(TemplateData.class);
 	private Date date = new Date(1, "2012-11-11", "2012-11-11");
@@ -86,17 +86,17 @@ public class TemplateGosTest {
 	}
 
 	@Test
-	public void whenGetFilenameBeforeFillingThenCorrect() throws Exception {
-		String expected = "ads A. A. - Протокол заседания ГЭК.docx";
+	public void whenGosTplGetFilenameBeforeFillingThenCorrect() throws Exception {
+		String expected = "ads A. A. - Протокол по приему гос экзамена.docx";
 		String actual = template.getFilename();
 		assertNotNull(actual);
 		assertEquals(expected, actual);
 	}
 
 	@Test
-	public void whenGetFilenameAfterFillingThenCorrect() throws Exception {
+	public void whenGosTplGetFilenameAfterFillingThenCorrect() throws Exception {
 		// assign
-		String filename = "ads A. A. - Протокол заседания ГЭК.docx";
+		String filename = "ads A. A. - Протокол по приему гос экзамена.docx";
 
 		// act
 		template.fulfillTemplate();
@@ -106,10 +106,67 @@ public class TemplateGosTest {
 		assertEquals(filename, actual);
 	}
 
+	@Test
+	public void whenFulfillGosTplWithFullDataThenSaved() throws Exception {
+		String filename;
+		try(Template tpl = Template.newGosTemplate(data)) {
+			tpl.fulfillTemplate();
+			filename = tpl.getFilename();
+		}
+
+		String path = this.getClass().getClassLoader().getResource(System.getProperty("template_save")).getPath() +
+				File.separator + filename;
+
+		boolean actual = new File(path).exists();
+		assertEquals(true, actual);
+	}
+
+	@Test
+	public void whenVcrTplGetFilenameBeforeFillingThenCorrect() throws Exception {
+
+		try(Template tpl = Template.newVcrTemplate(data)) {
+			String expected = "ads A. A. - Протокол по защите ВКР.docx";
+			String actual = tpl.getFilename();
+			assertNotNull(actual);
+			assertEquals(expected, actual);
+		}
+
+	}
+
+	@Test
+	public void whenVcrTplGetFilenameAfterFillingThenCorrect() throws Exception {
+
+		try(Template tpl = Template.newVcrTemplate(data)) {
+			String filename = "ads A. A. - Протокол по защите ВКР.docx";
+			tpl.fulfillTemplate();
+			String actual = tpl.getFilename();
+			assertEquals(filename, actual);
+		}
+
+	}
+
+	@Test
+	public void whenFulfillVcrTplWithFullDataThenSaved() throws Exception {
+
+		String filename;
+		try(Template tpl = Template.newVcrTemplate(data)) {
+			tpl.fulfillTemplate();
+			filename = tpl.getFilename();
+		}
+
+		String path = this.getClass().getClassLoader().getResource(System.getProperty("template_save")).getPath() +
+				File.separator + filename;
+
+		boolean actual = new File(path).exists();
+		assertEquals(true, actual);
+	}
+
+
+
 	// todo
 	@Ignore
 	@Test
-	public void whenFulfillTemplateWithFullDataThenFilled() throws Exception {
+	public void whenGosTplFulfillTemplateWithFullDataThenFilled() throws Exception {
 		template.fulfillTemplate();
 
 		verify(data).getGekHead();
@@ -128,20 +185,6 @@ public class TemplateGosTest {
 
 	}
 
-	@Test
-	public void whenFulfillTemplateWithFullDataThenSaved() throws Exception {
-		String filename;
-		try(Template tpl = Template.newGosTemplate(data)) {
-			tpl.fulfillTemplate();
-			filename = tpl.getFilename();
-		}
-
-		String path = this.getClass().getClassLoader().getResource(System.getProperty("template_save")).getPath() +
-		File.separator + filename;
-
-		boolean actual = new File(path).exists();
-		assertEquals(true, actual);
-	}
 
 	// tests when some data are missing
 

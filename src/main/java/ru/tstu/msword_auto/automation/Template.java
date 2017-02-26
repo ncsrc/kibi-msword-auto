@@ -10,7 +10,6 @@ import ru.tstu.msword_auto.entity.*;
 import java.util.List;
 
 public abstract class Template implements AutoCloseable {
-    private static final String TEMPLATE_VCR = "protocol_vcr.doc";
     private static final String FOLDER_SOURCE;
     private static final String FOLDER_SAVE;
     protected Document doc;
@@ -29,7 +28,7 @@ public abstract class Template implements AutoCloseable {
 	}
 
 	public static Template newVcrTemplate(TemplateData data) {
-		return null;
+		return new VcrTemplate(data);
 	}
 
 
@@ -125,7 +124,7 @@ public abstract class Template implements AutoCloseable {
 
 			// set filename
 			Student studentInfo = data.getStudent();
-			this.filename = studentInfo.getInitials() + " - Протокол заседания ГЭК.docx";
+			this.filename = studentInfo.getInitials() + " - Протокол по приему гос экзамена.docx";
 
 			// open document
 			String templatePath = FOLDER_SOURCE + "/" + TEMPLATE_NAME;
@@ -136,6 +135,51 @@ public abstract class Template implements AutoCloseable {
 		@Override
 		public void fulfillTemplate() throws TemplateException {
 			this.fillCommonData();
+			this.save();
+		}
+
+	}
+
+
+	private static class VcrTemplate extends Template {
+		private static final String TEMPLATE_NAME = "protocol_vcr.doc";
+
+		public VcrTemplate(TemplateData data) {
+			super(data);
+
+			// set filename
+			Student studentInfo = data.getStudent();
+			this.filename = studentInfo.getInitials() + " - Протокол по защите ВКР.docx";
+
+			// open document
+			String templatePath = FOLDER_SOURCE + "/" + TEMPLATE_NAME;
+			String templateLocation = this.getClass().getClassLoader().getResource(templatePath).getPath();
+			this.doc = new BasicDocument(templateLocation);
+		}
+
+		@Override
+		public void fulfillTemplate() throws TemplateException {
+			this.fillCommonData();
+
+			// student/course vcr-specific data
+			Student student = this.data.getStudent();
+			String fullNameT = student.getFullNameT();
+			String initials = student.getInitials();
+			Course course = this.data.getStudentCourse();
+			String qualification = course.getQualification();
+			this.doc.replace(TemplateRecord.STUDENT_NAME_T, fullNameT);
+			this.doc.replace(TemplateRecord.STUDENT_INITIALS, initials);
+			this.doc.replace(TemplateRecord.STUDENT_COURSE_QUALIFICATION, qualification);
+
+			// vcr data
+			VCR vcr = this.data.getStudentVcr();
+			String vcrName = vcr.getName();
+			String vcrHead = vcr.getHeadName();
+			String vcrReviewer = vcr.getReviewerName();
+			this.doc.replace(TemplateRecord.STUDENT_VCR_NAME, vcrName);
+			this.doc.replace(TemplateRecord.STUDENT_VCR_HEAD, vcrHead);
+			this.doc.replace(TemplateRecord.STUDENT_VCR_REVIEWER, vcrReviewer);
+
 			this.save();
 		}
 
