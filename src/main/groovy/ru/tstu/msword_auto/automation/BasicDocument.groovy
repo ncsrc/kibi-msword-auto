@@ -16,6 +16,9 @@ import ru.tstu.msword_auto.automation.constants.SaveOptions
 
     BasicDocument(String path) {
         this.application = WordApplication.getApplication()
+        if(path.startsWith("/")) {
+            path = path.substring(1)
+        }
         this.doc = application.Documents.Open(path)
     }
 
