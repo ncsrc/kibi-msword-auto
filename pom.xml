@@ -7,7 +7,7 @@
     <parent>
         <groupId>ru.tstu</groupId>
         <artifactId>msword-auto</artifactId>
-        <version>${project.version}</version>
+        <version>0.8</version>
     </parent>
 
     <artifactId>dao</artifactId>
@@ -15,13 +15,18 @@
 
 
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+        <!-- https://mvnrepository.com/artifact/com.h2database/h2 -->
         <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.39</version> <!-- new 6.* versions have bug in timezones -->
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <version>1.4.193</version>
         </dependency>
-
+        <!--local project entities-->
+        <dependency>
+            <groupId>ru.tstu</groupId>
+            <artifactId>entity</artifactId>
+            <version>0.8</version>
+        </dependency>
     </dependencies>
 
 </project>
