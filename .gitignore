@@ -2,4 +2,6 @@
 .idea/*
 prev_res/*
 target/*
-src/main/webapp/*
+src/main/webapp/scripts/*
+src/main/webapp/templates/*
+src/main/webapp/favicon.png

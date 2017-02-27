@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://java.sun.com/xml/ns/javaee"  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee  http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" version="2.5">
+
+    <!--context-params-->
+    <context-param>
+        <param-name>db.url</param-name>
+        <param-value>jdbc:h2:~/msword_auto</param-value>
+    </context-param>
+    <context-param>
+        <param-name>db.user</param-name>
+        <param-value>sa</param-value>
+    </context-param>
+    <context-param>
+        <param-name>db.password</param-name>
+        <param-value></param-value>
+    </context-param>
+
+    <!--initializers-->
+    <!--H2-DbStarter-->
+    <listener>
+        <listener-class>org.h2.server.web.DbStarter</listener-class>
+    </listener>
+    <!--db-tables-creator-->
+    <listener>
+        <listener-class>ru.tstu.msword_auto.webapp.listeners.DbTablesCreator</listener-class>
+    </listener>
+    <!--Dao connection storage initializer-->
+    <listener>
+        <listener-class>ru.tstu.msword_auto.webapp.listeners.ConnectionStorageInitializer</listener-class>
+    </listener>
+    <!--listener for automation service-->
+    <listener>
+        <listener-class>ru.tstu.msword_auto.webapp.listeners.AutomationServiceInitializer</listener-class>
+    </listener>
+
+    <!--SERVLETS-->
+    <!--date table handler-->
+    <servlet>
+        <servlet-name>DateHandler</servlet-name>
+        <servlet-class>ru.tstu.msword_auto.webapp.DateHandler</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DateHandler</servlet-name>
+        <url-pattern>/dateHandler</url-pattern>
+    </servlet-mapping>
+    <!--gek_head table handler-->
+    <servlet>
+        <servlet-name>GekHeadHandler</servlet-name>
+        <servlet-class>ru.tstu.msword_auto.webapp.GekHeadHandler</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GekHeadHandler</servlet-name>
+        <url-pattern>/gekHeadHandler</url-pattern>
+    </servlet-mapping>
+    <!--gek_members subtable handler-->
+    <servlet>
+        <servlet-name>GekMembersHandler</servlet-name>
+        <servlet-class>ru.tstu.msword_auto.webapp.GekMembersHandler</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GekMembersHandler</servlet-name>
+        <url-pattern>/gekMembersHandler</url-pattern>
+    </servlet-mapping>
+    <!--students table handler-->
+    <servlet>
+        <servlet-name>StudentHandler</servlet-name>
+        <servlet-class>ru.tstu.msword_auto.webapp.StudentHandler</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StudentHandler</servlet-name>
+        <url-pattern>/studentHandler</url-pattern>
+    </servlet-mapping>
+    <!--course subtable handler-->
+    <servlet>
+        <servlet-name>CourseHandler</servlet-name>
+        <servlet-class>ru.tstu.msword_auto.webapp.CourseHandler</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>CourseHandler</servlet-name>
+        <url-pattern>/courseHandler</url-pattern>
+    </servlet-mapping>
+    <!--vcr subtable handler-->
+    <servlet>
+        <servlet-name>VcrHandler</servlet-name>
+        <servlet-class>ru.tstu.msword_auto.webapp.VcrHandler</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>VcrHandler</servlet-name>
+        <url-pattern>/vcrHandler</url-pattern>
+    </servlet-mapping>
+    <!--document builder-->
+    <servlet>
+        <servlet-name>DocBuilder</servlet-name>
+        <servlet-class>ru.tstu.msword_auto.webapp.DocBuilder</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DocBuilder</servlet-name>
+        <url-pattern>/docBuilder</url-pattern>
+    </servlet-mapping>
+
+</web-app>
