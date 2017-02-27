@@ -212,17 +212,41 @@
                         update: false,
                         width: '5%'
                     },
-                    fName: {
-                        title: 'Имя',
+                    firstNameI: {
+                        title: 'Имя И.П.',
                         width: '20%'
                     },
-                    lName: {
-                        title: 'Фамилия',
+                    lastNameI: {
+                        title: 'Фамилия И.П.',
                         width: '20%'
                     },
-                    midName: {
-                        title: 'Отчество',
+                    middleNameI: {
+                        title: 'Отчество И.П.',
                         width: '20%'
+                    },
+                    firstNameR: {
+                        title: 'Имя Р.П.',
+                        list: false
+                    },
+                    lastNameR: {
+                        title: 'Фамилия Р.П.',
+                        list: false
+                    },
+                    middleNameR: {
+                        title: 'Отчество Р.П.',
+                        list: false
+                    },
+                    firstNameT: {
+                        title: 'Имя Т.П.',
+                        list: false
+                    },
+                    lastNameT: {
+                        title: 'Фамилия Т.П.',
+                        list: false
+                    },
+                    middleNameT: {
+                        title: 'Отчество Т.П.',
+                        list: false
                     },
                     course: {
                         title: 'Программа обучения', // Образовательная программа
