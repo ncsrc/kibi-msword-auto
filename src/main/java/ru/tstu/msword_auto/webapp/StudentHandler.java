@@ -12,12 +12,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 public class StudentHandler extends AbstractTableHandler {
 	private static final String PARAM_ID = "id";
-	private static final String PARAM_FIRST_NAME = "fName";
-	private static final String PARAM_LAST_NAME = "lName";
-	private static final String PARAM_MIDDLE_NAME = "midName";
-	private AtomicInteger currentId;
 
-	private StudentDao dao;
+	private static final String PARAM_FIRST_NAME_I = "firstNameI";
+	private static final String PARAM_LAST_NAME_I = "lastNameI";
+	private static final String PARAM_MIDDLE_NAME_I = "middleNameI";
+
+	private static final String PARAM_FIRST_NAME_R = "firstNameR";
+	private static final String PARAM_LAST_NAME_R = "lastNameR";
+	private static final String PARAM_MIDDLE_NAME_R = "middleNameR";
+
+	private static final String PARAM_FIRST_NAME_T = "firstNameT";
+	private static final String PARAM_LAST_NAME_T = "lastNameT";
+	private static final String PARAM_MIDDLE_NAME_T = "middleNameT";
+
+	private AtomicInteger currentId;
+	private StudentDao dao = new StudentDao();
 
 
 	@Override
@@ -43,15 +52,27 @@ public class StudentHandler extends AbstractTableHandler {
 			currentId.getAndIncrement();
 
 			// TODO move parameter extraction outside try block
-			String firstName = request.getParameter(PARAM_FIRST_NAME);
-			String lastName = request.getParameter(PARAM_LAST_NAME);
-			String middleName = request.getParameter(PARAM_MIDDLE_NAME);
+			String firstNameI = request.getParameter(PARAM_FIRST_NAME_I);
+			String lastNameI = request.getParameter(PARAM_LAST_NAME_I);
+			String middleNameI = request.getParameter(PARAM_MIDDLE_NAME_I);
 
-			if(firstName.isEmpty() || lastName.isEmpty() || middleName.isEmpty()){
+			String firstNameR = request.getParameter(PARAM_FIRST_NAME_R);
+			String lastNameR = request.getParameter(PARAM_LAST_NAME_R);
+			String middleNameR = request.getParameter(PARAM_MIDDLE_NAME_R);
+
+			String firstNameT = request.getParameter(PARAM_FIRST_NAME_T);
+			String lastNameT = request.getParameter(PARAM_LAST_NAME_T);
+			String middleNameT = request.getParameter(PARAM_MIDDLE_NAME_T);
+
+			// TODO complete
+			if(firstNameI.isEmpty() || lastNameI.isEmpty() || middleNameI.isEmpty()){
 				throw new HandlingException(RESPONSE_ERROR_EMPTY_FIELD);
 			}
 
-			Student entity = new Student(currentId.intValue(), firstName, lastName, middleName);
+			Student entity = new Student(currentId.intValue(), firstNameI, lastNameI, middleNameI,
+					 					 firstNameR, lastNameR, middleNameR,
+					 					 firstNameT, lastNameT, middleNameT);
+
 			dao.create(entity);
 			return gson.toJson(entity);
 		} catch(SQLException | DaoException e){ // TODO separate handling
@@ -69,15 +90,29 @@ public class StudentHandler extends AbstractTableHandler {
 			// TODO move parameter extraction outside try block
 
 			int id = Integer.parseInt(request.getParameter(PARAM_ID));
-			String firstName = request.getParameter(PARAM_FIRST_NAME);
-			String lastName = request.getParameter(PARAM_LAST_NAME);
-			String middleName = request.getParameter(PARAM_MIDDLE_NAME);
 
-			if(firstName.isEmpty() || lastName.isEmpty() || middleName.isEmpty()){
+			String firstNameI = request.getParameter(PARAM_FIRST_NAME_I);
+			String lastNameI = request.getParameter(PARAM_LAST_NAME_I);
+			String middleNameI = request.getParameter(PARAM_MIDDLE_NAME_I);
+
+			String firstNameR = request.getParameter(PARAM_FIRST_NAME_R);
+			String lastNameR = request.getParameter(PARAM_LAST_NAME_R);
+			String middleNameR = request.getParameter(PARAM_MIDDLE_NAME_R);
+
+			String firstNameT = request.getParameter(PARAM_FIRST_NAME_T);
+			String lastNameT = request.getParameter(PARAM_LAST_NAME_T);
+			String middleNameT = request.getParameter(PARAM_FIRST_NAME_T);
+
+			// TODO complete
+			if(firstNameI.isEmpty() || lastNameI.isEmpty() || middleNameI.isEmpty()){
 				throw new HandlingException(RESPONSE_ERROR_EMPTY_FIELD);
 			}
 
-			Student entity = new Student(0, firstName, lastName, middleName); // TODO fix 0 issue
+			// TODO fix 0 issue
+			Student entity = new Student(0, firstNameI, lastNameI, middleNameI,
+										 firstNameR, lastNameR, middleNameR,
+										 firstNameT, lastNameT, middleNameT);
+
 			dao.update(id, entity);
 			return RESPONSE_OK;
 		}catch(SQLException e){
