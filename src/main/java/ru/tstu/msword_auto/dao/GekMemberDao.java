@@ -10,18 +10,17 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO remove Connection from arguments, since protected
 
-public class GekMemberDao extends AbstractDao<GekMember, String> implements ForeignKeyReadableDao<GekMember, String>
-{
+public class GekMemberDao extends AbstractDao<GekMember, String> implements ForeignKeyReadableDao<GekMember, String> {
 
-	GekMemberDao(ConnectionPool connectionPool) {
-		super(connectionPool);
+	public GekMemberDao() {
+		super();
 	}
 
 	@Override
 	public List<GekMember> readByForeignKey(String fk) throws SQLException {
-		Connection connection = this.connectionPool.getConnection();
-		PreparedStatement statement = connection.prepareStatement("SELECT gek_head, gek_member FROM Gek_Members WHERE gek_head = ?");
+		PreparedStatement statement = this.connection.prepareStatement("SELECT gek_head, gek_member FROM Gek_Members WHERE gek_head = ?");
 		statement.setString(1, fk);
 		ResultSet resultSet = statement.executeQuery();
 
@@ -30,7 +29,6 @@ public class GekMemberDao extends AbstractDao<GekMember, String> implements Fore
 			gekMembers.add(new GekMember(resultSet.getString("gek_head"), resultSet.getString("gek_member")));
 		}
 
-		connectionPool.putBackConnection(connection);
 		resultSet.close();
 		statement.close();
 

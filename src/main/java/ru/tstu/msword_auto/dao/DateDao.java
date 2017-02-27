@@ -10,13 +10,13 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO remove Connection from arguments, since protected
 
 public class DateDao extends AbstractDao<Date, Integer> {
 	// TODO refactor all this wicked date thing
 
-	DateDao(ConnectionPool pool)
-	{
-		super(pool);
+	public DateDao() {
+		super();
 	}
 
 	@Override

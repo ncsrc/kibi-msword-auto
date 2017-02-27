@@ -3,7 +3,8 @@ package ru.tstu.msword_auto.dao;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import ru.tstu.msword_automation.database.datasets.VCR;
+import ru.tstu.msword_auto.entity.VCR;
+
 
 import java.sql.SQLException;
 import java.util.List;
@@ -39,7 +40,9 @@ public class VcrDaoTest extends AbstractDaoTest<VcrDao, VCR, String>
 	@Override
 	protected VcrDao getDao() throws SQLException
 	{
-		return DatabaseService.getInstance().getVcrDao();
+//		return DatabaseService.getInstance().getVcrDao();
+
+		return null;
 	}
 
 	@Override

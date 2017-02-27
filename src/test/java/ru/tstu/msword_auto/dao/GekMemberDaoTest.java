@@ -4,8 +4,8 @@ package ru.tstu.msword_auto.dao;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
-import ru.tstu.msword_automation.database.datasets.GekHead;
-import ru.tstu.msword_automation.database.datasets.GekMember;
+import ru.tstu.msword_auto.entity.GekMember;
+
 
 import java.sql.SQLException;
 import java.util.List;
@@ -20,9 +20,9 @@ public class GekMemberDaoTest extends AbstractDaoTest<GekMemberDao, GekMember, S
 	@BeforeClass
 	public static void init() throws Exception
 	{
-		GekHeadDao headDao = DatabaseService.getInstance().getGekHeadDao();
-		headDao.deleteAll();
-		headDao.create(new GekHead("test", "test", "test"));
+//		GekHeadDao headDao = DatabaseService.getInstance().getGekHeadDao();
+//		headDao.deleteAll();
+//		headDao.create(new GekHead("test", "test", "test"));
 	}
 
 
@@ -41,7 +41,9 @@ public class GekMemberDaoTest extends AbstractDaoTest<GekMemberDao, GekMember, S
 	@Override
 	protected GekMemberDao getDao() throws SQLException
 	{
-		return DatabaseService.getInstance().getGekMemberDao();
+//		return DatabaseService.getInstance().getGekMemberDao();
+
+		return null;
 	}
 
 	@Override

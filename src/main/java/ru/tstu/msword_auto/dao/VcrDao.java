@@ -10,19 +10,19 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO remove Connection from arguments, since protected
 
 public class VcrDao extends AbstractDao<VCR, String> implements ForeignKeyReadableDao<VCR, Integer> {
 
 
-	VcrDao(ConnectionPool connectionPool) {
-		super(connectionPool);
+	public VcrDao() {
+		super();
 	}
 
 
 	@Override
 	public List<VCR> readByForeignKey(Integer fk) throws SQLException {
-		Connection connection = connectionPool.getConnection();
-		PreparedStatement statement = connection.prepareStatement("SELECT student_id, vcr_name, vcr_head, vcr_reviewer FROM VCRs WHERE student_id = ?");
+		PreparedStatement statement = this.connection.prepareStatement("SELECT student_id, vcr_name, vcr_head, vcr_reviewer FROM VCRs WHERE student_id = ?");
 		statement.setInt(1, fk);
 		ResultSet resultSet = statement.executeQuery();
 
@@ -32,7 +32,6 @@ public class VcrDao extends AbstractDao<VCR, String> implements ForeignKeyReadab
 					resultSet.getString("vcr_head"), resultSet.getString("vcr_reviewer")));
 		}
 
-		connectionPool.putBackConnection(connection);
 		resultSet.close();
 		statement.close();
 		return tableData;

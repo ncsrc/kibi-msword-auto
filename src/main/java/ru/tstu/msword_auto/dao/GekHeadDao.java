@@ -10,10 +10,12 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO remove Connection from arguments, since protected
+
 public class GekHeadDao extends AbstractDao<GekHead, String> {
 
-	GekHeadDao(ConnectionPool pool) {
-		super(pool);
+	public GekHeadDao() {
+		super();
 	}
 
 

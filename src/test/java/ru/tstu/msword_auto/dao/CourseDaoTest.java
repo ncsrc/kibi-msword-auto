@@ -1,7 +1,7 @@
 package ru.tstu.msword_auto.dao;
 
 import org.junit.Ignore;
-import ru.tstu.msword_automation.database.datasets.Course;
+
 
 @Ignore
 public class CourseDaoTest

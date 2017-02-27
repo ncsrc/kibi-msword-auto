@@ -6,11 +6,12 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+// TODO remove Connection from arguments, since protected
 
 public class CourseDao extends AbstractDao<Course, Integer> implements ForeignKeyReadableDao<Course, Integer> {
 
-	CourseDao(ConnectionPool pool) {
-		super(pool);
+	public CourseDao() {
+		super();
 	}
 
 
@@ -75,8 +76,7 @@ public class CourseDao extends AbstractDao<Course, Integer> implements ForeignKe
 
 	@Override
 	public List<Course> readByForeignKey(Integer fk) throws SQLException {
-		Connection connection = connectionPool.getConnection();
-		PreparedStatement statement = connection.prepareStatement("SELECT student_id, course_code, course_name, course_profile, qualification FROM Courses WHERE student_id = ?");
+		PreparedStatement statement = this.connection.prepareStatement("SELECT student_id, course_code, course_name, course_profile, qualification FROM Courses WHERE student_id = ?");
 		statement.setInt(1, fk);
 
 		ResultSet resultSet = statement.executeQuery();
@@ -88,14 +88,12 @@ public class CourseDao extends AbstractDao<Course, Integer> implements ForeignKe
 
 		resultSet.close();
 		statement.close();
-		connectionPool.putBackConnection(connection);
 		return courses;
 	}
 
 	// TODO add test
 	public void updateByForeignKey(int fk, Course dataset) throws SQLException {
-		Connection connection = connectionPool.getConnection();
-		PreparedStatement statement = connection.prepareStatement("UPDATE Courses SET course_code = ?, course_name = ?, course_profile = ?, qualification = ? WHERE student_id = ?");
+		PreparedStatement statement = this.connection.prepareStatement("UPDATE Courses SET course_code = ?, course_name = ?, course_profile = ?, qualification = ? WHERE student_id = ?");
 		statement.setString(1, dataset.getCode());
 		statement.setString(2, dataset.getName());
 		statement.setString(3, dataset.getProfile());
@@ -104,18 +102,15 @@ public class CourseDao extends AbstractDao<Course, Integer> implements ForeignKe
 		statement.executeUpdate();
 
 		statement.close();
-		connectionPool.putBackConnection(connection);
 	}
 
 	// TODO add test
 	public void deleteByForeignKey(int fk) throws SQLException {
-		Connection connection = connectionPool.getConnection();
-		PreparedStatement statement = connection.prepareStatement("DELETE FROM Courses WHERE student_id = ?");
+		PreparedStatement statement = this.connection.prepareStatement("DELETE FROM Courses WHERE student_id = ?");
 		statement.setInt(1, fk);
 		statement.executeUpdate();
 
 		statement.close();
-		connectionPool.putBackConnection(connection);
 	}
 
 }

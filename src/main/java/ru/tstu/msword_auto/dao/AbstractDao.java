@@ -15,11 +15,11 @@ import java.util.List;
 abstract class AbstractDao<T, K> implements Dao<T, K> {
 	// protected in case you need direct access for connections
 	// for implementation of custom functionality not defined in Dao
-	protected ConnectionPool connectionPool;
+	protected Connection connection;
 	protected K lastInsertId; // this assigned in create() method after successful sql-statement execution
 
-	AbstractDao(ConnectionPool connectionPool) {
-		this.connectionPool = connectionPool;
+	AbstractDao() {
+		this.connection = ru.tstu.msword_auto.dao.ConnectionStorage.getConnection();
 	}
 
 
@@ -28,12 +28,10 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 
 	@Override
 	public void create(T dataset) throws SQLException, DaoException {
-		Connection connection = connectionPool.getConnection();
-		PreparedStatement statement = this.getCreationStatement(connection, dataset);
+		PreparedStatement statement = this.getCreationStatement(this.connection, dataset);
 		statement.executeUpdate();
 		setLastInsertId(dataset);
 		statement.close();
-		connectionPool.putBackConnection(connection);
 	}
 
 	protected abstract PreparedStatement getCreationStatement(Connection connection, T dataset) throws SQLException;
@@ -41,17 +39,16 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 
 	@Override
 	public T read(K pk) throws SQLException {
-		Connection connection = connectionPool.getConnection();
-		PreparedStatement statement = this.getReadingByPkStatement(connection, pk);
+		PreparedStatement statement = this.getReadingByPkStatement(this.connection, pk);
 		ResultSet resultSet = statement.executeQuery();
 		List<T> results = this.parseResultSet(resultSet);
 		resultSet.close();
 		statement.close();
-		connectionPool.putBackConnection(connection);
 
 		if(results.isEmpty()){
 			throw new SQLException("Such primary key value does not exists in table");
 		}
+
 		return results.get(0);
 	}
 
@@ -62,13 +59,11 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 
 	@Override
 	public List<T> readAll() throws SQLException {
-		Connection connection = connectionPool.getConnection();
-		PreparedStatement statement = this.getReadingAllStatement(connection);
+		PreparedStatement statement = this.getReadingAllStatement(this.connection);
 		ResultSet resultSet = statement.executeQuery();
 		List<T> results = this.parseResultSet(resultSet);
 		resultSet.close();
 		statement.close();
-		connectionPool.putBackConnection(connection);
 		return results;
 	}
 
@@ -77,11 +72,9 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 
 	@Override
 	public void update(K pk, T dataset) throws SQLException {
-		Connection connection = connectionPool.getConnection();
-		PreparedStatement statement = this.getUpdateStatement(connection, dataset, pk);
+		PreparedStatement statement = this.getUpdateStatement(this.connection, dataset, pk);
 		statement.executeUpdate();
 		statement.close();
-		connectionPool.putBackConnection(connection);
 	}
 
 	protected abstract PreparedStatement getUpdateStatement(Connection connection, T dataset, K pk) throws SQLException;
@@ -89,11 +82,9 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 
 	@Override
 	public void delete(K pk) throws SQLException {
-		Connection connection = connectionPool.getConnection();
-		PreparedStatement statement = this.getDeleteByPkStatement(connection, pk);
+		PreparedStatement statement = this.getDeleteByPkStatement(this.connection, pk);
 		statement.executeUpdate();
 		statement.close();
-		connectionPool.putBackConnection(connection);
 	}
 
 	protected abstract PreparedStatement getDeleteByPkStatement(Connection connection, K pk) throws SQLException;
@@ -101,11 +92,9 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 
 	@Override
 	public void deleteAll() throws SQLException {
-		Connection connection = connectionPool.getConnection();
-		PreparedStatement statement = this.getDeleteAllStatement(connection);
+		PreparedStatement statement = this.getDeleteAllStatement(this.connection);
 		statement.executeUpdate();
 		statement.close();
-		connectionPool.putBackConnection(connection);
 	}
 
 	protected abstract PreparedStatement getDeleteAllStatement(Connection connection) throws SQLException;

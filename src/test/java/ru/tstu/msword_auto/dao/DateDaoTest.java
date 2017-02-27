@@ -3,9 +3,7 @@ package ru.tstu.msword_auto.dao;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
-import ru.tstu.msword_auto.dao.DatabaseService;
-import ru.tstu.msword_auto.dao.DateDao;
-import ru.tstu.msword_automation.database.datasets.Date;
+import ru.tstu.msword_auto.entity.Date;
 
 import java.util.List;
 
@@ -24,7 +22,7 @@ public class DateDaoTest
 	{
 		this.strDateGos = "2013-02-05";
 		this.strDateVcr = "2012-01-13";
-		this.dao = DatabaseService.getInstance().getDateDao();
+//		this.dao = DatabaseService.getInstance().getDateDao();
 		this.date = new Date(1, strDateGos, strDateVcr);
 		this.dao.deleteAll();
 		this.dao.create(this.date);
