@@ -1,8 +1,13 @@
 package ru.tstu.msword_auto.webapp;
 
 
-import com.jacob.com.LibraryLoader;
 import ru.tstu.msword_auto.automation.Template;
+import ru.tstu.msword_auto.automation.TemplateException;
+import ru.tstu.msword_auto.automation.entity_aggregation.Gek;
+import ru.tstu.msword_auto.automation.entity_aggregation.StudentData;
+import ru.tstu.msword_auto.automation.entity_aggregation.TemplateData;
+import ru.tstu.msword_auto.dao.*;
+import ru.tstu.msword_auto.entity.*;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
@@ -14,48 +19,18 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.sql.SQLException;
+import java.util.List;
 
-public class DocBuilder extends HttpServlet
-{
+public class DocBuilder extends HttpServlet {
 	private static final String PARAM_ID = "id";
+	private static final String PARAM_TYPE = "type";
 	private static final String ERROR_BD = "Ошибка при работе с БД";
 
 
 	@Override
-	public void init() throws ServletException
-	{
-		// TODO add templates to folder
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-		String templatePath = getServletContext().getRealPath("/templates");
-		System.setProperty("template_folder", templatePath);
-		System.setProperty("java.library.path", "jacob-1.14.3-x64.dll");
-
-
-		// todo dll loading to automation service
-		if(System.getProperty("os.arch").equals("amd64")){
-			String jacobPath = getServletContext().getRealPath("/WEB-INF/classes/jacob-1.14.3-x64.dll");
-			System.setProperty(LibraryLoader.JACOB_DLL_PATH, jacobPath);
-		}else{
-			String jacobPath = getServletContext().getRealPath("/WEB-INF/classes/jacob-1.14.3-x86.dll");
-			System.setProperty(LibraryLoader.JACOB_DLL_PATH, jacobPath);
-		}
-
-	}
-
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
-	{
-
-	}
-
-
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
-	{
-		String jacob = System.getProperty("java.library.path"); // debug (null)
-
-
-		// TODO implementation
+		// OUTDATED
 		/*
 			get parameter id
 			get models from date, gek
@@ -64,17 +39,80 @@ public class DocBuilder extends HttpServlet
 			set content-type to docx file, send
 			optional: redirect
 		 */
-		// TODO fix bug with date-year
 
-		Template template = new Template();
+		// NEW
+		/*
+			get data and build TemplateData object
+			init template
+			fill
+			send document
+		 */
 
-		try{
-			template.fulfillTemplate(Integer.parseInt(req.getParameter(PARAM_ID)));
-		}catch(SQLException e){
-			// TODO logging
-			throw new ServletException(ERROR_BD);	// TODO different exception
+		int id = Integer.parseInt(req.getParameter(PARAM_ID));
+
+
+		// get all data
+
+		// todo fix null
+		// what if null gets to template ?
+		Date date = null;
+		Gek gek = null;
+		StudentData studentData = null;
+		try {
+			DateDao dateDao = new DateDao();
+			date = dateDao.readAll().get(0); // there should be always only one row
+
+			GekHeadDao gekHeadDao = new GekHeadDao();
+			GekHead gekHead = gekHeadDao.readAll().get(0); // there should be always only one row
+			GekMemberDao gekMemberDao = new GekMemberDao();
+			List<GekMember> gekMembers = gekMemberDao.readAll();
+			gek = new Gek(gekHead, gekMembers);
+
+			StudentDao studentDao = new StudentDao();
+			Student student = studentDao.read(id);
+			CourseDao courseDao = new CourseDao();
+			Course course = courseDao.readByForeignKey(id).get(0); // 1:1
+			VcrDao vcrDao = new VcrDao();
+			VCR vcr = vcrDao.readByForeignKey(id).get(0); // 1:1
+			studentData = new StudentData(student, course, vcr);
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+			// TODO handle, check for missing data
 		}
 
+
+		// make template
+
+		TemplateData templateData = new TemplateData(date, gek, studentData);
+		Template template = null; // todo fix null
+		String docType = req.getParameter(PARAM_TYPE);
+
+		// TODO FIX TO VIRTUAL CONSTRUCTOR, PASS DOCTYPE THERE
+		if(docType.equals("gos")) {
+			template = Template.newGosTemplate(templateData);
+		} else if(docType.equals("vcr")) {
+			template = Template.newVcrTemplate(templateData);
+		} else {
+			// todo redirect to error or something
+		}
+
+
+		// fill template
+
+		try {
+			template.fulfillTemplate();
+		} catch (TemplateException e) {
+			e.printStackTrace();
+			// todo handle
+		}
+
+		// close template
+
+		template.close();
+
+
+		// send build doc
 
 		resp.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document; charset=utf-8");
 		String fileName = template.getFilename().replace(' ', '_');	// replaces spaces with underscores because spaces decode to plus signs
@@ -92,11 +130,10 @@ public class DocBuilder extends HttpServlet
 			out.write(buf, 0, length);
 		}
 		in.close();
-//		template.close();	// TODO causes exception
 		out.flush();
 
 		// TODO add logging if failed, handle exceptions
-		new File(file).delete();	// TODO this don't work, add folder with docs in init(), remove it in destroy()
+//		new File(file).delete();	// TODO this don't work, add folder with docs in init(), remove it in destroy()
 	}
 
 }
