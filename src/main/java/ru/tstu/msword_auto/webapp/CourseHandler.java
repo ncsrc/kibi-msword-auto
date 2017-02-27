@@ -17,7 +17,7 @@ public class CourseHandler extends AbstractTableHandler {
 	private static final String PARAM_STUDENT_PROFILE = "profile";	// TODO move to business-logic
 	private static final String PARAM_STUDENT_QUALIFICATION = "qualification";
 
-	private CourseDao dao;
+	private CourseDao dao = new CourseDao();
 
 
 	@Override

@@ -1,11 +1,11 @@
 package ru.tstu.msword_auto.webapp;
 
 
-import ru.tstu.msword_automation.database.DaoException;
-import ru.tstu.msword_automation.database.DatabaseService;
-import ru.tstu.msword_automation.database.GekMemberDao;
-import ru.tstu.msword_automation.database.datasets.GekHead;
-import ru.tstu.msword_automation.database.datasets.GekMember;
+import ru.tstu.msword_auto.dao.DaoException;
+import ru.tstu.msword_auto.dao.GekHeadDao;
+import ru.tstu.msword_auto.dao.GekMemberDao;
+import ru.tstu.msword_auto.entity.GekHead;
+import ru.tstu.msword_auto.entity.GekMember;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.SQLException;
@@ -14,21 +14,20 @@ import java.util.List;
 
 // TODO add validation that input is proper(Фамилия И.О.)
 
-public class GekMembersHandler extends AbstractTableHandler
-{
+public class GekMembersHandler extends AbstractTableHandler {
 	private static final String PARAM_MEMBER = "member";
 	private static final String RESPONSE_ERROR_PARENT_TABLE_IS_EMPTY = "Укажите сначала данные в родительской таблице";
 	private static final String RESPONSE_ERROR_DUPLICATE_ENTRY = "Один из членов ГЭК с таким именем уже есть в таблице";
 
+	private GekMemberDao dao = new GekMemberDao();
+
 
 	@Override
-	protected String doList(HttpServletRequest request) throws HandlingException
-	{
-		try{
-			GekMemberDao dao = DatabaseService.getInstance().getGekMemberDao();
+	protected String doList(HttpServletRequest request) throws HandlingException {
+		try {
 			List<GekMember> gekMembers = dao.readAll();
 			return gson.toJson(gekMembers);
-		}catch(SQLException e){
+		} catch(SQLException e){
 			// TODO logging
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
@@ -36,19 +35,19 @@ public class GekMembersHandler extends AbstractTableHandler
 	}
 
 	@Override
-	protected String doCreate(HttpServletRequest request) throws HandlingException
-	{
-		try{
+	protected String doCreate(HttpServletRequest request) throws HandlingException {
+		try {
 			// TODO move parameter extraction outside try block
 
-			GekMemberDao dao = DatabaseService.getInstance().getGekMemberDao();
 			String head;
 			String member = request.getParameter(PARAM_MEMBER);
 
 			// reads parent table to check if it's empty, throws error message to user if it is,
 			// otherwise gets its necessary data
 			// TODO think of more proper way
-			List<GekHead> parentTable = DatabaseService.getInstance().getGekHeadDao().readAll();
+			// TODO check correctness
+			GekHeadDao headDao = new GekHeadDao();
+			List<GekHead> parentTable = headDao.readAll();
 			if(parentTable.isEmpty()){
 				throw new HandlingException(RESPONSE_ERROR_PARENT_TABLE_IS_EMPTY);
 			}
@@ -74,15 +73,14 @@ public class GekMembersHandler extends AbstractTableHandler
 	}
 
 	@Override
-	protected String doUpdate(HttpServletRequest request) throws HandlingException
-	{
-		try{
+	protected String doUpdate(HttpServletRequest request) throws HandlingException {
+		try {
 			// TODO move parameter extraction outside try block
 
-			GekMemberDao dao = DatabaseService.getInstance().getGekMemberDao();
 			String key = request.getParameter(PARAM_KEY);
 			String member = request.getParameter(PARAM_MEMBER);
 
+			// TODO check correctness
 			if(member.isEmpty()){
 				throw new HandlingException(RESPONSE_ERROR_EMPTY_FIELD);
 			}
@@ -99,17 +97,13 @@ public class GekMembersHandler extends AbstractTableHandler
 	}
 
 	@Override
-	protected String doDelete(HttpServletRequest request) throws HandlingException
-	{
-		try{
+	protected String doDelete(HttpServletRequest request) throws HandlingException {
+		try {
 			// TODO move parameter extraction outside try block
-
-			GekMemberDao dao = DatabaseService.getInstance().getGekMemberDao();
 			String member = request.getParameter(PARAM_MEMBER);
 			dao.delete(member);
-
 			return RESPONSE_OK;
-		}catch(SQLException e){
+		} catch(SQLException e){
 			// TODO logging
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
