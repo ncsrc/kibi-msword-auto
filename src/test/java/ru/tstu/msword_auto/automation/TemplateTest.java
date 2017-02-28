@@ -75,7 +75,7 @@ public class TemplateTest {
 		jacobDllPath = jacobDllPath.substring(1); // to remove "/"
 		AutomationService.init(jacobDllPath, templatePath, templateSavePath);
 
-		template = Template.newGosTemplate(data);
+		template = Template.newTemplate("gos", data);
 	}
 
 	@After
@@ -119,7 +119,7 @@ public class TemplateTest {
 	@Test
 	public void whenVcrTplGetFilenameBeforeFillingThenCorrect() throws Exception {
 
-		try(Template tpl = Template.newVcrTemplate(data)) {
+		try(Template tpl = Template.newTemplate("vcr", data)) {
 			String expected = "ads A. A. - Протокол по защите ВКР.docx";
 			String actual = tpl.getFilename();
 			assertNotNull(actual);
@@ -131,7 +131,7 @@ public class TemplateTest {
 	@Test
 	public void whenVcrTplGetFilenameAfterFillingThenCorrect() throws Exception {
 
-		try(Template tpl = Template.newVcrTemplate(data)) {
+		try(Template tpl = Template.newTemplate("vcr", data)) {
 			String filename = "ads A. A. - Протокол по защите ВКР.docx";
 			tpl.fulfillTemplate();
 			String actual = tpl.getFilename();
@@ -144,7 +144,7 @@ public class TemplateTest {
 	public void whenFulfillVcrTplWithFullDataThenSaved() throws Exception {
 
 		String filename;
-		try(Template tpl = Template.newVcrTemplate(data)) {
+		try(Template tpl = Template.newTemplate("vcr", data)) {
 			tpl.fulfillTemplate();
 			filename = tpl.getFilename();
 		}

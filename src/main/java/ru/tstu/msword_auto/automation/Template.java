@@ -7,6 +7,7 @@ import ru.tstu.msword_auto.entity.*;
 
 import java.util.List;
 
+// todo javadoc
 public abstract class Template implements AutoCloseable {
     protected Document doc;
 	protected String filename;
@@ -17,14 +18,18 @@ public abstract class Template implements AutoCloseable {
 		this.data = data;
 	}
 
-	// -- Static factory methods, returning concrete templates --
 
-	public static Template newGosTemplate(TemplateData data) {
-		return new GosTemplate(data);
-	}
+	// -- Factory methods, returning concrete templates --
 
-	public static Template newVcrTemplate(TemplateData data) {
-		return new VcrTemplate(data);
+	// type param resolved in webapp
+	public static Template newTemplate(String type, TemplateData data) {
+    	if ("gos".equals(type)) {
+    		return new GosTemplate(data);
+		} else if ("vcr".equals(type)) {
+    		return new VcrTemplate(data);
+		} else {
+    		throw new TemplateRuntimeException(type + " - invalid type of template");
+		}
 	}
 
 
@@ -37,9 +42,6 @@ public abstract class Template implements AutoCloseable {
 	}
 
 	protected void save() {
-		// using full path from webapp, so TODO fix tests to full path
-//		String saveLocation = this.getClass().getClassLoader().getResource(FOLDER_SAVE).getPath();
-
 		doc.saveAs(AutomationService.templateSave, this.filename, SaveFormat.DOCX);
 	}
 
@@ -127,9 +129,6 @@ public abstract class Template implements AutoCloseable {
 			// open document
 			String templatePath = AutomationService.templateSource + "/" + TEMPLATE_NAME;
 
-			// using full path from webapp, so TODO fix tests to full path
-//			String templateLocation = this.getClass().getClassLoader().getResource(templatePath).getPath();
-
 			this.doc = new BasicDocument(templatePath);
 		}
 
@@ -154,10 +153,6 @@ public abstract class Template implements AutoCloseable {
 
 			// open document
 			String templatePath = AutomationService.templateSource + "/" + TEMPLATE_NAME;
-
-			// using full path from webapp, so TODO fix tests to full path
-//			String templateLocation = this.getClass().getClassLoader().getResource(templatePath).getPath();
-
 
 			this.doc = new BasicDocument(templatePath);
 		}
