@@ -14,7 +14,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 import static org.junit.Assert.*;
 
-@Ignore
+
 public class BasicDocumentTest {
 	private static final String DOC_NAME = "testing_doc.docx";
 	private static final String DOC_CONTENT = "asdf";
@@ -28,6 +28,8 @@ public class BasicDocumentTest {
 	public static void setUpOnce() {
 		ClassLoader classLoader = BasicDocumentTest.class.getClassLoader();
 		String jacobDllPath = classLoader.getResource("jacob-1.14.3-x64.dll").getPath();
+
+		// needed to remove "/" in the beginning, it causes problems
 		jacobDllPath = jacobDllPath.substring(1);
 		System.setProperty(LibraryLoader.JACOB_DLL_PATH, jacobDllPath);
 		testingDocPath = classLoader.getResource(DOC_NAME).getPath();
@@ -41,15 +43,7 @@ public class BasicDocumentTest {
 
 	@After
 	public void closeDoc() {
-		doc.close(SaveOptions.DO_NOT_SAVE);
-	}
-
-	@AfterClass
-	public static void tearDownOnce() {
-		if(WordAppStatus.prevTestPassed) {
-			WordApplication.close();
-		}
-		WordAppStatus.prevTestPassed = true;
+		doc.close();
 	}
 
 

@@ -17,7 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@Ignore // tmp
+
 public class TemplateTest {
 	private Template template;
 	private TemplateData data = mock(TemplateData.class);
@@ -69,21 +69,20 @@ public class TemplateTest {
 		when(data.getStudentVcr()).thenReturn(this.vcr);
 		when(data.getGekMembersListInString()).thenReturn(this.gekMembersStr);
 
-		System.setProperty("template_source", "templates");
-		System.setProperty("template_save", "templates/filled");
+		String templatePath = this.getClass().getClassLoader().getResource("templates").getPath();
+		String templateSavePath = this.getClass().getClassLoader().getResource("templates/filled").getPath();
+		String jacobDllPath = this.getClass().getClassLoader().getResource("jacob-1.14.3-x64.dll").getPath();
+		jacobDllPath = jacobDllPath.substring(1); // to remove "/"
+		AutomationService.init(jacobDllPath, templatePath, templateSavePath);
 
 		template = Template.newGosTemplate(data);
-		template.close();
-		template.doc = mock(Document.class);
 	}
 
-	@AfterClass
-	public static void tearDownClass() {
-		if(WordAppStatus.prevTestPassed) {
-			WordApplication.close();
-		}
-		WordAppStatus.prevTestPassed = true;
+	@After
+	public void tearDown() {
+		template.close();
 	}
+
 
 	@Test
 	public void whenGosTplGetFilenameBeforeFillingThenCorrect() throws Exception {
@@ -108,14 +107,10 @@ public class TemplateTest {
 
 	@Test
 	public void whenFulfillGosTplWithFullDataThenSaved() throws Exception {
-		String filename;
-		try(Template tpl = Template.newGosTemplate(data)) {
-			tpl.fulfillTemplate();
-			filename = tpl.getFilename();
-		}
+		template.fulfillTemplate();
+		String filename = template.getFilename();
 
-		String path = this.getClass().getClassLoader().getResource(System.getProperty("template_save")).getPath() +
-				File.separator + filename;
+		String path = AutomationService.templateSave + File.separator + filename;
 
 		boolean actual = new File(path).exists();
 		assertEquals(true, actual);
@@ -154,8 +149,7 @@ public class TemplateTest {
 			filename = tpl.getFilename();
 		}
 
-		String path = this.getClass().getClassLoader().getResource(System.getProperty("template_save")).getPath() +
-				File.separator + filename;
+		String path = AutomationService.templateSave + File.separator + filename;
 
 		boolean actual = new File(path).exists();
 		assertEquals(true, actual);

@@ -22,7 +22,6 @@ import ru.tstu.msword_auto.automation.constants.SaveOptions
         opens it, then closes it -> process automatically terminated.
      */
     BasicDocument(String path) {
-//        this.application = WordApplication.getApplication()
         application = new ActiveXObject("Word.Application")
         if(path.startsWith("/")) {
             path = path.substring(1)
@@ -56,6 +55,7 @@ import ru.tstu.msword_auto.automation.constants.SaveOptions
 
     void close(SaveOptions options) {
         doc.close(options.value())
+        application.quit()
     }
 
 

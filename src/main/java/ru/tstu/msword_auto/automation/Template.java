@@ -1,17 +1,13 @@
 package ru.tstu.msword_auto.automation;
 
 
-import com.jacob.com.LibraryLoader;
 import ru.tstu.msword_auto.automation.constants.SaveFormat;
-import ru.tstu.msword_auto.automation.constants.SaveOptions;
 import ru.tstu.msword_auto.automation.entity_aggregation.TemplateData;
 import ru.tstu.msword_auto.entity.*;
 
 import java.util.List;
 
 public abstract class Template implements AutoCloseable {
-    private static final String FOLDER_SOURCE;
-    private static final String FOLDER_SAVE;
     protected Document doc;
 	protected String filename;
 	protected TemplateData data;
@@ -44,7 +40,7 @@ public abstract class Template implements AutoCloseable {
 		// using full path from webapp, so TODO fix tests to full path
 //		String saveLocation = this.getClass().getClassLoader().getResource(FOLDER_SAVE).getPath();
 
-		doc.saveAs(FOLDER_SAVE, this.filename, SaveFormat.DOCX);
+		doc.saveAs(AutomationService.templateSave, this.filename, SaveFormat.DOCX);
 	}
 
 
@@ -62,7 +58,7 @@ public abstract class Template implements AutoCloseable {
 	// -- Autocloseable --
 
 	public void close() {
-		doc.close(SaveOptions.DO_NOT_SAVE);
+		doc.close();
 	}
 
 
@@ -129,7 +125,7 @@ public abstract class Template implements AutoCloseable {
 			this.filename = studentInfo.getInitials() + " - Протокол по приему гос экзамена.docx";
 
 			// open document
-			String templatePath = FOLDER_SOURCE + "/" + TEMPLATE_NAME;
+			String templatePath = AutomationService.templateSource + "/" + TEMPLATE_NAME;
 
 			// using full path from webapp, so TODO fix tests to full path
 //			String templateLocation = this.getClass().getClassLoader().getResource(templatePath).getPath();
@@ -157,7 +153,7 @@ public abstract class Template implements AutoCloseable {
 			this.filename = studentInfo.getInitials() + " - Протокол по защите ВКР.docx";
 
 			// open document
-			String templatePath = FOLDER_SOURCE + "/" + TEMPLATE_NAME;
+			String templatePath = AutomationService.templateSource + "/" + TEMPLATE_NAME;
 
 			// using full path from webapp, so TODO fix tests to full path
 //			String templateLocation = this.getClass().getClassLoader().getResource(templatePath).getPath();
@@ -194,24 +190,6 @@ public abstract class Template implements AutoCloseable {
 
 	}
 
-
-	// -- Static init block --
-
-	static {
-		// jacob dll initialization
-//		ClassLoader classLoader = Template.class.getClassLoader();
-//		String jacobDll;
-//		if(System.getProperty("os.arch").equals("amd64")) {
-//			jacobDll = classLoader.getResource("jacob-1.14.3-x64.dll").getPath();
-//		} else {
-//			jacobDll = classLoader.getResource("jacob-1.14.3-x86.dll").getPath();
-//		}
-//		System.setProperty(LibraryLoader.JACOB_DLL_PATH, jacobDll);
-
-		// folders initialization
-		FOLDER_SOURCE = System.getProperty("template_source");
-		FOLDER_SAVE = System.getProperty("template_save");
-	}
 
 
 }
