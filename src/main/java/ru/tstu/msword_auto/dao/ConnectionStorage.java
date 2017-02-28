@@ -5,7 +5,7 @@ import java.sql.Connection;
 
 // wrapper that set from webapp
 // todo javadoc
-class ConnectionStorage {
+public class ConnectionStorage {
     private static Connection connection;
 
 

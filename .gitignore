@@ -2,4 +2,4 @@
 target/*
 .idea/*
 *.iml
-new_student_table
+tables/*
