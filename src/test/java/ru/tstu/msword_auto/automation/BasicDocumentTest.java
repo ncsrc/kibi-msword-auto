@@ -14,7 +14,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 
 import static org.junit.Assert.*;
 
-
+@Ignore
 public class BasicDocumentTest {
 	private static final String DOC_NAME = "testing_doc.docx";
 	private static final String DOC_CONTENT = "asdf";

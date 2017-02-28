@@ -41,8 +41,10 @@ public abstract class Template implements AutoCloseable {
 	}
 
 	protected void save() {
-		String saveLocation = this.getClass().getClassLoader().getResource(FOLDER_SAVE).getPath();
-		doc.saveAs(saveLocation, this.filename, SaveFormat.DOCX);
+		// using full path from webapp, so TODO fix tests to full path
+//		String saveLocation = this.getClass().getClassLoader().getResource(FOLDER_SAVE).getPath();
+
+		doc.saveAs(FOLDER_SAVE, this.filename, SaveFormat.DOCX);
 	}
 
 
@@ -128,8 +130,11 @@ public abstract class Template implements AutoCloseable {
 
 			// open document
 			String templatePath = FOLDER_SOURCE + "/" + TEMPLATE_NAME;
-			String templateLocation = this.getClass().getClassLoader().getResource(templatePath).getPath();
-			this.doc = new BasicDocument(templateLocation);
+
+			// using full path from webapp, so TODO fix tests to full path
+//			String templateLocation = this.getClass().getClassLoader().getResource(templatePath).getPath();
+
+			this.doc = new BasicDocument(templatePath);
 		}
 
 		@Override
@@ -153,8 +158,12 @@ public abstract class Template implements AutoCloseable {
 
 			// open document
 			String templatePath = FOLDER_SOURCE + "/" + TEMPLATE_NAME;
-			String templateLocation = this.getClass().getClassLoader().getResource(templatePath).getPath();
-			this.doc = new BasicDocument(templateLocation);
+
+			// using full path from webapp, so TODO fix tests to full path
+//			String templateLocation = this.getClass().getClassLoader().getResource(templatePath).getPath();
+
+
+			this.doc = new BasicDocument(templatePath);
 		}
 
 		@Override
@@ -190,14 +199,14 @@ public abstract class Template implements AutoCloseable {
 
 	static {
 		// jacob dll initialization
-		ClassLoader classLoader = Template.class.getClassLoader();
-		String jacobDll;
-		if(System.getProperty("os.arch").equals("amd64")) {
-			jacobDll = classLoader.getResource("jacob-1.14.3-x64.dll").getPath();
-		} else {
-			jacobDll = classLoader.getResource("jacob-1.14.3-x86.dll").getPath();
-		}
-		System.setProperty(LibraryLoader.JACOB_DLL_PATH, jacobDll);
+//		ClassLoader classLoader = Template.class.getClassLoader();
+//		String jacobDll;
+//		if(System.getProperty("os.arch").equals("amd64")) {
+//			jacobDll = classLoader.getResource("jacob-1.14.3-x64.dll").getPath();
+//		} else {
+//			jacobDll = classLoader.getResource("jacob-1.14.3-x86.dll").getPath();
+//		}
+//		System.setProperty(LibraryLoader.JACOB_DLL_PATH, jacobDll);
 
 		// folders initialization
 		FOLDER_SOURCE = System.getProperty("template_source");

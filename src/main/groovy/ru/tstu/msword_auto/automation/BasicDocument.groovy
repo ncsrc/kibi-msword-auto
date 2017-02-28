@@ -1,6 +1,7 @@
 package ru.tstu.msword_auto.automation
 
 import groovy.transform.PackageScope
+import org.codehaus.groovy.scriptom.ActiveXObject
 import org.codehaus.groovy.scriptom.Scriptom
 import ru.tstu.msword_auto.automation.constants.FindStrategy
 import ru.tstu.msword_auto.automation.constants.ReplacementStrategy
@@ -14,8 +15,15 @@ import ru.tstu.msword_auto.automation.constants.SaveOptions
     final def application
 
 
+    /*
+        ActiveXObject needed to be created every time, because
+        word shares one process for every document. Single object for whole app
+        may cause loss of it in following scenario: user creates document from template,
+        opens it, then closes it -> process automatically terminated.
+     */
     BasicDocument(String path) {
-        this.application = WordApplication.getApplication()
+//        this.application = WordApplication.getApplication()
+        application = new ActiveXObject("Word.Application")
         if(path.startsWith("/")) {
             path = path.substring(1)
         }

@@ -1,6 +1,6 @@
 package ru.tstu.msword_auto.automation
 
-import groovy.transform.PackageScope
+import com.jacob.com.LibraryLoader
 import org.codehaus.groovy.scriptom.ActiveXObject
 
 /**
@@ -8,8 +8,9 @@ import org.codehaus.groovy.scriptom.ActiveXObject
  * Has only getApp() and close() methods. Considered to be used in whole lifetime of client application,
  * so close() should only be invoked while closing whole app.
  */
-@PackageScope class WordApplication {
-    private static final def application = new ActiveXObject("Word.Application")
+class WordApplication {
+    private static def application
+
 
     /**
      * Returns msword application object.
@@ -19,11 +20,20 @@ import org.codehaus.groovy.scriptom.ActiveXObject
         return application
     }
 
+    static void init() {
+        application = new ActiveXObject("Word.Application")
+    }
+
     /**
      * Closes msword application object. Object can't be used after anymore.
      */
     static void close() {
         application.quit()
+    }
+
+
+    static void initDll(String path) {
+        System.setProperty(LibraryLoader.JACOB_DLL_PATH, path)
     }
 
 }

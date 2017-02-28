@@ -2,11 +2,12 @@ package ru.tstu.msword_auto.automation
 
 import com.jacob.com.ComFailException
 import org.codehaus.groovy.scriptom.ActiveXObject
+import org.junit.Ignore
 
 import static org.junit.Assert.*
 import org.junit.Test
 
-
+@Ignore
 class WordApplicationTest {
 
 
