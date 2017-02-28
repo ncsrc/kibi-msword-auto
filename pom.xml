@@ -60,7 +60,7 @@
                     <server>TomcatServer</server>
                     <username>admin</username>
                     <password>admin</password>
-                    <path>/www-msword</path>
+                    <path>/webapp-0.8</path>
                 </configuration>
             </plugin>
         </plugins>

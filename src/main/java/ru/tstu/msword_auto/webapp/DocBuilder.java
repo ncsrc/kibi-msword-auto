@@ -3,12 +3,14 @@ package ru.tstu.msword_auto.webapp;
 
 import ru.tstu.msword_auto.automation.Template;
 import ru.tstu.msword_auto.automation.TemplateException;
+import ru.tstu.msword_auto.automation.WordApplication;
 import ru.tstu.msword_auto.automation.entity_aggregation.Gek;
 import ru.tstu.msword_auto.automation.entity_aggregation.StudentData;
 import ru.tstu.msword_auto.automation.entity_aggregation.TemplateData;
 import ru.tstu.msword_auto.dao.*;
 import ru.tstu.msword_auto.entity.*;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -26,6 +28,24 @@ public class DocBuilder extends HttpServlet {
 	private static final String PARAM_TYPE = "type";
 	private static final String ERROR_BD = "Ошибка при работе с БД";
 
+	@Override
+	public void init() throws ServletException {
+		ServletContext servletContext = getServletContext();
+		String jacobDll;
+		if(System.getProperty("os.arch").equals("amd64")) {
+			jacobDll = servletContext.getRealPath("WEB-INF/classes/jacob-1.14.3-x64.dll");
+		} else {
+			jacobDll = servletContext.getRealPath("WEB-INF/classes/jacob-1.14.3-x86.dll");
+		}
+		WordApplication.initDll(jacobDll);
+
+//		WordApplication.init();
+	}
+
+	@Override
+	public void destroy() {
+		WordApplication.close();
+	}
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -122,7 +142,7 @@ public class DocBuilder extends HttpServlet {
 
 //		 TODO handle IOExceptions
 		ServletOutputStream out = resp.getOutputStream();
-		String file = System.getProperty("template_folder") + File.separator + template.getFilename();
+		String file = System.getProperty("template_save") + File.separator + template.getFilename();
 		FileInputStream in = new FileInputStream(file);
 		byte[] buf = new byte[4096];
 		int length;

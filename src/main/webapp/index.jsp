@@ -23,25 +23,13 @@
     <div id="dialog" title="Создать документ">
         <p>Выберите тип документа</p>
         <select name="doctype" id="doctype">
-            <option id="gos" value="proto_1">Протокол по приему гос экзамена</option>
-            <option id="vcr" value="proto_2">Протокол по защите ВКР</option>
+            <option id="gos" value="gos">Протокол по приему гос экзамена</option>
+            <option id="vcr" value="vcr">Протокол по защите ВКР</option>
         </select>
     </div>
 </div>
 
 <script>
-    // add event listeners to options in dialog
-
-    $('#gos').addEventListener('click', function (event) {
-        var docType = event.target.id;
-        dialog.data('type', docType);
-    });
-
-    $('#vcr').addEventListener('click', function (event) {
-        var docType = event.target.id;
-        dialog.data('type', docType);
-    });
-
 
     // prepare dialog
 
@@ -65,7 +53,7 @@
 
         function getFile() {
             var id = $('#dialog').data('id');
-            var type = $('#dialog').data('type');
+            var type = $('#doctype').val();
 
             window.location = 'docBuilder?id=' + id + '&type=' + type;
 
@@ -82,6 +70,8 @@
         }
 
     });
+
+
 </script>
 
 
@@ -213,15 +203,15 @@
                         width: '5%'
                     },
                     firstNameI: {
-                        title: 'Имя И.П.',
+                        title: 'Имя',
                         width: '20%'
                     },
                     lastNameI: {
-                        title: 'Фамилия И.П.',
+                        title: 'Фамилия',
                         width: '20%'
                     },
                     middleNameI: {
-                        title: 'Отчество И.П.',
+                        title: 'Отчество',
                         width: '20%'
                     },
                     firstNameR: {
@@ -265,7 +255,7 @@
                                 $('#StudentsTable').jtable('openChildTable',
                                     $img.closest('tr'),
                                     {
-                                        title: studentData.record.lName + ' ' + studentData.record.fName + ' - образовательная программа',
+                                        title: studentData.record.lastNameI + ' ' + studentData.record.firstNameI + ' - образовательная программа',
                                         actions: {
                                             listAction: 'courseHandler?action=list&studentId='+studentId,
                                             createAction: 'courseHandler?action=create&studentId='+studentId,

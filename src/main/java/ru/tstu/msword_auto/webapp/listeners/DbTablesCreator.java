@@ -24,7 +24,7 @@ public class DbTablesCreator implements ServletContextListener {
                             "  middle_name_t VARCHAR(60)\n" +
                             ");",
 
-                    "CREATE TABLE Courses\n" +
+                    "CREATE TABLE IF NOT EXISTS Courses\n" +
                             "(\n" +
                             "  student_id INT NOT NULL PRIMARY KEY,\n" +
                             "  course_code VARCHAR(30),\n" +
@@ -34,7 +34,7 @@ public class DbTablesCreator implements ServletContextListener {
                             "  FOREIGN KEY(student_id) REFERENCES Students(student_id) ON DELETE CASCADE ON UPDATE CASCADE\n" +
                             ");",
 
-                    "CREATE TABLE VCRs\n" +
+                    "CREATE TABLE IF NOT EXISTS VCRs\n" +
                             "(\n" +
                             "  student_id INT NOT NULL,\n" +
                             "  vcr_name VARCHAR(100) NOT NULL PRIMARY KEY,\n" +
@@ -43,21 +43,21 @@ public class DbTablesCreator implements ServletContextListener {
                             "  FOREIGN KEY(student_id) REFERENCES Students(student_id) ON DELETE CASCADE\n" +
                             ");",
 
-                    "CREATE TABLE Gek_Head\n" +
+                    "CREATE TABLE IF NOT EXISTS Gek_Head\n" +
                             "(\n" +
                             "  gek_head VARCHAR(60) NOT NULL PRIMARY KEY,\n" +
                             "  gek_subhead VARCHAR(60),\n" +
                             "  gek_secretary VARCHAR(60)\n" +
                             ");",
 
-                    "CREATE TABLE Gek_Members\n" +
+                    "CREATE TABLE IF NOT EXISTS Gek_Members\n" +
                             "(\n" +
                             "  gek_head VARCHAR(60) NOT NULL,\n" +
                             "  gek_member VARCHAR(60) NOT NULL PRIMARY KEY,\n" +
                             "  FOREIGN KEY (gek_head) REFERENCES Gek_Head (gek_head) ON UPDATE CASCADE ON DELETE CASCADE\n" +
                             ");",
 
-                    "CREATE TABLE Date\n" +
+                    "CREATE TABLE IF NOT EXISTS Date\n" +
                             "(\n" +
                             "  id INT PRIMARY KEY AUTO_INCREMENT,\n" +
                             "  date_gos DATE,\n" +
