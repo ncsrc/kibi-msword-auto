@@ -2,7 +2,10 @@
 .idea/*
 prev_res/*
 target/*
-src/main/webapp/scripts/*
+src/main/webapp/scripts/jquery-ui/*
+src/main/webapp/scripts/jtable/*
+src/main/webapp/scripts/custom_buttons.js
+src/main/webapp/scripts/jquery-3.1.1.min.js
 src/main/webapp/templates/*
 src/main/webapp/favicon.png
 src/main/resources/*

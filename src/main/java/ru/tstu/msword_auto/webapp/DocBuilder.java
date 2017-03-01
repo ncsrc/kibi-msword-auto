@@ -1,9 +1,9 @@
 package ru.tstu.msword_auto.webapp;
 
 
+import ru.tstu.msword_auto.automation.AutomationService;
 import ru.tstu.msword_auto.automation.Template;
 import ru.tstu.msword_auto.automation.TemplateException;
-import ru.tstu.msword_auto.automation.WordApplication;
 import ru.tstu.msword_auto.automation.entity_aggregation.Gek;
 import ru.tstu.msword_auto.automation.entity_aggregation.StudentData;
 import ru.tstu.msword_auto.automation.entity_aggregation.TemplateData;
@@ -16,6 +16,7 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -28,39 +29,10 @@ public class DocBuilder extends HttpServlet {
 	private static final String PARAM_TYPE = "type";
 	private static final String ERROR_BD = "Ошибка при работе с БД";
 
-	@Override
-	public void init() throws ServletException {
-		ServletContext servletContext = getServletContext();
-		String jacobDll;
-		if(System.getProperty("os.arch").equals("amd64")) {
-			jacobDll = servletContext.getRealPath("WEB-INF/classes/jacob-1.14.3-x64.dll");
-		} else {
-			jacobDll = servletContext.getRealPath("WEB-INF/classes/jacob-1.14.3-x86.dll");
-		}
-		WordApplication.initDll(jacobDll);
-
-//		WordApplication.init();
-	}
-
-	@Override
-	public void destroy() {
-		WordApplication.close();
-	}
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 
-		// OUTDATED
-		/*
-			get parameter id
-			get models from date, gek
-			get models from student, course, vcr by id
-			use automation module, pass it what doc should it make and insert model's values
-			set content-type to docx file, send
-			optional: redirect
-		 */
-
-		// NEW
 		/*
 			get data and build TemplateData object
 			init template
@@ -105,17 +77,8 @@ public class DocBuilder extends HttpServlet {
 		// make template
 
 		TemplateData templateData = new TemplateData(date, gek, studentData);
-		Template template = null; // todo fix null
 		String docType = req.getParameter(PARAM_TYPE);
-
-		// TODO FIX TO VIRTUAL CONSTRUCTOR, PASS DOCTYPE THERE
-		if(docType.equals("gos")) {
-			template = Template.newGosTemplate(templateData);
-		} else if(docType.equals("vcr")) {
-			template = Template.newVcrTemplate(templateData);
-		} else {
-			// todo redirect to error or something
-		}
+		Template template = Template.newTemplate(docType, templateData);
 
 
 		// fill template
@@ -142,18 +105,17 @@ public class DocBuilder extends HttpServlet {
 
 //		 TODO handle IOExceptions
 		ServletOutputStream out = resp.getOutputStream();
-		String file = System.getProperty("template_save") + File.separator + template.getFilename();
-		FileInputStream in = new FileInputStream(file);
+		String file = AutomationService.templateSave + File.separator + template.getFilename();
+		BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
 		byte[] buf = new byte[4096];
 		int length;
 		while((length = in.read(buf)) > 0){
 			out.write(buf, 0, length);
 		}
+
 		in.close();
 		out.flush();
 
-		// TODO add logging if failed, handle exceptions
-//		new File(file).delete();	// TODO this don't work, add folder with docs in init(), remove it in destroy()
 	}
 
 }

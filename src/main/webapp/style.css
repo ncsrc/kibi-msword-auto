@@ -10,6 +10,10 @@
     margin-bottom: 13px;
 }
 
+#dialog {
+    display: none;
+}
+
 body {
     background-color: rgba(247, 247, 247, 0.7);
 }
