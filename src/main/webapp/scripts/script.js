@@ -42,39 +42,43 @@ $(document).ready(function () {
 });
 
 
-// event listeners to fio fields, for autocompletion
+// Observer for for fio create/update dialog appearance
+// needed to set event listeners for autocompletion
 
-$('#Edit-firstNameI').on('change', function (event) {
-    var input = event.target.value;
-    $('Edit-firstNameR').val(input);
+var observer = new MutationObserver(function (nodes) {
+
+    var editFirstName = $('#Edit-firstNameI')[0];   // [0] required to extract actual Node type from wrapper, otherwise contains() will throw exception
+
+    if(nodes[0].addedNodes) {
+
+        if(document.body.contains(editFirstName)) {
+
+            $('#Edit-firstNameI').on('change', function (event) {
+                var input = event.target.value;
+                $('#Edit-firstNameR').val(input);
+                $('#Edit-firstNameT').val(input);
+            });
+
+            $('#Edit-lastNameI').on('change', function (event) {
+                var input = event.target.value;
+                $('#Edit-lastNameR').val(input);
+                $('#Edit-lastNameT').val(input);
+            });
+
+            $('#Edit-middleNameI').on('change', function (event) {
+                var input = event.target.value;
+                $('#Edit-middleNameR').val(input);
+                $('#Edit-middleNameT').val(input);
+            });
+
+        }
+    }
+
 });
 
-$('#Edit-lastNameI').on('change', function (event) {
-    var input = event.target.value;
-    $('Edit-lastNameR').val(input);
-});
-
-$('#Edit-middleNameI').on('change', function (event) {
-    var input = event.target.value;
-    $('Edit-middleNameR').val(input);
-});
+observer.observe(document.body, { childList: true });
 
 
-
-/*
-    ids:
-    Edit-firstNameI
-    Edit-lastNameI
-    Edit-middleNameI
-
-    Edit-firstNameR
-    Edit-lastNameR
-    Edit-middleNameR
-    Edit-firstNameT
-    Edit-lastNameT
-    Edit-middleNameT
-
- */
 
 
 

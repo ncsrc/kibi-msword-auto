@@ -19,7 +19,7 @@
         <div id="DateTable"></div>
         <div id="GekTable"></div>
         <div id="StudentsTable"></div>
-        <div id="dialog" title="Создать документ">
+        <div id="dialog" style="display:none;" title="Создать документ">
             <p>Выберите тип документа</p>
             <select name="doctype" id="doctype">
                 <option id="gos" value="gos">Протокол по приему гос экзамена</option>
