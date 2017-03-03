@@ -115,6 +115,7 @@ $(document).ready(function () {
     // Table about students
     studentsTable.jtable({
         title: 'Студенты',
+        // paging: true,
         actions: {
             listAction: 'studentHandler?action=list',
             createAction: 'studentHandler?action=create',
@@ -124,7 +125,7 @@ $(document).ready(function () {
         fields: {
             id: {
                 key: true,
-                list: true,
+                list: false,
                 create: false,
                 update: false,
                 width: '5%'
@@ -193,7 +194,7 @@ $(document).ready(function () {
                                 },
                                 fields: {
                                     name: {
-                                        title: 'Направление/специальность',
+                                        title: 'Направление',
                                         options: {
                                             'Бизнес-информатика':'Бизнес-информатика',
                                             'Торговое дело':'Торговое дело'

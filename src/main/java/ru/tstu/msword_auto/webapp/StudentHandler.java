@@ -21,9 +21,9 @@ public class StudentHandler extends AbstractTableHandler {
 	private static final String PARAM_LAST_NAME_R = "lastNameR";
 	private static final String PARAM_MIDDLE_NAME_R = "middleNameR";
 
-	private static final String PARAM_FIRST_NAME_T = "firstNameT";
-	private static final String PARAM_LAST_NAME_T = "lastNameT";
-	private static final String PARAM_MIDDLE_NAME_T = "middleNameT";
+	private static final String PARAM_FIRST_NAME_D = "firstNameD";
+	private static final String PARAM_LAST_NAME_D = "lastNameD";
+	private static final String PARAM_MIDDLE_NAME_D = "middleNameD";
 
 	private AtomicInteger currentId;
 	private StudentDao dao = new StudentDao();
@@ -60,18 +60,20 @@ public class StudentHandler extends AbstractTableHandler {
 			String lastNameR = request.getParameter(PARAM_LAST_NAME_R);
 			String middleNameR = request.getParameter(PARAM_MIDDLE_NAME_R);
 
-			String firstNameT = request.getParameter(PARAM_FIRST_NAME_T);
-			String lastNameT = request.getParameter(PARAM_LAST_NAME_T);
-			String middleNameT = request.getParameter(PARAM_MIDDLE_NAME_T);
+			String firstNameD = request.getParameter(PARAM_FIRST_NAME_D);
+			String lastNameD = request.getParameter(PARAM_LAST_NAME_D);
+			String middleNameD = request.getParameter(PARAM_MIDDLE_NAME_D);
 
-			// TODO complete
-			if(firstNameI.isEmpty() || lastNameI.isEmpty() || middleNameI.isEmpty()){
+			if(firstNameI.isEmpty() || lastNameI.isEmpty() || middleNameI.isEmpty()
+			   || firstNameR.isEmpty() || lastNameR.isEmpty() || middleNameR.isEmpty()
+			   || firstNameD.isEmpty() || lastNameD.isEmpty() || middleNameD.isEmpty()){
+
 				throw new HandlingException(RESPONSE_ERROR_EMPTY_FIELD);
 			}
 
 			Student entity = new Student(currentId.intValue(), firstNameI, lastNameI, middleNameI,
 					 					 firstNameR, lastNameR, middleNameR,
-					 					 firstNameT, lastNameT, middleNameT);
+					 					 firstNameD, lastNameD, middleNameD);
 
 			dao.create(entity);
 			return gson.toJson(entity);
@@ -84,7 +86,6 @@ public class StudentHandler extends AbstractTableHandler {
 
 	@Override
 	protected String doUpdate(HttpServletRequest request) throws HandlingException {
-		// TODO move parameter extraction outside try block
 
 		try {
 			// TODO move parameter extraction outside try block
@@ -99,19 +100,21 @@ public class StudentHandler extends AbstractTableHandler {
 			String lastNameR = request.getParameter(PARAM_LAST_NAME_R);
 			String middleNameR = request.getParameter(PARAM_MIDDLE_NAME_R);
 
-			String firstNameT = request.getParameter(PARAM_FIRST_NAME_T);
-			String lastNameT = request.getParameter(PARAM_LAST_NAME_T);
-			String middleNameT = request.getParameter(PARAM_FIRST_NAME_T);
+			String firstNameD = request.getParameter(PARAM_FIRST_NAME_D);
+			String lastNameD = request.getParameter(PARAM_LAST_NAME_D);
+			String middleNameD = request.getParameter(PARAM_FIRST_NAME_D);
 
-			// TODO complete
-			if(firstNameI.isEmpty() || lastNameI.isEmpty() || middleNameI.isEmpty()){
+			if(firstNameI.isEmpty() || lastNameI.isEmpty() || middleNameI.isEmpty()
+				|| firstNameR.isEmpty() || lastNameR.isEmpty() || middleNameR.isEmpty()
+				|| firstNameD.isEmpty() || lastNameD.isEmpty() || middleNameD.isEmpty()) {
+
 				throw new HandlingException(RESPONSE_ERROR_EMPTY_FIELD);
 			}
 
 			// TODO fix 0 issue
 			Student entity = new Student(0, firstNameI, lastNameI, middleNameI,
 										 firstNameR, lastNameR, middleNameR,
-										 firstNameT, lastNameT, middleNameT);
+										 firstNameD, lastNameD, middleNameD);
 
 			dao.update(id, entity);
 			return RESPONSE_OK;

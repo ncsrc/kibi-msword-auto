@@ -56,10 +56,18 @@ public class DocBuilder extends HttpServlet {
 		StudentData studentData = null;
 		try {
 			DateDao dateDao = new DateDao();
+
+			// TODO fix IndexOutOfBoundsException
+			List<Date> dates = dateDao.readAll();
 			date = dateDao.readAll().get(0); // there should be always only one row
 
 			GekHeadDao gekHeadDao = new GekHeadDao();
+
+			// TODO fix IndexOutOfBoundsException if empty
+			List<GekHead> gekHeads = gekHeadDao.readAll();
 			GekHead gekHead = gekHeadDao.readAll().get(0); // there should be always only one row
+
+			// TODO fix {template-strings}
 			GekMemberDao gekMemberDao = new GekMemberDao();
 			List<GekMember> gekMembers = gekMemberDao.readAll();
 			gek = new Gek(gekHead, gekMembers);
@@ -67,8 +75,12 @@ public class DocBuilder extends HttpServlet {
 			StudentDao studentDao = new StudentDao();
 			Student student = studentDao.read(id);
 			CourseDao courseDao = new CourseDao();
+
+			// TODO fix IndexOutOfBoundsException
 			Course course = courseDao.readByForeignKey(id).get(0); // 1:1
 			VcrDao vcrDao = new VcrDao();
+
+			// TODO fix IndexOutOfBoundsException if empty
 			VCR vcr = vcrDao.readByForeignKey(id).get(0); // 1:1
 			studentData = new StudentData(student, course, vcr);
 
