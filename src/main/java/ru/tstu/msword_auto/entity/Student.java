@@ -16,16 +16,16 @@ public class Student {
 	private final String middleNameR;
 
 	// Творительный падеж
-	private final String firstNameT;
-	private final String lastNameT;
-	private final String middleNameT;
+	private final String firstNameD;
+	private final String lastNameD;
+	private final String middleNameD;
 
 	private final transient String initials;
 
 
 	public Student(int id, String firstNameI, String lastNameI, String middleNameI,
 				   String firstNameR, String lastNameR, String middleNameR,
-				   String firstNameT, String lastNameT, String middleNameT) {
+				   String firstNameD, String lastNameD, String middleNameD) {
 
 		this.id = id;
 
@@ -40,9 +40,9 @@ public class Student {
 		this.middleNameR = middleNameR;
 
 		// Творительный падеж
-		this.firstNameT = firstNameT;
-		this.lastNameT = lastNameT;
-		this.middleNameT = middleNameT;
+		this.firstNameD = firstNameD;
+		this.lastNameD = lastNameD;
+		this.middleNameD = middleNameD;
 
 		this.initials = this.lastNameI + " " + this.firstNameI.substring(0, 1).toUpperCase() + ". " + this.middleNameI.substring(0, 1).toUpperCase() + ".";
 	}
@@ -84,19 +84,19 @@ public class Student {
 	}
 
 	public String getFirstNameT() {
-		return firstNameT;
+		return firstNameD;
 	}
 
 	public String getLastNameT() {
-		return lastNameT;
+		return lastNameD;
 	}
 
 	public String getMiddleNameT() {
-		return middleNameT;
+		return middleNameD;
 	}
 
 	public String getFullNameT() {
-		return this.lastNameT + " " + this.firstNameT + " " + this.middleNameT;
+		return this.lastNameD + " " + this.firstNameD + " " + this.middleNameD;
 	}
 
 	public String getInitials() {
@@ -121,7 +121,7 @@ public class Student {
 		Student other = (Student) obj;
 		if(this.id == other.id && this.firstNameI.equals(other.firstNameI) && this.lastNameI.equals(other.lastNameI) && this.middleNameI.equals(other.middleNameI)
 				&& this.firstNameR.equals(other.firstNameR) && this.lastNameR.equals(other.lastNameR) && this.middleNameR.equals(other.middleNameR)
-				&& this.firstNameT.equals(other.firstNameT) && this.lastNameT.equals(other.lastNameT) && this.middleNameT.equals(other.middleNameT)){
+				&& this.firstNameD.equals(other.firstNameD) && this.lastNameD.equals(other.lastNameD) && this.middleNameD.equals(other.middleNameD)){
 
 			return true;
 		}
