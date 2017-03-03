@@ -10,7 +10,6 @@ import ru.tstu.msword_auto.automation.entity_aggregation.TemplateData;
 import ru.tstu.msword_auto.dao.*;
 import ru.tstu.msword_auto.entity.*;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -32,19 +31,24 @@ public class DocBuilder extends HttpServlet {
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-
-		/*
-			get data and build TemplateData object
-			init template
-			fill
-			send document
-		 */
-
 		int id = Integer.parseInt(req.getParameter(PARAM_ID));
+		String docType = req.getParameter(PARAM_TYPE);
+		TemplateData data = getTemplateData(id);
+		String templateFilename = "";
+
+		try(Template template = Template.newTemplate(docType, data)) {
+			template.fulfillTemplate();
+			templateFilename = template.getFilename();
+		} catch (TemplateException e) {
+			e.printStackTrace();
+			// todo handle
+		}
+
+		sendDocument(resp, templateFilename);
+	}
 
 
-		// get all data
-
+	private TemplateData getTemplateData(int id) {
 		// todo fix null
 		// what if null gets to template ?
 		Date date = null;
@@ -73,39 +77,19 @@ public class DocBuilder extends HttpServlet {
 			// TODO handle, check for missing data
 		}
 
+		return new TemplateData(date, gek, studentData);
+	}
 
-		// make template
-
-		TemplateData templateData = new TemplateData(date, gek, studentData);
-		String docType = req.getParameter(PARAM_TYPE);
-		Template template = Template.newTemplate(docType, templateData);
-
-
-		// fill template
-
-		try {
-			template.fulfillTemplate();
-		} catch (TemplateException e) {
-			e.printStackTrace();
-			// todo handle
-		}
-
-		// close template
-
-		template.close();
-
-
-		// send build doc
-
+	private void sendDocument(HttpServletResponse resp, String templateFilename) throws IOException {
 		resp.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document; charset=utf-8");
-		String fileName = template.getFilename().replace(' ', '_');	// replaces spaces with underscores because spaces decode to plus signs
+		String fileName = templateFilename.replace(' ', '_');	// replaces spaces with underscores because spaces decode to plus signs
 		String encodedFileName = URLEncoder.encode(fileName, "UTF-8");
 
 		resp.setHeader("Content-disposition", "attachment; filename=" + "\"" + encodedFileName + "\"");
 
 //		 TODO handle IOExceptions
 		ServletOutputStream out = resp.getOutputStream();
-		String file = AutomationService.templateSave + File.separator + template.getFilename();
+		String file = AutomationService.templateSave + File.separator + templateFilename;
 		BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
 		byte[] buf = new byte[4096];
 		int length;
@@ -115,7 +99,6 @@ public class DocBuilder extends HttpServlet {
 
 		in.close();
 		out.flush();
-
 	}
 
 }
