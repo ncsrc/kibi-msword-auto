@@ -47,37 +47,88 @@ $(document).ready(function () {
 
 var observer = new MutationObserver(function (nodes) {
 
-    var editFirstName = $('#Edit-firstNameI')[0];   // [0] required to extract actual Node type from wrapper, otherwise contains() will throw exception
+    var person = {
+        first: '',
+        middle: '',
+        last: ''
+    };
+
+
+    var firstNameI = $('#Edit-firstNameI');
+    var lastNameI = $('#Edit-lastNameI');
+    var middleNameI = $('#Edit-middleNameI');
+
+    var firstNameR = $('#Edit-firstNameR');
+    var lastNameR = $('#Edit-lastNameR');
+    var middleNameR = $('#Edit-middleNameR');
+
+    var firstNameD = $('#Edit-firstNameD');
+    var lastNameD = $('#Edit-lastNameD');
+    var middleNameD = $('#Edit-middleNameD');
 
     if(nodes[0].addedNodes) {
 
-        if(document.body.contains(editFirstName)) {
+        if(document.body.contains(firstNameI[0])) {  // [0] required to extract actual Node type from wrapper, otherwise contains() will throw exception
 
-            $('#Edit-firstNameI').on('change', function (event) {
-                var input = event.target.value;
-                $('#Edit-firstNameR').val(input);
-                $('#Edit-firstNameT').val(input);
+            firstNameI.on('change', function (event) {
+                person.first = event.target.value;
+
+                var last = lastNameI.val();
+                var middle = middleNameI.val();
+                if(last.length > 0 && middle.length > 0) {
+                    person.last = last;
+                    person.middle = middle;
+                    var personR = petrovich(person, 'genitive');
+                    var personD = petrovich(person, 'dative');
+                    setFio(personR, personD);
+                }
             });
 
-            $('#Edit-lastNameI').on('change', function (event) {
-                var input = event.target.value;
-                $('#Edit-lastNameR').val(input);
-                $('#Edit-lastNameT').val(input);
+            lastNameI.on('change', function (event) {
+                person.last = event.target.value;
+
+                var first = firstNameI.val();
+                var middle = middleNameI.val();
+                if(first.length > 0 && middle.length > 0) {
+                    person.first = first;
+                    person.middle = middle;
+                    var personR = petrovich(person, 'genitive');
+                    var personD = petrovich(person, 'dative');
+                    setFio(personR, personD);
+                }
             });
 
-            $('#Edit-middleNameI').on('change', function (event) {
-                var input = event.target.value;
-                $('#Edit-middleNameR').val(input);
-                $('#Edit-middleNameT').val(input);
-            });
+            middleNameI.on('change', function (event) {
+                person.middle = event.target.value;
 
+                var first = firstNameI.val();
+                var last = lastNameI.val();
+                if(first.length > 0 && last.length > 0) {
+                    person.first = first;
+                    person.last = last;
+                    var personR = petrovich(person, 'genitive');
+                    var personD = petrovich(person, 'dative');
+                    setFio(personR, personD);
+                }
+            });
         }
+    }
+
+
+    function setFio(personR, personD) {
+        firstNameR.val(personR.first);
+        firstNameD.val(personD.first);
+
+        lastNameR.val(personR.last);
+        lastNameD.val(personD.last);
+
+        middleNameR.val(personR.middle);
+        middleNameD.val(personD.middle);
     }
 
 });
 
 observer.observe(document.body, { childList: true });
-
 
 
 

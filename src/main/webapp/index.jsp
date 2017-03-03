@@ -28,6 +28,7 @@
         </div>
     </div>
 
+    <script src="scripts/petrovich.min.js"></script>
     <script src="scripts/script.js"></script>
     <script src="scripts/tables.js"></script>
 </body>

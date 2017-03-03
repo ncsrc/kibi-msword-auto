@@ -142,7 +142,7 @@ $(document).ready(function () {
                 width: '20%'
             },
             firstNameR: {
-                title: 'Имя Р.П.',
+                title: 'Имя Р.П. (Кого/Чего)',
                 list: false
             },
             lastNameR: {
@@ -153,16 +153,16 @@ $(document).ready(function () {
                 title: 'Отчество Р.П.',
                 list: false
             },
-            firstNameT: {
-                title: 'Имя Т.П.',
+            firstNameD: {
+                title: 'Имя Д.П. (Кому/Чему)',
                 list: false
             },
-            lastNameT: {
-                title: 'Фамилия Т.П.',
+            lastNameD: {
+                title: 'Фамилия Д.П.',
                 list: false
             },
-            middleNameT: {
-                title: 'Отчество Т.П.',
+            middleNameD: {
+                title: 'Отчество Д.П.',
                 list: false
             },
 
