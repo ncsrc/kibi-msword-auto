@@ -36,12 +36,15 @@ public class DocBuilder extends HttpServlet {
 		TemplateData data = getTemplateData(id);
 		String templateFilename = "";
 
-		try(Template template = Template.newTemplate(docType, data)) {
-			template.fulfillTemplate();
-			templateFilename = template.getFilename();
-		} catch (TemplateException e) {
-			e.printStackTrace();
-			// todo handle
+		// sync needed to ensure single access to template file
+		synchronized (this) {
+			try(Template template = Template.newTemplate(docType, data)) {
+				template.fulfillTemplate();
+				templateFilename = template.getFilename();
+			} catch (TemplateException e) {
+				e.printStackTrace();
+				// todo handle
+			}
 		}
 
 		sendDocument(resp, templateFilename);
