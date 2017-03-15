@@ -1,101 +1,289 @@
 package ru.tstu.msword_auto.dao;
 
-import org.junit.Ignore;
+
+import org.junit.Before;
+import org.junit.Test;
+import ru.tstu.msword_auto.entity.Course;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.*;
 
 
-@Ignore
-public class CourseDaoTest
-{
-	// TODO change to new pk(int student_id)
+public class CourseDaoTest {
+
+    // mocks
+    private CourseDao dao;
+    private Connection connection;
+    private PreparedStatement statement;
+
+    // entity content
+    private int studentId;
+    private String groupName;
+    private String code;
+    private String courseName;
+    private String profile;
+    private String qualification;
+
+    // table column names
+    private String sqlStudentId;
+    private String sqlGroupName;
+    private String sqlCourseCode;
+    private String sqlCourseName;
+    private String sqlCourseProfile;
+    private String sqlQualificatgion;
+    private Course defaultEntity;
+    private Course additionalEntity;
 
 
-	/*private CourseDao dao;
-	private Course course;
+    @Before
+    public void setUp() {
+        connection = mock(Connection.class);
+        statement = mock(PreparedStatement.class);
+        dao = new CourseDao();
+        dao.connection = this.connection;
 
-	// TODO probably need to add @BeforeClass to get rid of foreign key constraints
+        studentId = 1;
+        groupName = "group";
+        code = "1.1.1";
+        courseName = "course";
+        profile = "profile";
+        qualification = "q";
+        sqlStudentId = "STUDENT_ID";
+        sqlGroupName = "GROUP_NAME";
+        sqlCourseCode = "COURSE_CODE";
+        sqlCourseName = "COURSE_NAME";
+        sqlCourseProfile = "COURSE_PROFILE";
+        sqlQualificatgion = "QUALIFICATION";
 
-	@Before
-	public void init() throws Exception
-	{
-		this.course = new Course("11.11.11.11", 1, "бакалавр", "Б-И", "Б-И в сфере ИТ");
-		DatabaseService db = DatabaseService.getInstance();
-		this.dao = db.getCourseDao();
-		this.dao.deleteAll();
-		this.dao.create(this.course);
-	}
+        defaultEntity = new Course(
+                studentId,
+                groupName,
+                code,
+                qualification,
+                courseName,
+                profile
+        );
+        additionalEntity = new Course(
+                2,
+                groupName,
+                code,
+                qualification,
+                courseName,
+                profile
+        );
+
+    }
 
 
-	@Test
-	public void TestInsertion() throws Exception
-	{
-		Course data = new Course("1.1.1.1", 1, "бакалавр", "из тестов", "спек из тестов");
-		dao.create(data);
-		Course createdData = dao.read("1.1.1.1");
-		assertEquals(data, createdData);
-	}
+    @Test
+    public void whenCreateFullEntityThenAllRight() throws Exception {
+        when(connection.prepareStatement(CourseDao.SQL_CREATE)).thenReturn(statement);
 
-	@Test
-	public void TestSelectionCorrectness() throws Exception
-	{
-		Course read = dao.read("11.11.11.11");
-		assertEquals(this.course, read);
-	}
+        dao.create(defaultEntity);
 
-	@Test(expected = SQLException.class)
-	public void SelectionThrowsExceptionWhenSpecifiedPrimaryKeyNotFoundInTable() throws Exception
-	{
-		assertNull(dao.read("1"));
-	}
+        verify(connection).prepareStatement(CourseDao.SQL_CREATE);
+        verify(statement).setInt(1, studentId);
+        verify(statement).setString(2, groupName);
+        verify(statement).setString(3, code);
+        verify(statement).setString(4, courseName);
+        verify(statement).setString(5, profile);
+        verify(statement).setString(6, qualification);
+        verify(statement).executeUpdate();
+        verify(statement).close();
 
-	@Test
-	public void TestSelectionOfAllTable() throws Exception
-	{
-		Course newCourse = new Course("1.1.1.1", 1, "бакалавр", "from-tests", "spec-from-tests");
-		dao.create(newCourse);
-		List<Course> list = dao.readAll();
+    }
 
-		Course c1 = list.get(0);
-		assertEquals(newCourse, c1);
+    @Test
+    public void whenReadByPrimaryKeyExistingRowThenAllRight() throws Exception {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(connection.prepareStatement(CourseDao.SQL_READ_BY_PK)).thenReturn(statement);
+        when(statement.executeQuery()).thenReturn(resultSet);
 
-		Course c2 = list.get(1);
-		assertEquals(this.course, c2);
-	}
+        adjustResultSet(resultSet, true);
 
-	@Test
-	public void TestUpdatingOldCourseWithNewOne() throws Exception
-	{
-		Course update = new Course("1.1.1.1", 1, "бакалавр", "from-tests", "spec-from-tests");
-		dao.update("11.11.11.11", update);
+        Course entity = dao.read(studentId);
 
-		List<Course> list = dao.readAll();
-		assertEquals(1, list.size());
+        verifyQuery(CourseDao.SQL_READ_BY_PK, resultSet, 1);
+        verify(resultSet).close();
+        verify(statement).close();
 
-		Course c0 = list.get(0);
-		assertEquals(update, c0);
-	}
+        assertEquals(defaultEntity, entity);
+    }
 
-	@Test
-	public void ReturnsEmptyListAfterRemovalOfTheOnlyOneRow() throws Exception	// supposing there is only one row in table as it should be by default
-	{
-		dao.delete("11.11.11.11");
-		List<Course> list = dao.readAll();
-		assertEquals(true, list.isEmpty());
-	}
+    @Test(expected = SQLException.class)
+    public void whenReadByPrimaryKeyNonExistingRowThenException() throws Exception {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(connection.prepareStatement(CourseDao.SQL_READ_BY_PK)).thenReturn(statement);
+        when(statement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(false);
 
-	@Test
-	public void ReturnsEmptyListAfterRemovalAllRows() throws Exception
-	{
-		dao.deleteAll();
-		List<Course> list = dao.readAll();
-		assertEquals(true, list.isEmpty());
-	}
+        Course entity = dao.read(studentId);
 
-	@Test
-	public void CorrectReadByForeignKey() throws Exception
-	{
-		List<Course> list = dao.readByForeignKey(1);
-		assertEquals(course, list.get(0));
-	}*/
+        verify(connection).prepareStatement(CourseDao.SQL_READ_BY_PK);
+        verify(statement).setInt(1, studentId);
+        verify(statement).executeQuery();
+        verify(resultSet).next();
+        verify(resultSet).close();
+        verify(statement).close();
+
+        assertNull(entity);
+    }
+
+    @Test
+    public void whenReadAllWithMultipleRowsThenAllRight() throws Exception {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(connection.prepareStatement(CourseDao.SQL_READ_ALL)).thenReturn(statement);
+        when(statement.executeQuery()).thenReturn(resultSet);
+
+        adjustResultSet(resultSet, false);
+
+        List<Course> entities = dao.readAll();
+
+        verifyQuery(CourseDao.SQL_READ_ALL, resultSet, 2);
+        verify(resultSet).close();
+        verify(statement).close();
+
+        Course actual1 = entities.get(0);
+        Course actual2 = entities.get(1);
+        assertEquals(defaultEntity, actual1);
+        assertEquals(additionalEntity, actual2);
+
+    }
+
+    @Test
+    public void whenUpdateByPkOneRowThenAllRight() throws Exception {
+        when(connection.prepareStatement(CourseDao.SQL_UPDATE)).thenReturn(statement);
+
+        dao.update(studentId, additionalEntity);
+
+        verify(connection).prepareStatement(CourseDao.SQL_UPDATE);
+        verify(statement).setString(1, groupName);
+        verify(statement).setString(2, code);
+        verify(statement).setString(3, courseName);
+        verify(statement).setString(4, profile);
+        verify(statement).setString(5, qualification);
+        verify(statement).setInt(6, studentId);
+        verify(statement).executeUpdate();
+        verify(statement).close();
+
+    }
+
+    @Test
+    public void whenDeleteByPkThenAllStepsPerformed() throws Exception {
+        when(connection.prepareStatement(CourseDao.SQL_DELETE_BY_PK)).thenReturn(statement);
+
+        dao.delete(studentId);
+
+        verify(connection).prepareStatement(CourseDao.SQL_DELETE_BY_PK);
+        verify(statement).setInt(1, studentId);
+        verify(statement).executeUpdate();
+        verify(statement).close();
+
+    }
+
+    @Test
+    public void whenDeleteAllThenAllActionsPerformed() throws Exception {
+        when(connection.prepareStatement(CourseDao.SQL_DELETE_ALL)).thenReturn(statement);
+
+        dao.deleteAll();
+
+        verify(connection).prepareStatement(CourseDao.SQL_DELETE_ALL);
+        verify(statement).executeUpdate();
+        verify(statement).close();
+
+    }
+
+    @Test
+    public void whenReadByFkOneRowThenAllActionsPerformed() throws Exception {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(connection.prepareStatement(CourseDao.SQL_READ_BY_FK)).thenReturn(statement);
+        when(statement.executeQuery()).thenReturn(resultSet);
+
+        adjustResultSet(resultSet, true);
+
+        Course entity = dao.readByForeignKey(studentId).get(0);
+
+        verifyQuery(CourseDao.SQL_READ_BY_FK, resultSet, 1);
+        verify(resultSet).close();
+        verify(statement).close();
+
+        assertEquals(defaultEntity, entity);
+
+    }
+
+    @Test(expected = SQLException.class)
+    public void whenReadByForeignKeyNonExistingRowThenException() throws Exception {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(connection.prepareStatement(CourseDao.SQL_READ_BY_FK)).thenReturn(statement);
+        when(statement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(false);
+
+        List<Course> entities = dao.readByForeignKey(studentId);
+
+        verify(connection).prepareStatement(CourseDao.SQL_READ_BY_FK);
+        verify(statement).setInt(1, studentId);
+        verify(statement).executeQuery();
+        verify(resultSet).next();
+        verify(resultSet).close();
+        verify(statement).close();
+
+        assertTrue(entities.isEmpty());
+    }
+
+
+    private void adjustResultSet(ResultSet resultSet, boolean oneTime) throws Exception {
+
+        // pk-fk one
+        if(oneTime) {
+            when(resultSet.next())
+                    .thenReturn(true)
+                    .thenReturn(false);
+
+            when(resultSet.getInt(sqlStudentId)).thenReturn(studentId);
+        } else {    // pk many(at least 2)
+            when(resultSet.next())
+                    .thenReturn(true)
+                    .thenReturn(true)
+                    .thenReturn(false);
+
+            when(resultSet.getInt(sqlStudentId))
+                    .thenReturn(studentId)
+                    .thenReturn(2); // second id, second entity
+        }
+
+        when(resultSet.getString(sqlGroupName)).thenReturn(groupName);
+        when(resultSet.getString(sqlCourseCode)).thenReturn(code);
+        when(resultSet.getString(sqlCourseName)).thenReturn(courseName);
+        when(resultSet.getString(sqlCourseProfile)).thenReturn(profile);
+        when(resultSet.getString(sqlQualificatgion)).thenReturn(qualification);
+
+    }
+
+    private void verifyQuery(String sql, ResultSet resultSet, int times) throws Exception {
+        verify(connection).prepareStatement(sql);
+        if(times == 1) {
+            verify(statement).setInt(1, studentId);
+        }
+        verify(statement).executeQuery();
+
+        int resultSetNextTimes = times + 1; // because there would be last, that returns false
+        verify(resultSet, times(resultSetNextTimes)).next();
+        verify(resultSet, times(times)).getInt(sqlStudentId);
+        verify(resultSet, times(times)).getString(sqlGroupName);
+        verify(resultSet, times(times)).getString(sqlCourseCode);
+        verify(resultSet, times(times)).getString(sqlCourseName);
+        verify(resultSet, times(times)).getString(sqlCourseProfile);
+        verify(resultSet, times(times)).getString(sqlQualificatgion);
+
+    }
 
 }
 
