@@ -36,7 +36,6 @@ public abstract class Template implements AutoCloseable {
 	// -- Protected common methods --
 
 	protected void fillCommonData() {
-    	this.fillDate();
     	this.fillStudentData();
     	this.fillGekData();
 	}
@@ -48,7 +47,9 @@ public abstract class Template implements AutoCloseable {
 
 	// -- Abstract methods --
 
-	// todo add throws TemplateException later, and checks
+	protected abstract void fillDate();
+
+	// todo add throws TemplateException later, and checks; or remove if not needed
 	public abstract void fulfillTemplate() throws TemplateException;
 
 	// e.g. initials - Протокол ГЭК по защите ВКР.docx
@@ -65,19 +66,6 @@ public abstract class Template implements AutoCloseable {
 
 
 	// -- Private methods --
-
-	// TODO fix bug: it gets always only gos date
-	private void fillDate() {
-		// TODO fix to using aggregation
-
-//		Date dateInfo = data.getDate();
-//		String day = String.valueOf(dateInfo.getGosDay());
-//		String month = dateInfo.getGosMonth();
-//		String year = String.valueOf(dateInfo.getGosYear()).substring(2);
-//		doc.replace(TemplateRecord.DATE_DAY, day);
-//		doc.replace(TemplateRecord.DATE_MONTH, month);
-//		doc.replace(TemplateRecord.DATE_YEAR, year);
-	}
 
 	// fills common: fio in I case and in R case; course info and course profile
 	private void fillStudentData() {
@@ -138,7 +126,19 @@ public abstract class Template implements AutoCloseable {
 		@Override
 		public void fulfillTemplate() throws TemplateException {
 			this.fillCommonData();
+			this.fillDate();
 			this.save();
+		}
+
+		@Override
+		protected void fillDate() {
+			ru.tstu.msword_auto.automation.entity_aggregation.Date date = data.getDate();
+			String day = date.getGosDay();
+			String month = date.getGosMonth();
+			String year = date.getGosYear();
+			doc.replace(TemplateRecord.DATE_DAY, day);
+			doc.replace(TemplateRecord.DATE_MONTH, month);
+			doc.replace(TemplateRecord.DATE_YEAR, year);
 		}
 
 	}
@@ -163,6 +163,7 @@ public abstract class Template implements AutoCloseable {
 		@Override
 		public void fulfillTemplate() throws TemplateException {
 			this.fillCommonData();
+			this.fillDate();
 
 			// student/course vcr-specific data
 			Student student = this.data.getStudent();
@@ -184,6 +185,17 @@ public abstract class Template implements AutoCloseable {
 			this.doc.replace(TemplateRecord.STUDENT_VCR_REVIEWER, vcrReviewer);
 
 			this.save();
+		}
+
+		@Override
+		protected void fillDate() {
+			ru.tstu.msword_auto.automation.entity_aggregation.Date date = data.getDate();
+			String day = date.getVcrDay();
+			String month = date.getVcrMonth();
+			String year = date.getVcrYear();
+			doc.replace(TemplateRecord.DATE_DAY, day);
+			doc.replace(TemplateRecord.DATE_MONTH, month);
+			doc.replace(TemplateRecord.DATE_YEAR, year);
 		}
 
 	}

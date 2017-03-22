@@ -12,9 +12,9 @@ import static org.junit.Assert.assertEquals;
 
 public class GekTest {
     private final static String MEMBERS_LIST = "asd, qwe, zxc";
-//    private final Gek gek;
-//    private final GekHead gekHead;
-//    private final List<GekMember> gekMembers;
+    private final Gek gek;
+    private final GekHead gekHead;
+    private final List<GekMember> gekMembers;
 
 
     /*
@@ -26,35 +26,33 @@ public class GekTest {
      */
 
     public GekTest() {
-        // TODO fix to new entities
-//
-//        this.gekHead = new GekHead("ads", "ads", "ads");
-//        this.gekMembers = Arrays.asList(
-//                new GekMember("asd", "asd"),
-//                new GekMember("asd", "qwe"),
-//                new GekMember("asd", "zxc"));
-//
-//        this.gek = new Gek(gekHead, gekMembers);
+        this.gekHead = new GekHead(1, "gr","ads", "ads", "ads");
+        this.gekMembers = Arrays.asList(
+                new GekMember(1, "asd"),
+                new GekMember(2, "qwe"),
+                new GekMember(3, "zxc"));
+
+        this.gek = new Gek(gekHead, gekMembers);
     }
 
-//
-//    @Test
-//    public void whenGetGekHeadThenCorrectData() throws Exception {
-//        GekHead actual = this.gek.getGekHead();
-//        assertEquals(this.gekHead, actual);
-//    }
-//
-//    @Test
-//    public void whenGetGekMemberThenCorrectData() throws Exception {
-//        List<GekMember> actual = this.gek.getListOfGekMembers();
-//        assertEquals(this.gekMembers, actual);
-//    }
-//
-//    @Test
-//    public void whenGetGekMembersInStringThenCorrectRepresentation() throws Exception {
-//        String actual = gek.getFullMembersList();
-//        assertEquals(MEMBERS_LIST, actual);
-//    }
+
+    @Test
+    public void whenGetGekHeadThenCorrectData() throws Exception {
+        GekHead actual = this.gek.getGekHead();
+        assertEquals(this.gekHead, actual);
+    }
+
+    @Test
+    public void whenGetGekMemberThenCorrectData() throws Exception {
+        List<GekMember> actual = this.gek.getListOfGekMembers();
+        assertEquals(this.gekMembers, actual);
+    }
+
+    @Test
+    public void whenGetGekMembersInStringThenCorrectRepresentation() throws Exception {
+        String actual = gek.getFullMembersList();
+        assertEquals(MEMBERS_LIST, actual);
+    }
 
 
 
