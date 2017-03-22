@@ -47,38 +47,6 @@ public class DateTest {
 		assertTrue(first.equals(second));
 	}
 
-	@Test
-	public void whenSimpleConstructorThenAllParsedDataAreEmptyString() {
-		Date entity = new Date(groupName);
-		String expected = "";
-
-		assertEquals(expected, entity.getGosDay());
-		assertEquals(expected, entity.getVcrDay());
-		assertEquals(expected, entity.getGosMonth());
-		assertEquals(expected, entity.getVcrMonth());
-		assertEquals(expected, entity.getGosYear());
-		assertEquals(expected, entity.getVcrYear());
-
-		assertNotEquals(expected, entity.getGroupName());
-	}
-
-	@Test
-	public void whenFullyCreatedWithStringConstructorThenDatesParsedCorrectly() throws Exception {
-		String expectedGosYear = "01";
-		String expectedVcrYear = "05";
-		String expectedGosMonth = "января";
-		String expectedVcrMonth = "января";
-		String expectedGosDay = "12";
-		String expectedVcrDay = "11";
-
-		assertEquals(expectedGosYear, defaultEntity.getGosYear());
-		assertEquals(expectedVcrYear, defaultEntity.getVcrYear());
-		assertEquals(expectedGosMonth, defaultEntity.getGosMonth());
-		assertEquals(expectedVcrMonth, defaultEntity.getVcrMonth());
-		assertEquals(expectedGosDay, defaultEntity.getGosDay());
-		assertEquals(expectedVcrDay, defaultEntity.getVcrDay());
-	}
-
 	@Test(expected = DateFormatException.class)
 	public void exceptionThrownWhenIncorrectDelimitersInDate() throws Exception {
 		new Date(groupName, "2003.03.12", "2004/25/01");
