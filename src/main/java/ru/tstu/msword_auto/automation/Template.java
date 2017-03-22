@@ -66,14 +66,17 @@ public abstract class Template implements AutoCloseable {
 
 	// -- Private methods --
 
+	// TODO fix bug: it gets always only gos date
 	private void fillDate() {
-		Date dateInfo = data.getDate();
-		String day = String.valueOf(dateInfo.getGosDay());
-		String month = dateInfo.getGosMonth();
-		String year = String.valueOf(dateInfo.getGosYear()).substring(2);
-		doc.replace(TemplateRecord.DATE_DAY, day);
-		doc.replace(TemplateRecord.DATE_MONTH, month);
-		doc.replace(TemplateRecord.DATE_YEAR, year);
+		// TODO fix to using aggregation
+
+//		Date dateInfo = data.getDate();
+//		String day = String.valueOf(dateInfo.getGosDay());
+//		String month = dateInfo.getGosMonth();
+//		String year = String.valueOf(dateInfo.getGosYear()).substring(2);
+//		doc.replace(TemplateRecord.DATE_DAY, day);
+//		doc.replace(TemplateRecord.DATE_MONTH, month);
+//		doc.replace(TemplateRecord.DATE_YEAR, year);
 	}
 
 	// fills common: fio in I case and in R case; course info and course profile
@@ -163,7 +166,7 @@ public abstract class Template implements AutoCloseable {
 
 			// student/course vcr-specific data
 			Student student = this.data.getStudent();
-			String fullNameT = student.getFullNameT();
+			String fullNameT = student.getFullNameD();
 			String initials = student.getInitials();
 			Course course = this.data.getStudentCourse();
 			String qualification = course.getQualification();
