@@ -123,7 +123,7 @@ public class Student {
 		Student other = (Student) obj;
 		if(this.firstNameI.equals(other.firstNameI) && this.lastNameI.equals(other.lastNameI) && this.middleNameI.equals(other.middleNameI)
 				&& this.firstNameR.equals(other.firstNameR) && this.lastNameR.equals(other.lastNameR) && this.middleNameR.equals(other.middleNameR)
-				&& this.firstNameD.equals(other.firstNameD) && this.lastNameD.equals(other.lastNameD) && this.middleNameD.equals(other.middleNameD)){
+				&& this.firstNameD.equals(other.firstNameD) && this.lastNameD.equals(other.lastNameD) && this.middleNameD.equals(other.middleNameD)) {
 
 			return true;
 		}

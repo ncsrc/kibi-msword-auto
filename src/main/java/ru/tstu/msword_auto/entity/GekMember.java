@@ -42,7 +42,7 @@ public class GekMember {
 
 		GekMember other = (GekMember) o;
 
-		if(this.gekHeadId == other.gekHeadId && this.member.equals(other.member)){
+		if(this.gekMemberId == other.gekMemberId && this.gekHeadId == other.gekHeadId && this.member.equals(other.member)) {
 			return true;
 		}
 
