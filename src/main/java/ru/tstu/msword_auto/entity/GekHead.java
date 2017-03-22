@@ -1,40 +1,66 @@
 package ru.tstu.msword_auto.entity;
 
 
-public class GekHead    // gek stands for "Государственная экзаменационная комиссия"
-{
+// gek stands for "Государственная экзаменационная комиссия"
+public class GekHead {
 	@PrimaryKey
-	private final String head;
-	private final String subhead;
-	private final String secretary;
+	private int gekId;
+	private final String courseName; // foreign key
+	private String head = "";
+	private String subhead = "";
+	private String secretary = "";
 
 
+	public GekHead(String courseName) {
+		this.courseName = courseName;
+	}
 
-	public GekHead(String head, String subhead, String secretary)
-	{
+	public GekHead(int gekId, String courseName, String head, String subhead, String secretary) {
+		this.gekId = gekId;
+		this.courseName = courseName;
 		this.head = head;
 		this.subhead = subhead;
 		this.secretary = secretary;
 	}
 
-	public String getHead()
-	{
+	public int getGekId() {
+		return this.gekId;
+	}
+
+	public String getHead() {
 		return this.head;
 	}
 
-	public String getSubhead()
-	{
+	public String getSubhead() {
 		return this.subhead;
 	}
 
-	public String getSecretary()
-	{
+	public String getSecretary() {
 		return this.secretary;
 	}
 
+	public String getCourseName() {
+		return courseName;
+	}
+
+	public void setGekId(int gekId) {
+		this.gekId = gekId;
+	}
+
+	public void setHead(String head) {
+		this.head = head;
+	}
+
+	public void setSubhead(String subhead) {
+		this.subhead = subhead;
+	}
+
+	public void setSecretary(String secretary) {
+		this.secretary = secretary;
+	}
+
 	@Override
-	public boolean equals(Object obj)
-	{
+	public boolean equals(Object obj) {
 		if(this == obj){
 			return true;
 		}
@@ -48,9 +74,18 @@ public class GekHead    // gek stands for "Государственная экз
 		}
 
 		GekHead other = (GekHead) obj;
-		if(this.head.equals(other.head) && this.subhead.equals(other.subhead) && this.secretary.equals(other.secretary)){
+		if(
+				this.gekId == other.gekId
+				&& this.courseName.equals(other.courseName)
+				&& this.head.equals(other.head)
+				&& this.subhead.equals(other.subhead)
+				&& this.secretary.equals(other.secretary)
+				)
+		{
+
 			return true;
 		}
+
 
 		return false;
 	}

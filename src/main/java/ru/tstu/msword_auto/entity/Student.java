@@ -3,7 +3,7 @@ package ru.tstu.msword_auto.entity;
 
 public class Student {
 	@PrimaryKey
-	private final int id;
+	private int studentId;
 
 	// Именительный падеж
 	private final String firstNameI;
@@ -23,11 +23,10 @@ public class Student {
 	private final transient String initials;
 
 
-	public Student(int id, String firstNameI, String lastNameI, String middleNameI,
+	public Student(String firstNameI, String lastNameI, String middleNameI,
 				   String firstNameR, String lastNameR, String middleNameR,
 				   String firstNameD, String lastNameD, String middleNameD) {
 
-		this.id = id;
 
 		// Именительный падеж
 		this.firstNameI = firstNameI;
@@ -39,7 +38,7 @@ public class Student {
 		this.lastNameR = lastNameR;
 		this.middleNameR = middleNameR;
 
-		// Творительный падеж
+		// Дательный падеж
 		this.firstNameD = firstNameD;
 		this.lastNameD = lastNameD;
 		this.middleNameD = middleNameD;
@@ -47,8 +46,8 @@ public class Student {
 		this.initials = this.lastNameI + " " + this.firstNameI.substring(0, 1).toUpperCase() + ". " + this.middleNameI.substring(0, 1).toUpperCase() + ".";
 	}
 
-	public int getId() {
-		return this.id;
+	public int getStudentId() {
+		return this.studentId;
 	}
 
 	public String getFirstNameI() {
@@ -83,19 +82,19 @@ public class Student {
 		return this.lastNameR + " " + this.firstNameR + " " + this.middleNameR;
 	}
 
-	public String getFirstNameT() {
+	public String getFirstNameD() {
 		return firstNameD;
 	}
 
-	public String getLastNameT() {
+	public String getLastNameD() {
 		return lastNameD;
 	}
 
-	public String getMiddleNameT() {
+	public String getMiddleNameD() {
 		return middleNameD;
 	}
 
-	public String getFullNameT() {
+	public String getFullNameD() {
 		return this.lastNameD + " " + this.firstNameD + " " + this.middleNameD;
 	}
 
@@ -103,6 +102,9 @@ public class Student {
 		return this.initials;
 	}
 
+	public void setStudentId(int studentId) {
+		this.studentId = studentId;
+	}
 
 	@Override
 	public boolean equals(Object obj) {
@@ -119,7 +121,7 @@ public class Student {
 		}
 
 		Student other = (Student) obj;
-		if(this.id == other.id && this.firstNameI.equals(other.firstNameI) && this.lastNameI.equals(other.lastNameI) && this.middleNameI.equals(other.middleNameI)
+		if(this.firstNameI.equals(other.firstNameI) && this.lastNameI.equals(other.lastNameI) && this.middleNameI.equals(other.middleNameI)
 				&& this.firstNameR.equals(other.firstNameR) && this.lastNameR.equals(other.lastNameR) && this.middleNameR.equals(other.middleNameR)
 				&& this.firstNameD.equals(other.firstNameD) && this.lastNameD.equals(other.lastNameD) && this.middleNameD.equals(other.middleNameD)){
 

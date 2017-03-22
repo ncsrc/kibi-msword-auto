@@ -1,66 +1,143 @@
 package ru.tstu.msword_auto.entity;
 
+import org.junit.Before;
 import org.junit.Test;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
-public class DateTest
-{
+public class DateTest {
+
+	/*
+		what needs to be tested:
+
+		from jdbc: null can be inserted, so simple constructor with only primary key(groupName) required
+		in this scenario check that non-transient properties equal empty string, so as parsed data
+		in other scenario check that all data properly parsed
+
+	 */
+
+	private String groupName;
+//	private java.util.Date gosWrappedDate;
+//	private java.util.Date vcrWrappedDate;
+	private String gosDate;
+	private String vcrDate;
+	private Date defaultEntity;
+
+
+	@Before
+	public void setUp() throws Exception {
+		groupName = "asd";
+		gosDate = "2001-01-12";
+		vcrDate = "2005-01-11";
+
+//		DateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
+//		gosWrappedDate = parser.parse(gosDate);
+//		vcrWrappedDate = parser.parse(vcrDate);
+
+		defaultEntity = new Date(groupName, gosDate, vcrDate);
+	}
 
 
 	@Test
-	public void DateConstructor() throws Exception
-	{
-		java.util.Date d0 = new java.util.Date();
-		java.util.Date d1 = new java.util.Date(d0.getTime()/100);
-		Date date = new Date(1, d0, d1);
-		assertEquals(d0, date.getRawGosDate());
-		assertEquals(d1, date.getRawVcrDate());
+	public void whenSameDataWithFullStringConstructorThenEqualsTrue() throws Exception {
+		Date second = new Date(groupName, gosDate, vcrDate);
+
+		assertEquals(defaultEntity, second);
+		assertTrue(defaultEntity.equals(second));
+	}
+
+
+//	@Test
+//	public void whenSameDataWithFullObjectConstructorThenEqualsTrue() throws Exception {
+//		Date second = new Date(groupName, gosWrappedDate, vcrWrappedDate);
+//
+//		assertEquals(defaultEntity, second);
+//		assertTrue(defaultEntity.equals(second));
+//	}
+
+	@Test
+	public void whenDifferentDataThenEqualsFalse() {
+		Date other = new Date("xcz", vcrDate, gosDate);
+
+		assertNotEquals(defaultEntity, other);
+		assertFalse(defaultEntity.equals(other));
 	}
 
 	@Test
-	public void StringConstructor() throws Exception
-	{
-		String date0 = "2001-01-12";
-		String date1 = "2005-01-11";
-		Date d0 = new Date(1, date0, date1);
+	public void whenSameDataWithSimpleConstructorThenEqualsTrue() {
+		Date first = new Date(groupName);
+		Date second = new Date(groupName);
 
-		SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
-		assertEquals(date0, parser.format(d0.getRawGosDate()));
-		assertEquals(date1, parser.format(d0.getRawVcrDate()));
+		assertEquals(first, second);
+		assertTrue(first.equals(second));
 	}
 
 	@Test
-	public void CorrectBusinessLogicDateConversions() throws Exception
-	{
-		String date0 = "2001-01-12";
-		String date1 = "2005-01-11";
-		Date d0 = new Date(1, date0, date1);
+	public void whenSimpleConstructorThenAllParsedDataAreEmptyString() {
+		Date entity = new Date(groupName);
+		String expected = "";
 
-		assertEquals(2001, d0.getGosYear());
-		assertEquals(11, d0.getVcrDay());
-		assertEquals("января", d0.getGosMonth());
+		assertEquals(expected, entity.getGosDay());
+		assertEquals(expected, entity.getVcrDay());
+		assertEquals(expected, entity.getGosMonth());
+		assertEquals(expected, entity.getVcrMonth());
+		assertEquals(expected, entity.getGosYear());
+		assertEquals(expected, entity.getVcrYear());
+
+		assertNotEquals(expected, entity.getGroupName());
 	}
+
+//	@Test
+//	public void whenSimpleConstructorThenWrappedDatesAreNulls() {
+//		Date entity = new Date(groupName);
+//
+//		assertNull(entity.getGosDateInLong());
+//		assertNull(entity.getVcrDateInLong());
+//	}
+
+	@Test
+	public void whenFullyCreatedWithStringConstructorThenDatesParsedCorrectly() throws Exception {
+		String expectedGosYear = "01";
+		String expectedVcrYear = "05";
+		String expectedGosMonth = "января";
+		String expectedVcrMonth = "января";
+		String expectedGosDay = "12";
+		String expectedVcrDay = "11";
+
+		assertEquals(expectedGosYear, defaultEntity.getGosYear());
+		assertEquals(expectedVcrYear, defaultEntity.getVcrYear());
+		assertEquals(expectedGosMonth, defaultEntity.getGosMonth());
+		assertEquals(expectedVcrMonth, defaultEntity.getVcrMonth());
+		assertEquals(expectedGosDay, defaultEntity.getGosDay());
+		assertEquals(expectedVcrDay, defaultEntity.getVcrDay());
+	}
+
+//	@Test
+//	public void whenFullyCreatedWithObjectConstructorThenDatesParsedCorrectly() throws Exception {
+//		Date defaultEntity = new Date(groupName, gosWrappedDate, vcrWrappedDate);
+//		String expectedGosYear = "01";
+//		String expectedVcrYear = "05";
+//		String expectedGosMonth = "января";
+//		String expectedVcrMonth = "января";
+//		String expectedGosDay = "12";
+//		String expectedVcrDay = "11";
+//
+//		assertEquals(expectedGosYear, defaultEntity.getGosYear());
+//		assertEquals(expectedVcrYear, defaultEntity.getVcrYear());
+//		assertEquals(expectedGosMonth, defaultEntity.getGosMonth());
+//		assertEquals(expectedVcrMonth, defaultEntity.getVcrMonth());
+//		assertEquals(expectedGosDay, defaultEntity.getGosDay());
+//		assertEquals(expectedVcrDay, defaultEntity.getVcrDay());
+//	}
 
 	@Test(expected = DateFormatException.class)
-	public void ExceptionThrownWhenIncorrectStringDatePassed() throws Exception
-	{
-		new Date(1, "2003.03.12", "2004/25/01");
+	public void exceptionThrownWhenIncorrectStringDatePassed() throws Exception {
+		new Date(groupName, "2003.03.12", "2004/25/01");
 	}
 
-
-	@Test
-	public void equalsCorrectness() throws Exception
-	{
-		Date d0 = new Date(1, "2001-01-23", "2015-03-25");
-		Date d1 = new Date(1, "2001-01-23", "2015-03-25");
-		Date d2 = new Date(2, "2005-13-13", "2013-13-12");
-
-		assertEquals(d0, d1);
-		assertNotEquals(d1, d2);
-	}
 
 }
