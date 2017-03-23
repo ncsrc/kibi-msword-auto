@@ -32,7 +32,7 @@
         <dependency>
             <groupId>ru.tstu</groupId>
             <artifactId>entity</artifactId>
-            <version>0.8</version>
+            <version>0.9</version>
         </dependency>
     </dependencies>
 

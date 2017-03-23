@@ -1,6 +1,7 @@
 package ru.tstu.msword_auto.dao;
 
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import ru.tstu.msword_auto.entity.Course;
@@ -15,6 +16,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
+import static ru.tstu.msword_auto.dao.CourseDao.*;
 
 
 public class CourseDaoTest {
@@ -32,13 +34,6 @@ public class CourseDaoTest {
     private String profile;
     private String qualification;
 
-    // table column names
-    private String sqlStudentId;
-    private String sqlGroupName;
-    private String sqlCourseCode;
-    private String sqlCourseName;
-    private String sqlCourseProfile;
-    private String sqlQualificatgion;
     private Course defaultEntity;
     private Course additionalEntity;
 
@@ -56,12 +51,6 @@ public class CourseDaoTest {
         courseName = "course";
         profile = "profile";
         qualification = "q";
-        sqlStudentId = "STUDENT_ID";
-        sqlGroupName = "GROUP_NAME";
-        sqlCourseCode = "COURSE_CODE";
-        sqlCourseName = "COURSE_NAME";
-        sqlCourseProfile = "COURSE_PROFILE";
-        sqlQualificatgion = "QUALIFICATION";
 
         defaultEntity = new Course(
                 studentId,
@@ -82,14 +71,19 @@ public class CourseDaoTest {
 
     }
 
+    @After
+    public void tearDown() throws Exception {
+        verify(connection, never()).close();
+    }
+
 
     @Test
     public void whenCreateFullEntityThenAllRight() throws Exception {
-        when(connection.prepareStatement(CourseDao.SQL_CREATE)).thenReturn(statement);
+        when(connection.prepareStatement(SQL_CREATE)).thenReturn(statement);
 
         dao.create(defaultEntity);
 
-        verify(connection).prepareStatement(CourseDao.SQL_CREATE);
+        verify(connection).prepareStatement(SQL_CREATE);
         verify(statement).setInt(1, studentId);
         verify(statement).setString(2, groupName);
         verify(statement).setString(3, code);
@@ -104,14 +98,14 @@ public class CourseDaoTest {
     @Test
     public void whenReadByPrimaryKeyExistingRowThenAllRight() throws Exception {
         ResultSet resultSet = mock(ResultSet.class);
-        when(connection.prepareStatement(CourseDao.SQL_READ_BY_PK)).thenReturn(statement);
+        when(connection.prepareStatement(SQL_READ_BY_PK)).thenReturn(statement);
         when(statement.executeQuery()).thenReturn(resultSet);
 
         adjustResultSet(resultSet, true);
 
         Course entity = dao.read(studentId);
 
-        verifyQuery(CourseDao.SQL_READ_BY_PK, resultSet, 1);
+        verifyQuery(SQL_READ_BY_PK, resultSet, 1);
         verify(resultSet).close();
         verify(statement).close();
 
@@ -121,13 +115,13 @@ public class CourseDaoTest {
     @Test(expected = SQLException.class)
     public void whenReadByPrimaryKeyNonExistingRowThenException() throws Exception {
         ResultSet resultSet = mock(ResultSet.class);
-        when(connection.prepareStatement(CourseDao.SQL_READ_BY_PK)).thenReturn(statement);
+        when(connection.prepareStatement(SQL_READ_BY_PK)).thenReturn(statement);
         when(statement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
 
         Course entity = dao.read(studentId);
 
-        verify(connection).prepareStatement(CourseDao.SQL_READ_BY_PK);
+        verify(connection).prepareStatement(SQL_READ_BY_PK);
         verify(statement).setInt(1, studentId);
         verify(statement).executeQuery();
         verify(resultSet).next();
@@ -140,14 +134,14 @@ public class CourseDaoTest {
     @Test
     public void whenReadAllWithMultipleRowsThenAllRight() throws Exception {
         ResultSet resultSet = mock(ResultSet.class);
-        when(connection.prepareStatement(CourseDao.SQL_READ_ALL)).thenReturn(statement);
+        when(connection.prepareStatement(SQL_READ_ALL)).thenReturn(statement);
         when(statement.executeQuery()).thenReturn(resultSet);
 
         adjustResultSet(resultSet, false);
 
         List<Course> entities = dao.readAll();
 
-        verifyQuery(CourseDao.SQL_READ_ALL, resultSet, 2);
+        verifyQuery(SQL_READ_ALL, resultSet, 2);
         verify(resultSet).close();
         verify(statement).close();
 
@@ -160,11 +154,11 @@ public class CourseDaoTest {
 
     @Test
     public void whenUpdateByPkOneRowThenAllRight() throws Exception {
-        when(connection.prepareStatement(CourseDao.SQL_UPDATE)).thenReturn(statement);
+        when(connection.prepareStatement(SQL_UPDATE)).thenReturn(statement);
 
         dao.update(studentId, additionalEntity);
 
-        verify(connection).prepareStatement(CourseDao.SQL_UPDATE);
+        verify(connection).prepareStatement(SQL_UPDATE);
         verify(statement).setString(1, groupName);
         verify(statement).setString(2, code);
         verify(statement).setString(3, courseName);
@@ -178,11 +172,11 @@ public class CourseDaoTest {
 
     @Test
     public void whenDeleteByPkThenAllStepsPerformed() throws Exception {
-        when(connection.prepareStatement(CourseDao.SQL_DELETE_BY_PK)).thenReturn(statement);
+        when(connection.prepareStatement(SQL_DELETE_BY_PK)).thenReturn(statement);
 
         dao.delete(studentId);
 
-        verify(connection).prepareStatement(CourseDao.SQL_DELETE_BY_PK);
+        verify(connection).prepareStatement(SQL_DELETE_BY_PK);
         verify(statement).setInt(1, studentId);
         verify(statement).executeUpdate();
         verify(statement).close();
@@ -191,11 +185,11 @@ public class CourseDaoTest {
 
     @Test
     public void whenDeleteAllThenAllActionsPerformed() throws Exception {
-        when(connection.prepareStatement(CourseDao.SQL_DELETE_ALL)).thenReturn(statement);
+        when(connection.prepareStatement(SQL_DELETE_ALL)).thenReturn(statement);
 
         dao.deleteAll();
 
-        verify(connection).prepareStatement(CourseDao.SQL_DELETE_ALL);
+        verify(connection).prepareStatement(SQL_DELETE_ALL);
         verify(statement).executeUpdate();
         verify(statement).close();
 
@@ -204,14 +198,14 @@ public class CourseDaoTest {
     @Test
     public void whenReadByFkOneRowThenAllActionsPerformed() throws Exception {
         ResultSet resultSet = mock(ResultSet.class);
-        when(connection.prepareStatement(CourseDao.SQL_READ_BY_FK)).thenReturn(statement);
+        when(connection.prepareStatement(SQL_READ_BY_FK)).thenReturn(statement);
         when(statement.executeQuery()).thenReturn(resultSet);
 
         adjustResultSet(resultSet, true);
 
         Course entity = dao.readByForeignKey(studentId).get(0);
 
-        verifyQuery(CourseDao.SQL_READ_BY_FK, resultSet, 1);
+        verifyQuery(SQL_READ_BY_FK, resultSet, 1);
         verify(resultSet).close();
         verify(statement).close();
 
@@ -222,13 +216,13 @@ public class CourseDaoTest {
     @Test(expected = SQLException.class)
     public void whenReadByForeignKeyNonExistingRowThenException() throws Exception {
         ResultSet resultSet = mock(ResultSet.class);
-        when(connection.prepareStatement(CourseDao.SQL_READ_BY_FK)).thenReturn(statement);
+        when(connection.prepareStatement(SQL_READ_BY_FK)).thenReturn(statement);
         when(statement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
 
         List<Course> entities = dao.readByForeignKey(studentId);
 
-        verify(connection).prepareStatement(CourseDao.SQL_READ_BY_FK);
+        verify(connection).prepareStatement(SQL_READ_BY_FK);
         verify(statement).setInt(1, studentId);
         verify(statement).executeQuery();
         verify(resultSet).next();
@@ -247,23 +241,23 @@ public class CourseDaoTest {
                     .thenReturn(true)
                     .thenReturn(false);
 
-            when(resultSet.getInt(sqlStudentId)).thenReturn(studentId);
+            when(resultSet.getInt(TABLE_STUDENT_ID)).thenReturn(studentId);
         } else {    // pk many(at least 2)
             when(resultSet.next())
                     .thenReturn(true)
                     .thenReturn(true)
                     .thenReturn(false);
 
-            when(resultSet.getInt(sqlStudentId))
+            when(resultSet.getInt(TABLE_STUDENT_ID))
                     .thenReturn(studentId)
                     .thenReturn(2); // second id, second entity
         }
 
-        when(resultSet.getString(sqlGroupName)).thenReturn(groupName);
-        when(resultSet.getString(sqlCourseCode)).thenReturn(code);
-        when(resultSet.getString(sqlCourseName)).thenReturn(courseName);
-        when(resultSet.getString(sqlCourseProfile)).thenReturn(profile);
-        when(resultSet.getString(sqlQualificatgion)).thenReturn(qualification);
+        when(resultSet.getString(TABLE_GROUP_NAME)).thenReturn(groupName);
+        when(resultSet.getString(TABLE_COURSE_CODE)).thenReturn(code);
+        when(resultSet.getString(TABLE_COURSE_NAME)).thenReturn(courseName);
+        when(resultSet.getString(TABLE_COURSE_PROFILE)).thenReturn(profile);
+        when(resultSet.getString(TABLE_QUALIFICATION)).thenReturn(qualification);
 
     }
 
@@ -276,12 +270,12 @@ public class CourseDaoTest {
 
         int resultSetNextTimes = times + 1; // because there would be last, that returns false
         verify(resultSet, times(resultSetNextTimes)).next();
-        verify(resultSet, times(times)).getInt(sqlStudentId);
-        verify(resultSet, times(times)).getString(sqlGroupName);
-        verify(resultSet, times(times)).getString(sqlCourseCode);
-        verify(resultSet, times(times)).getString(sqlCourseName);
-        verify(resultSet, times(times)).getString(sqlCourseProfile);
-        verify(resultSet, times(times)).getString(sqlQualificatgion);
+        verify(resultSet, times(times)).getInt(TABLE_STUDENT_ID);
+        verify(resultSet, times(times)).getString(TABLE_GROUP_NAME);
+        verify(resultSet, times(times)).getString(TABLE_COURSE_CODE);
+        verify(resultSet, times(times)).getString(TABLE_COURSE_NAME);
+        verify(resultSet, times(times)).getString(TABLE_COURSE_PROFILE);
+        verify(resultSet, times(times)).getString(TABLE_QUALIFICATION);
 
     }
 

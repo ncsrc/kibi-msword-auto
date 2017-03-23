@@ -10,6 +10,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import static ru.tstu.msword_auto.dao.ConnectionStorage.getConnection;
+
 // TODO change template methods to lambdas(executor class, composite in daos)
 
 abstract class AbstractDao<T, K> implements Dao<T, K> {
@@ -19,7 +21,7 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 	protected K lastInsertId; // this assigned in create() method after successful sql-statement execution
 
 	AbstractDao() {
-		this.connection = ru.tstu.msword_auto.dao.ConnectionStorage.getConnection();
+		this.connection = getConnection();
 	}
 
 
@@ -29,8 +31,11 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 	@Override
 	public void create(T dataset) throws SQLException, DaoException {
 		PreparedStatement statement = this.getCreationStatement(this.connection, dataset);
-		statement.executeUpdate();
-		setLastInsertId(dataset);
+		int created = statement.executeUpdate();
+
+		if(created > 0) {
+			setLastInsertId(dataset);
+		}
 		statement.close();
 	}
 
@@ -46,7 +51,7 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 		statement.close();
 
 		if(results.isEmpty()){
-			throw new SQLException("Such primary key value does not exists in table");
+			throw new SQLException("Such primary key value does not exists in table"); // TODO change to NoSuchEntityException
 		}
 
 		return results.get(0);
@@ -102,6 +107,8 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 
 	@Override
 	public K lastInsertId() throws SQLException {
+		// TODO can return null
+
 		return this.lastInsertId;
 	}
 
@@ -112,7 +119,7 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 		Field[] fields = clazz.getDeclaredFields();
 
 		Field target = null;
-		for(Field field : fields){
+		for(Field field : fields) {
 			Annotation pk = field.getAnnotation(PrimaryKey.class);
 			if(pk != null){
 				target = field;
@@ -121,10 +128,10 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 		}
 
 		K value;
-		try{
+		try {
 			target.setAccessible(true);
 			value = (K) target.get(dataset); // TODO fix unchecked casting
-		}catch(IllegalAccessException e){
+		} catch(IllegalAccessException e) {
 			throw new DaoException("Can't reflectively get lastInsertId value, access denied"); // TODO think of more precise exception
 		}
 

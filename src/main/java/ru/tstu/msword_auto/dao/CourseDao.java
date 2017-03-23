@@ -7,9 +7,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 // TODO remove Connection from arguments, since protected
-// TODO fix sqls according to new table
 
 public class CourseDao extends AbstractDao<Course, Integer> implements ForeignKeyReadableDao<Course, Integer> {
+
+	// sql queries
 	static final String SQL_CREATE = "INSERT INTO COURSES(STUDENT_ID, GROUP_NAME, COURSE_CODE, COURSE_NAME, COURSE_PROFILE, QUALIFICATION) " +
 							   		 "VALUES(?, ?, ?, ?, ?, ?);";
 
@@ -27,6 +28,14 @@ public class CourseDao extends AbstractDao<Course, Integer> implements ForeignKe
 
 	static final String SQL_READ_BY_FK = "SELECT STUDENT_ID, GROUP_NAME, COURSE_CODE, COURSE_NAME, COURSE_PROFILE, QUALIFICATION " +
 										 "FROM COURSES WHERE STUDENT_ID = ?";
+
+	// table column names
+	static final String TABLE_STUDENT_ID = "STUDENT_ID";
+	static final String TABLE_GROUP_NAME = "GROUP_NAME";
+	static final String TABLE_COURSE_CODE = "COURSE_CODE";
+	static final String TABLE_COURSE_NAME = "COURSE_NAME";
+	static final String TABLE_COURSE_PROFILE = "COURSE_PROFILE";
+	static final String TABLE_QUALIFICATION = "QUALIFICATION";
 
 
 	public CourseDao() {
@@ -60,12 +69,12 @@ public class CourseDao extends AbstractDao<Course, Integer> implements ForeignKe
 
 		while(resultSet.next()){
 			courses.add(new Course(
-					resultSet.getInt("STUDENT_ID"),
-					resultSet.getString("GROUP_NAME"),
-					resultSet.getString("COURSE_CODE"),
-					resultSet.getString("QUALIFICATION"),
-					resultSet.getString("COURSE_NAME"),
-					resultSet.getString("COURSE_PROFILE")
+					resultSet.getInt(TABLE_STUDENT_ID),
+					resultSet.getString(TABLE_GROUP_NAME),
+					resultSet.getString(TABLE_COURSE_CODE),
+					resultSet.getString(TABLE_QUALIFICATION),
+					resultSet.getString(TABLE_COURSE_NAME),
+					resultSet.getString(TABLE_COURSE_PROFILE)
 					));
 
 		}
