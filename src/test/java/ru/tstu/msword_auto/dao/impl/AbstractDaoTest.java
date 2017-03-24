@@ -1,4 +1,4 @@
-package ru.tstu.msword_auto.dao;
+package ru.tstu.msword_auto.dao.impl;
 
 
 import org.junit.Before;

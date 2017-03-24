@@ -1,12 +1,14 @@
-package ru.tstu.msword_auto.dao;
+package ru.tstu.msword_auto.dao.impl;
 
+import ru.tstu.msword_auto.dao.ForeignKeyReadableDao;
+import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
+import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
 import ru.tstu.msword_auto.entity.Course;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO remove Connection from arguments, since protected
 
 public class CourseDao extends AbstractDao<Course, Integer> implements ForeignKeyReadableDao<Course, Integer> {
 
@@ -44,7 +46,7 @@ public class CourseDao extends AbstractDao<Course, Integer> implements ForeignKe
 
 
 	@Override
-	protected PreparedStatement getCreationStatement(Connection connection, Course dataset) throws SQLException {
+	protected PreparedStatement getCreationStatement(Course dataset) throws SQLException {
 		PreparedStatement statement = connection.prepareStatement(SQL_CREATE);
 		statement.setInt(1, dataset.getStudentId());
 		statement.setString(2, dataset.getGroupName());
@@ -57,7 +59,7 @@ public class CourseDao extends AbstractDao<Course, Integer> implements ForeignKe
 	}
 
 	@Override
-	protected PreparedStatement getReadingByPkStatement(Connection connection, Integer pk) throws SQLException {
+	protected PreparedStatement getReadingByPkStatement(Integer pk) throws SQLException {
 		PreparedStatement statement = connection.prepareStatement(SQL_READ_BY_PK);
 		statement.setInt(1, pk);
 		return statement;
@@ -83,12 +85,12 @@ public class CourseDao extends AbstractDao<Course, Integer> implements ForeignKe
 	}
 
 	@Override
-	protected PreparedStatement getReadingAllStatement(Connection connection) throws SQLException {
+	protected PreparedStatement getReadingAllStatement() throws SQLException {
 		return connection.prepareStatement(SQL_READ_ALL);
 	}
 
 	@Override
-	protected PreparedStatement getUpdateStatement(Connection connection, Course dataset, Integer pk) throws SQLException {
+	protected PreparedStatement getUpdateStatement(Course dataset, Integer pk) throws SQLException {
 		PreparedStatement statement = connection.prepareStatement(SQL_UPDATE);
 		statement.setString(1, dataset.getGroupName());
 		statement.setString(2, dataset.getCode());
@@ -101,33 +103,38 @@ public class CourseDao extends AbstractDao<Course, Integer> implements ForeignKe
 	}
 
 	@Override
-	protected PreparedStatement getDeleteByPkStatement(Connection connection, Integer pk) throws SQLException {
+	protected PreparedStatement getDeleteByPkStatement(Integer pk) throws SQLException {
 		PreparedStatement statement = connection.prepareStatement(SQL_DELETE_BY_PK);
 		statement.setInt(1, pk);
 		return statement;
 	}
 
 	@Override
-	protected PreparedStatement getDeleteAllStatement(Connection connection) throws SQLException {
+	protected PreparedStatement getDeleteAllStatement() throws SQLException {
 		return connection.prepareStatement(SQL_DELETE_ALL);
 	}
 
 	@Override
-	public List<Course> readByForeignKey(Integer fk) throws SQLException {
-		PreparedStatement statement = this.connection.prepareStatement(SQL_READ_BY_FK);
-		statement.setInt(1, fk);
+	public List<Course> readByForeignKey(Integer fk) throws DaoSystemException, NoSuchEntityException {
+		try {
+			PreparedStatement statement = this.connection.prepareStatement(SQL_READ_BY_FK);
+			statement.setInt(1, fk);
 
-		ResultSet resultSet = statement.executeQuery();
-		List<Course> courses = parseResultSet(resultSet);
+			ResultSet resultSet = statement.executeQuery();
+			List<Course> courses = parseResultSet(resultSet);
 
-		resultSet.close();
-		statement.close();
+			resultSet.close();
+			statement.close();
 
-		if(courses.isEmpty()){
-			throw new SQLException("Such foreign key value does not exists in table");
+			if(courses.isEmpty()){
+				throw new NoSuchEntityException();
+			}
+
+			return courses;
+		} catch (SQLException e) {
+			throw new DaoSystemException(e);
 		}
 
-		return courses;
 	}
 
 

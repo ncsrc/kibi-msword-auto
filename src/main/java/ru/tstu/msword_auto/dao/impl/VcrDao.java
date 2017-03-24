@@ -1,16 +1,17 @@
-package ru.tstu.msword_auto.dao;
+package ru.tstu.msword_auto.dao.impl;
 
 
+import ru.tstu.msword_auto.dao.ForeignKeyReadableDao;
+import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
+import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
 import ru.tstu.msword_auto.entity.VCR;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO remove Connection from arguments, since protected
 
 public class VcrDao extends AbstractDao<VCR, String> implements ForeignKeyReadableDao<VCR, Integer> {
 
@@ -36,24 +37,29 @@ public class VcrDao extends AbstractDao<VCR, String> implements ForeignKeyReadab
 
 
 	@Override
-	public List<VCR> readByForeignKey(Integer fk) throws SQLException {
-		PreparedStatement statement = this.connection.prepareStatement(SQL_READ_BY_FK);
-		statement.setInt(1, fk);
-		ResultSet resultSet = statement.executeQuery();
+	public List<VCR> readByForeignKey(Integer fk) throws DaoSystemException, NoSuchEntityException {
+		try {
+			PreparedStatement statement = this.connection.prepareStatement(SQL_READ_BY_FK);
+			statement.setInt(1, fk);
+			ResultSet resultSet = statement.executeQuery();
 
-		List<VCR> vcrs = parseResultSet(resultSet);
+			List<VCR> vcrs = parseResultSet(resultSet);
 
-		if(vcrs.isEmpty()){
-			throw new SQLException("Such primary key value does not exists in table"); // TODO change to NoSuchEntityException
+			if(vcrs.isEmpty()){
+				throw new NoSuchEntityException();
+			}
+
+			resultSet.close();
+			statement.close();
+			return vcrs;
+		} catch (SQLException e) {
+			throw new DaoSystemException(e);
 		}
 
-		resultSet.close();
-		statement.close();
-		return vcrs;
 	}
 
 	@Override
-	protected PreparedStatement getCreationStatement(Connection connection, VCR dataset) throws SQLException {
+	protected PreparedStatement getCreationStatement(VCR dataset) throws SQLException {
 		PreparedStatement statement = connection.prepareStatement(SQL_CREATE);
 		statement.setInt(1, dataset.getStudentId());
 		statement.setString(2, dataset.getName());
@@ -63,19 +69,19 @@ public class VcrDao extends AbstractDao<VCR, String> implements ForeignKeyReadab
 	}
 
 	@Override
-	protected PreparedStatement getReadingByPkStatement(Connection connection, String pk) throws SQLException {
+	protected PreparedStatement getReadingByPkStatement(String pk) throws SQLException {
 		PreparedStatement statement = connection.prepareStatement(SQL_READ_BY_PK);
 		statement.setString(1, pk);
 		return statement;
 	}
 
 	@Override
-	protected PreparedStatement getReadingAllStatement(Connection connection) throws SQLException {
+	protected PreparedStatement getReadingAllStatement() throws SQLException {
 		return connection.prepareStatement(SQL_READ_ALL);
 	}
 
 	@Override
-	protected PreparedStatement getUpdateStatement(Connection connection, VCR dataset, String pk) throws SQLException {
+	protected PreparedStatement getUpdateStatement(VCR dataset, String pk) throws SQLException {
 		PreparedStatement statement = connection.prepareStatement(SQL_UPDATE);
 		statement.setString(1, dataset.getName());
 		statement.setString(2, dataset.getHeadName());
@@ -85,14 +91,14 @@ public class VcrDao extends AbstractDao<VCR, String> implements ForeignKeyReadab
 	}
 
 	@Override
-	protected PreparedStatement getDeleteByPkStatement(Connection connection, String pk) throws SQLException {
+	protected PreparedStatement getDeleteByPkStatement(String pk) throws SQLException {
 		PreparedStatement statement = connection.prepareStatement(SQL_DELETE_BY_PK);
 		statement.setString(1, pk);
 		return statement;
 	}
 
 	@Override
-	protected PreparedStatement getDeleteAllStatement(Connection connection) throws SQLException {
+	protected PreparedStatement getDeleteAllStatement() throws SQLException {
 		return connection.prepareStatement(SQL_DELETE_ALL);
 	}
 

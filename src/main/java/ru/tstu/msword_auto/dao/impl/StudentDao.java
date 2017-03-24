@@ -1,16 +1,14 @@
-package ru.tstu.msword_auto.dao;
+package ru.tstu.msword_auto.dao.impl;
 
 
 import ru.tstu.msword_auto.entity.Student;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO remove Connection from arguments, since protected
 
 public class StudentDao extends AbstractDao<Student, Integer> {
 
@@ -54,7 +52,7 @@ public class StudentDao extends AbstractDao<Student, Integer> {
 
 
 	@Override
-	protected PreparedStatement getCreationStatement(Connection connection, Student dataset) throws SQLException {
+	protected PreparedStatement getCreationStatement(Student dataset) throws SQLException {
 		PreparedStatement statement = connection.prepareStatement(SQL_CREATE);
 
 		// I case
@@ -77,7 +75,7 @@ public class StudentDao extends AbstractDao<Student, Integer> {
 	}
 
 	@Override
-	protected PreparedStatement getReadingByPkStatement(Connection connection, Integer pk) throws SQLException {
+	protected PreparedStatement getReadingByPkStatement(Integer pk) throws SQLException {
 		PreparedStatement statement = connection.prepareStatement(SQL_READ_BY_PK);
 		statement.setInt(1, pk);
 
@@ -85,12 +83,12 @@ public class StudentDao extends AbstractDao<Student, Integer> {
 	}
 
 	@Override
-	protected PreparedStatement getReadingAllStatement(Connection connection) throws SQLException {
+	protected PreparedStatement getReadingAllStatement() throws SQLException {
 		return connection.prepareStatement(SQL_READ_ALL);
 	}
 
 	@Override
-	protected PreparedStatement getUpdateStatement(Connection connection, Student dataset, Integer pk) throws SQLException {
+	protected PreparedStatement getUpdateStatement(Student dataset, Integer pk) throws SQLException {
 		PreparedStatement statement = connection.prepareStatement(SQL_UPDATE);
 
 		// I case
@@ -114,7 +112,7 @@ public class StudentDao extends AbstractDao<Student, Integer> {
 	}
 
 	@Override
-	protected PreparedStatement getDeleteByPkStatement(Connection connection, Integer pk) throws SQLException {
+	protected PreparedStatement getDeleteByPkStatement(Integer pk) throws SQLException {
 		PreparedStatement statement = connection.prepareStatement(SQL_DELETE_BY_PK);
 		statement.setInt(1, pk);
 
@@ -122,7 +120,7 @@ public class StudentDao extends AbstractDao<Student, Integer> {
 	}
 
 	@Override
-	protected PreparedStatement getDeleteAllStatement(Connection connection) throws SQLException {
+	protected PreparedStatement getDeleteAllStatement() throws SQLException {
 		return connection.prepareStatement(SQL_DELETE_ALL);
 	}
 
@@ -130,8 +128,6 @@ public class StudentDao extends AbstractDao<Student, Integer> {
 	protected List<Student> parseResultSet(ResultSet resultSet) throws SQLException {
 		List<Student> list = new ArrayList<>();
 		while(resultSet.next()) {
-			// TODO to upper case
-
 			int studentId = resultSet.getInt(TABLE_STUDENT_ID);
 
 			String firstNameI = resultSet.getString(TABLE_FIRST_NAME_I);

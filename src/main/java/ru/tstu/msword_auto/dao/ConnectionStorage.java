@@ -8,6 +8,7 @@ import java.sql.Connection;
 public class ConnectionStorage {
     private static Connection connection;
 
+    // TODO Connection instead of ServletContext
 
     public static void setConnection(ServletContext servletContext) {
         connection = (Connection) servletContext.getAttribute("connection");

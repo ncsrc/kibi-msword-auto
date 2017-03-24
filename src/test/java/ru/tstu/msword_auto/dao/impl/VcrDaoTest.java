@@ -1,10 +1,10 @@
-package ru.tstu.msword_auto.dao;
+package ru.tstu.msword_auto.dao.impl;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
-import ru.tstu.msword_auto.entity.Course;
+import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
+import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
 import ru.tstu.msword_auto.entity.VCR;
 
 
@@ -96,25 +96,6 @@ public class VcrDaoTest {
 		assertEquals(defaultEntity, entity);
 	}
 
-	@Test(expected = SQLException.class)
-	public void whenReadByPrimaryKeyNonExistingRowThenException() throws Exception {
-		ResultSet resultSet = mock(ResultSet.class);
-		when(connection.prepareStatement(VcrDao.SQL_READ_BY_PK)).thenReturn(statement);
-		when(statement.executeQuery()).thenReturn(resultSet);
-		when(resultSet.next()).thenReturn(false);
-
-		VCR entity = dao.read(vcrName);
-
-		verify(connection).prepareStatement(VcrDao.SQL_READ_BY_PK);
-		verify(statement).setString(1, vcrName);
-		verify(statement).executeQuery();
-		verify(resultSet).next();
-		verify(resultSet).close();
-		verify(statement).close();
-
-		assertNull(entity);
-	}
-
 	@Test
 	public void whenReadAllWithMultipleRowsThenAllRight() throws Exception {
 		ResultSet resultSet = mock(ResultSet.class);
@@ -195,7 +176,26 @@ public class VcrDaoTest {
 
 	}
 
-	@Test(expected = SQLException.class)
+	@Test(expected = NoSuchEntityException.class)
+	public void whenReadByPrimaryKeyNonExistingRowThenException() throws Exception {
+		ResultSet resultSet = mock(ResultSet.class);
+		when(connection.prepareStatement(VcrDao.SQL_READ_BY_PK)).thenReturn(statement);
+		when(statement.executeQuery()).thenReturn(resultSet);
+		when(resultSet.next()).thenReturn(false);
+
+		VCR entity = dao.read(vcrName);
+
+		verify(connection).prepareStatement(VcrDao.SQL_READ_BY_PK);
+		verify(statement).setString(1, vcrName);
+		verify(statement).executeQuery();
+		verify(resultSet).next();
+		verify(resultSet).close();
+		verify(statement).close();
+
+		assertNull(entity);
+	}
+
+	@Test(expected = NoSuchEntityException.class)
 	public void whenReadByForeignKeyNonExistingRowThenException() throws Exception {
 		ResultSet resultSet = mock(ResultSet.class);
 		when(connection.prepareStatement(VcrDao.SQL_READ_BY_FK)).thenReturn(statement);
@@ -212,6 +212,62 @@ public class VcrDaoTest {
 		verify(statement).close();
 
 		assertTrue(entities.isEmpty());
+	}
+
+	@Test(expected = DaoSystemException.class)
+	public void whenCreateThrowsSqlExceptionThenThrownDaoSystemException() throws Exception {
+		when(connection.prepareStatement(VcrDao.SQL_CREATE)).thenReturn(statement);
+		when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+		dao.create(defaultEntity);
+	}
+
+	@Test(expected = DaoSystemException.class)
+	public void whenReadByPkThrowsSqlExceptionThenThrownDaoSystemException() throws Exception {
+		when(connection.prepareStatement(VcrDao.SQL_READ_BY_PK)).thenReturn(statement);
+		when(statement.executeQuery()).thenThrow(SQLException.class);
+
+		dao.read(vcrName);
+	}
+
+	@Test(expected = DaoSystemException.class)
+	public void whenReadByFkThrowsSqlExceptionThenThrownDaoSystemException() throws Exception {
+		when(connection.prepareStatement(VcrDao.SQL_READ_BY_FK)).thenReturn(statement);
+		when(statement.executeQuery()).thenThrow(SQLException.class);
+
+		dao.readByForeignKey(studentId);
+	}
+
+	@Test(expected = DaoSystemException.class)
+	public void whenReadAllThrowsSqlExceptionThenThrownDaoSystemException() throws Exception {
+		when(connection.prepareStatement(VcrDao.SQL_READ_ALL)).thenReturn(statement);
+		when(statement.executeQuery()).thenThrow(SQLException.class);
+
+		dao.readAll();
+	}
+
+	@Test(expected = DaoSystemException.class)
+	public void whenUpdateThrowsSqlExceptionThenThrownDaoSystemException() throws Exception {
+		when(connection.prepareStatement(VcrDao.SQL_UPDATE)).thenReturn(statement);
+		when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+		dao.update(vcrName, defaultEntity);
+	}
+
+	@Test(expected = DaoSystemException.class)
+	public void whenDeleteByPkThrowsSqlExceptionThenThrownDaoSystemException() throws Exception {
+		when(connection.prepareStatement(VcrDao.SQL_DELETE_BY_PK)).thenReturn(statement);
+		when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+		dao.delete(vcrName);
+	}
+
+	@Test(expected = DaoSystemException.class)
+	public void whenDeleteAllThrowsSqlExceptionThenThrownDaoSystemException() throws Exception {
+		when(connection.prepareStatement(VcrDao.SQL_DELETE_ALL)).thenReturn(statement);
+		when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+		dao.deleteAll();
 	}
 
 

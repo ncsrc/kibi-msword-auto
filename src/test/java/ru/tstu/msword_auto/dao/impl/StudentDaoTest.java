@@ -1,9 +1,11 @@
-package ru.tstu.msword_auto.dao;
+package ru.tstu.msword_auto.dao.impl;
 
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
+import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
 import ru.tstu.msword_auto.entity.Student;
 
 
@@ -120,25 +122,6 @@ public class StudentDaoTest {
 		assertEquals(defaultEntity, entity);
 	}
 
-	@Test(expected = SQLException.class)
-	public void whenReadByPrimaryKeyNonExistingRowThenException() throws Exception {
-		ResultSet resultSet = mock(ResultSet.class);
-		when(connection.prepareStatement(StudentDao.SQL_READ_BY_PK)).thenReturn(statement);
-		when(statement.executeQuery()).thenReturn(resultSet);
-		when(resultSet.next()).thenReturn(false);
-
-		Student entity = dao.read(studentId);
-
-		verify(connection).prepareStatement(StudentDao.SQL_READ_BY_PK);
-		verify(statement).setInt(1, studentId);
-		verify(statement).executeQuery();
-		verify(resultSet).next();
-		verify(resultSet).close();
-		verify(statement).close();
-
-		assertNull(entity);
-	}
-
 	@Test
 	public void whenReadAllWithMultipleRowsThenAllRight() throws Exception {
 		ResultSet resultSet = mock(ResultSet.class);
@@ -204,6 +187,73 @@ public class StudentDaoTest {
 		verify(statement).executeUpdate();
 		verify(statement).close();
 
+	}
+
+	@Test(expected = NoSuchEntityException.class)
+	public void whenReadByPrimaryKeyNonExistingRowThenException() throws Exception {
+		ResultSet resultSet = mock(ResultSet.class);
+		when(connection.prepareStatement(StudentDao.SQL_READ_BY_PK)).thenReturn(statement);
+		when(statement.executeQuery()).thenReturn(resultSet);
+		when(resultSet.next()).thenReturn(false);
+
+		Student entity = dao.read(studentId);
+
+		verify(connection).prepareStatement(StudentDao.SQL_READ_BY_PK);
+		verify(statement).setInt(1, studentId);
+		verify(statement).executeQuery();
+		verify(resultSet).next();
+		verify(resultSet).close();
+		verify(statement).close();
+
+		assertNull(entity);
+	}
+
+	@Test(expected = DaoSystemException.class)
+	public void whenCreateThrowsSqlExceptionThenThrownDaoSystemException() throws Exception {
+		when(connection.prepareStatement(StudentDao.SQL_CREATE)).thenReturn(statement);
+		when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+		dao.create(defaultEntity);
+	}
+
+	@Test(expected = DaoSystemException.class)
+	public void whenReadByPkThrowsSqlExceptionThenThrownDaoSystemException() throws Exception {
+		when(connection.prepareStatement(StudentDao.SQL_READ_BY_PK)).thenReturn(statement);
+		when(statement.executeQuery()).thenThrow(SQLException.class);
+
+		dao.read(studentId);
+	}
+
+	@Test(expected = DaoSystemException.class)
+	public void whenReadAllThrowsSqlExceptionThenThrownDaoSystemException() throws Exception {
+		when(connection.prepareStatement(StudentDao.SQL_READ_ALL)).thenReturn(statement);
+		when(statement.executeQuery()).thenThrow(SQLException.class);
+
+		dao.readAll();
+	}
+
+	@Test(expected = DaoSystemException.class)
+	public void whenUpdateThrowsSqlExceptionThenThrownDaoSystemException() throws Exception {
+		when(connection.prepareStatement(StudentDao.SQL_UPDATE)).thenReturn(statement);
+		when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+		dao.update(studentId, defaultEntity);
+	}
+
+	@Test(expected = DaoSystemException.class)
+	public void whenDeleteByPkThrowsSqlExceptionThenThrownDaoSystemException() throws Exception {
+		when(connection.prepareStatement(StudentDao.SQL_DELETE_BY_PK)).thenReturn(statement);
+		when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+		dao.delete(studentId);
+	}
+
+	@Test(expected = DaoSystemException.class)
+	public void whenDeleteAllThrowsSqlExceptionThenThrownDaoSystemException() throws Exception {
+		when(connection.prepareStatement(StudentDao.SQL_DELETE_ALL)).thenReturn(statement);
+		when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+		dao.deleteAll();
 	}
 
 
