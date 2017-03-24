@@ -43,7 +43,13 @@ public class Student {
 		this.lastNameD = lastNameD;
 		this.middleNameD = middleNameD;
 
-		this.initials = this.lastNameI + " " + this.firstNameI.substring(0, 1).toUpperCase() + ". " + this.middleNameI.substring(0, 1).toUpperCase() + ".";
+		if(firstNameI == null || middleNameI == null) {
+			initials = "";
+		} else {
+			this.initials = this.lastNameI + " " +
+			this.firstNameI.substring(0, 1).toUpperCase() +
+			". " + this.middleNameI.substring(0, 1).toUpperCase() + ".";
+		}
 	}
 
 	public int getStudentId() {
@@ -121,7 +127,7 @@ public class Student {
 		}
 
 		Student other = (Student) obj;
-		if(this.firstNameI.equals(other.firstNameI) && this.lastNameI.equals(other.lastNameI) && this.middleNameI.equals(other.middleNameI)
+		if(this.studentId == other.studentId && this.firstNameI.equals(other.firstNameI) && this.lastNameI.equals(other.lastNameI) && this.middleNameI.equals(other.middleNameI)
 				&& this.firstNameR.equals(other.firstNameR) && this.lastNameR.equals(other.lastNameR) && this.middleNameR.equals(other.middleNameR)
 				&& this.firstNameD.equals(other.firstNameD) && this.lastNameD.equals(other.lastNameD) && this.middleNameD.equals(other.middleNameD)) {
 

@@ -96,6 +96,12 @@ public class Date {
 		String regex = "([0-9][0-9][0-9][0-9])-(0[1-9]|1[0-2])-(([0-2][0-9])|(3[0-1]))";
 		if(Pattern.matches(regex, gosDate) && Pattern.matches(regex, vcrDate)) {
 			return true;
+		} else if(Pattern.matches(regex, gosDate) && "".equals(vcrDate)) {
+			return true;
+		} else if("".equals(gosDate) && Pattern.matches(regex, vcrDate)) {
+			return true;
+		} else if("".equals(gosDate) && "".equals(vcrDate)) {
+			return true;
 		}
 
 		return false;
