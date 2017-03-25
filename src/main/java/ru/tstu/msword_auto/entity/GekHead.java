@@ -5,7 +5,7 @@ package ru.tstu.msword_auto.entity;
 public class GekHead {
 	@PrimaryKey
 	private int gekId;
-	private final String courseName; // foreign key
+	private final String courseName;
 	private String head = "";
 	private String subhead = "";
 	private String secretary = "";
@@ -15,8 +15,7 @@ public class GekHead {
 		this.courseName = courseName;
 	}
 
-	public GekHead(int gekId, String courseName, String head, String subhead, String secretary) {
-		this.gekId = gekId;
+	public GekHead(String courseName, String head, String subhead, String secretary) {
 		this.courseName = courseName;
 		this.head = head;
 		this.subhead = subhead;

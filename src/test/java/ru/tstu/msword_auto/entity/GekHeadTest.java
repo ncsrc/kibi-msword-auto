@@ -22,12 +22,14 @@ public class GekHeadTest {
 		head = "asd";
 		subhead = "asfd";
 		secretary = "zxc";
-		defaultEntity = new GekHead(gekId, courseName, head, subhead, secretary);
+		defaultEntity = new GekHead(courseName, head, subhead, secretary);
+		defaultEntity.setGekId(gekId);
 	}
 
 	@Test
 	public void whenSameDataWithFullConstructorThenEqualsTrue() throws Exception {
-		GekHead other = new GekHead(gekId, courseName, head, subhead, secretary);
+		GekHead other = new GekHead(courseName, head, subhead, secretary);
+		other.setGekId(gekId);
 
 		assertEquals(defaultEntity, other);
 		assertTrue(defaultEntity.equals(other));
@@ -35,7 +37,8 @@ public class GekHeadTest {
 
 	@Test
 	public void whenDifferentDataThenEqualsFalse() {
-		GekHead other = new GekHead(gekId, "cvb", head, "cv", secretary);
+		GekHead other = new GekHead("cvb", head, "cv", secretary);
+		other.setGekId(gekId);
 
 		assertNotEquals(defaultEntity, other);
 		assertFalse(defaultEntity.equals(other));
