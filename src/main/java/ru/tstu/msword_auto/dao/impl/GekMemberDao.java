@@ -1,111 +1,137 @@
-//package ru.tstu.msword_auto.dao;
-//
-//
-//import ru.tstu.msword_auto.entity.GekMember;
-//
-//import java.sql.Connection;
-//import java.sql.PreparedStatement;
-//import java.sql.ResultSet;
-//import java.sql.SQLException;
-//import java.util.ArrayList;
-//import java.util.List;
-//
-//// TODO remove Connection from arguments, since protected
-//
-//public class GekMemberDao extends AbstractDao<GekMember, String> implements ForeignKeyReadableDao<GekMember, String> {
-//
-//	public GekMemberDao() {
-//		super();
-//	}
-//
-//	@Override
-//	public List<GekMember> readByForeignKey(String fk) throws SQLException {
-//		PreparedStatement statement = this.connection.prepareStatement("SELECT gek_head, gek_member FROM Gek_Members WHERE gek_head = ?");
-//		statement.setString(1, fk);
-//		ResultSet resultSet = statement.executeQuery();
-//
-//		List<GekMember> gekMembers = new ArrayList<>();
-//		while(resultSet.next()){
-//			gekMembers.add(new GekMember(resultSet.getString("gek_head"), resultSet.getString("gek_member")));
-//		}
-//
-//		resultSet.close();
-//		statement.close();
-//
-//		return gekMembers;
-//	}
-//
-//	@Override
-//	protected PreparedStatement getCreationStatement(Connection connection, GekMember dataset) throws SQLException {
-//		PreparedStatement statement = connection.prepareStatement("INSERT INTO Gek_Members VALUES(?, ?)");
-//		statement.setString(1, dataset.getGekHeadId());
-//		statement.setString(2, dataset.getMember());
-//		return statement;
-//	}
-//
-//	@Override
-//	protected PreparedStatement getReadingByPkStatement(Connection connection, String pk) throws SQLException {
-//		PreparedStatement statement = connection.prepareStatement("SELECT gek_head, gek_member FROM Gek_Members WHERE gek_member = ?");
-//		statement.setString(1, pk);
-//
-//		return statement;
-//	}
-//
-//	@Override
-//	protected PreparedStatement getReadingAllStatement(Connection connection) throws SQLException {
-//		return connection.prepareStatement("SELECT gek_head, gek_member FROM Gek_Members");
-//	}
-//
-//	@Override
-//	protected PreparedStatement getUpdateStatement(Connection connection, GekMember dataset, String pk) throws SQLException {
-//		PreparedStatement statement = connection.prepareStatement("UPDATE Gek_Members SET gek_member = ? WHERE gek_member = ?");
-//		statement.setString(1, dataset.getMember());
-//		statement.setString(2, pk);
-//
-//		return statement;
-//	}
-//
-//	@Override
-//	protected PreparedStatement getDeleteByPkStatement(Connection connection, String pk) throws SQLException {
-//		PreparedStatement statement = connection.prepareStatement("DELETE FROM Gek_Members WHERE gek_member = ?");
-//		statement.setString(1, pk);
-//
-//		return statement;
-//	}
-//
-//	@Override
-//	protected PreparedStatement getDeleteAllStatement(Connection connection) throws SQLException {
-//		return connection.prepareStatement("DELETE FROM Gek_Members");
-//	}
-//
-//	@Override
-//	protected List<GekMember> parseResultSet(ResultSet resultSet) throws SQLException {
-//		List<GekMember> list = new ArrayList<>();
-//		while(resultSet.next()) {
-//			list.add(new GekMember(resultSet.getString("gek_head"), resultSet.getString("gek_member")));
-//		}
-//
-//		return list;
-//	}
-//
-//}
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
+package ru.tstu.msword_auto.dao.impl;
+
+
+import ru.tstu.msword_auto.dao.ForeignKeyReadableDao;
+import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
+import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
+import ru.tstu.msword_auto.entity.GekMember;
+
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class GekMemberDao extends AbstractDao<GekMember, Integer> implements ForeignKeyReadableDao<GekMember, Integer> {
+
+    // sql queries
+    static final String SQL_CREATE = "INSERT INTO GEK_MEMBERS(HEAD_ID, GEK_MEMBER) VALUES(?, ?)";
+    static final String SQL_READ_BY_PK = "SELECT MEMBER_ID, HEAD_ID, GEK_MEMBER FROM GEK_MEMBERS WHERE MEMBER_ID=?";
+    static final String SQL_READ_ALL = "SELECT MEMBER_ID, HEAD_ID, GEK_MEMBER FROM GEK_MEMBERS";
+    static final String SQL_UPDATE = "UPDATE GEK_MEMBERS SET HEAD_ID=?, GEK_MEMBER=? WHERE MEMBER_ID=?";
+    static final String SQL_DELETE_BY_PK = "DELETE FROM GEK_MEMBERS WHERE MEMBER_ID=?";
+    static final String SQL_DELETE_ALL = "DELETE FROM GEK_MEMBERS";
+    static final String SQL_READ_BY_FK = "SELECT MEMBER_ID, HEAD_ID, GEK_MEMBER FROM GEK_MEMBERS WHERE HEAD_ID=?";
+
+    // table column names
+    static final String TABLE_MEMBER_ID = "MEMBER_ID";
+    static final String TABLE_HEAD_ID = "HEAD_ID";
+    static final String TABLE_GEK_MEMBER = "GEK_MEMBER";
+
+
+    public GekMemberDao() {
+		super();
+	}
+
+	@Override
+	public List<GekMember> readByForeignKey(Integer fk) throws DaoSystemException, NoSuchEntityException {
+    	try {
+			PreparedStatement statement = this.connection.prepareStatement(SQL_READ_BY_FK);
+			statement.setInt(1, fk);
+			ResultSet resultSet = statement.executeQuery();
+
+			List<GekMember> gekMembers = parseResultSet(resultSet);
+			if(gekMembers.isEmpty()) {
+				throw new NoSuchEntityException();
+			}
+
+			resultSet.close();
+			statement.close();
+
+			return gekMembers;
+		} catch (SQLException e) {
+    		throw new DaoSystemException(e);
+		}
+
+	}
+
+	@Override
+	protected PreparedStatement getCreationStatement(GekMember dataset) throws SQLException {
+		PreparedStatement statement = connection.prepareStatement(SQL_CREATE);
+		statement.setInt(1, dataset.getGekHeadId());
+		statement.setString(2, dataset.getMember());
+		return statement;
+	}
+
+	@Override
+	protected PreparedStatement getReadingByPkStatement(Integer pk) throws SQLException {
+		PreparedStatement statement = connection.prepareStatement(SQL_READ_BY_PK);
+		statement.setInt(1, pk);
+
+		return statement;
+	}
+
+	@Override
+	protected PreparedStatement getReadingAllStatement() throws SQLException {
+		return connection.prepareStatement(SQL_READ_ALL);
+	}
+
+	@Override
+	protected PreparedStatement getUpdateStatement(GekMember dataset, Integer pk) throws SQLException {
+		PreparedStatement statement = connection.prepareStatement(SQL_UPDATE);
+		statement.setInt(1, dataset.getGekHeadId());
+		statement.setString(2, dataset.getMember());
+		statement.setInt(3, pk);
+
+		return statement;
+	}
+
+	@Override
+	protected PreparedStatement getDeleteByPkStatement(Integer pk) throws SQLException {
+		PreparedStatement statement = connection.prepareStatement(SQL_DELETE_BY_PK);
+		statement.setInt(1, pk);
+
+		return statement;
+	}
+
+	@Override
+	protected PreparedStatement getDeleteAllStatement() throws SQLException {
+		return connection.prepareStatement(SQL_DELETE_ALL);
+	}
+
+	@Override
+	protected List<GekMember> parseResultSet(ResultSet resultSet) throws SQLException {
+		List<GekMember> list = new ArrayList<>();
+		while(resultSet.next()) {
+			list.add(new GekMember(
+					resultSet.getInt(TABLE_MEMBER_ID),
+					resultSet.getInt(TABLE_HEAD_ID),
+					resultSet.getString(TABLE_GEK_MEMBER))
+			);
+		}
+
+		return list;
+	}
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
