@@ -270,6 +270,100 @@ public class VcrDaoTest {
 		dao.deleteAll();
 	}
 
+	@Test
+	public void whenReadByPkStatementFailsThenAllResourcesClosed() throws Exception {
+		ResultSet resultSet = mock(ResultSet.class);
+		when(connection.prepareStatement(VcrDao.SQL_READ_BY_PK)).thenReturn(statement);
+		when(statement.executeQuery()).thenReturn(resultSet);
+		when(resultSet.next()).thenThrow(SQLException.class);
+
+		try {
+			dao.read(vcrName);
+		} catch (DaoSystemException e) {}
+
+		verify(resultSet).close();
+		verify(statement).close();
+	}
+
+	@Test
+	public void whenReadAllFailsThenAllResourcesClosed() throws Exception {
+		ResultSet resultSet = mock(ResultSet.class);
+		when(connection.prepareStatement(VcrDao.SQL_READ_ALL)).thenReturn(statement);
+		when(statement.executeQuery()).thenReturn(resultSet);
+		when(resultSet.next()).thenThrow(SQLException.class);
+
+		try {
+			dao.readAll();
+		} catch (DaoSystemException e) {}
+
+		verify(resultSet).close();
+		verify(statement).close();
+	}
+
+	@Test
+	public void whenReadByFkStatementFailsThenAllResourcesClosed() throws Exception {
+		ResultSet resultSet = mock(ResultSet.class);
+		when(connection.prepareStatement(VcrDao.SQL_READ_BY_FK)).thenReturn(statement);
+		when(statement.executeQuery()).thenReturn(resultSet);
+		when(resultSet.next()).thenThrow(SQLException.class);
+
+		try {
+			dao.readByForeignKey(studentId);
+		} catch (DaoSystemException e) {}
+
+		verify(resultSet).close();
+		verify(statement).close();
+	}
+
+	@Test
+	public void whenCreateStatementFailsThenAllResourcesClosed() throws Exception {
+		when(connection.prepareStatement(VcrDao.SQL_CREATE)).thenReturn(statement);
+		when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+		try {
+			dao.create(defaultEntity);
+		} catch (DaoSystemException e) {}
+
+		verify(statement).close();
+	}
+
+	@Test
+	public void whenUpdateStatementFailsThenAllResourcesClosed() throws Exception {
+		when(connection.prepareStatement(VcrDao.SQL_UPDATE)).thenReturn(statement);
+		when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+		try {
+			dao.update(vcrName, defaultEntity);
+		} catch (DaoSystemException e) {}
+
+		verify(statement).close();
+	}
+
+	@Test
+	public void whenDeleteByPkStatementFailsThenAllResourcesClosed() throws Exception {
+		when(connection.prepareStatement(VcrDao.SQL_DELETE_BY_PK)).thenReturn(statement);
+		when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+		try {
+			dao.delete(vcrName);
+		} catch (DaoSystemException e) {}
+
+		verify(statement).close();
+	}
+
+	@Test
+	public void whenDeleteAllFailsThenAllResourcesClosed() throws Exception {
+		when(connection.prepareStatement(VcrDao.SQL_DELETE_ALL)).thenReturn(statement);
+		when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+		try {
+			dao.deleteAll();
+		} catch (DaoSystemException e) {}
+
+		verify(statement).close();
+	}
+
+
 
 	private void adjustResultSet(ResultSet resultSet, boolean oneTime) throws Exception {
 

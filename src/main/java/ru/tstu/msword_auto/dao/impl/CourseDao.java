@@ -5,7 +5,9 @@ import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
 import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
 import ru.tstu.msword_auto.entity.Course;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -73,7 +75,6 @@ public class CourseDao extends AbstractDao<Course, Integer> implements ForeignKe
 			courses.add(new Course(
 					resultSet.getInt(TABLE_STUDENT_ID),
 					resultSet.getString(TABLE_GROUP_NAME),
-					resultSet.getString(TABLE_COURSE_CODE),
 					resultSet.getString(TABLE_QUALIFICATION),
 					resultSet.getString(TABLE_COURSE_NAME),
 					resultSet.getString(TABLE_COURSE_PROFILE)
@@ -116,21 +117,19 @@ public class CourseDao extends AbstractDao<Course, Integer> implements ForeignKe
 
 	@Override
 	public List<Course> readByForeignKey(Integer fk) throws DaoSystemException, NoSuchEntityException {
-		try {
-			PreparedStatement statement = this.connection.prepareStatement(SQL_READ_BY_FK);
+		try(PreparedStatement statement = this.connection.prepareStatement(SQL_READ_BY_FK)) {
 			statement.setInt(1, fk);
 
-			ResultSet resultSet = statement.executeQuery();
-			List<Course> courses = parseResultSet(resultSet);
+			try(ResultSet resultSet = statement.executeQuery()) {
+				List<Course> courses = parseResultSet(resultSet);
 
-			resultSet.close();
-			statement.close();
+				if(courses.isEmpty()){
+					throw new NoSuchEntityException();
+				}
 
-			if(courses.isEmpty()){
-				throw new NoSuchEntityException();
+				return courses;
 			}
 
-			return courses;
 		} catch (SQLException e) {
 			throw new DaoSystemException(e);
 		}

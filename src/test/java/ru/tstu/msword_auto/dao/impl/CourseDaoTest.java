@@ -49,15 +49,14 @@ public class CourseDaoTest {
 
         studentId = 1;
         groupName = "group";
-        code = "1.1.1";
-        courseName = "course";
-        profile = "profile";
-        qualification = "q";
+        code = "38.03.06";
+        courseName = "Торговое дело";
+        profile = "qqwe";
+        qualification = "Бакалавр";
 
         defaultEntity = new Course(
                 studentId,
                 groupName,
-                code,
                 qualification,
                 courseName,
                 profile
@@ -65,7 +64,6 @@ public class CourseDaoTest {
         additionalEntity = new Course(
                 2,
                 groupName,
-                code,
                 qualification,
                 courseName,
                 profile
@@ -290,6 +288,99 @@ public class CourseDaoTest {
         dao.deleteAll();
     }
 
+    @Test
+    public void whenReadByPkStatementFailsThenAllResourcesClosed() throws Exception {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(connection.prepareStatement(CourseDao.SQL_READ_BY_PK)).thenReturn(statement);
+        when(statement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenThrow(SQLException.class);
+
+        try {
+            dao.read(studentId);
+        } catch (DaoSystemException e) {}
+
+        verify(resultSet).close();
+        verify(statement).close();
+    }
+
+    @Test
+    public void whenReadAllFailsThenAllResourcesClosed() throws Exception {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(connection.prepareStatement(CourseDao.SQL_READ_ALL)).thenReturn(statement);
+        when(statement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenThrow(SQLException.class);
+
+        try {
+            dao.readAll();
+        } catch (DaoSystemException e) {}
+
+        verify(resultSet).close();
+        verify(statement).close();
+    }
+
+    @Test
+    public void whenReadByFkStatementFailsThenAllResourcesClosed() throws Exception {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(connection.prepareStatement(CourseDao.SQL_READ_BY_FK)).thenReturn(statement);
+        when(statement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenThrow(SQLException.class);
+
+        try {
+            dao.readByForeignKey(studentId);
+        } catch (DaoSystemException e) {}
+
+        verify(resultSet).close();
+        verify(statement).close();
+    }
+
+    @Test
+    public void whenCreateStatementFailsThenAllResourcesClosed() throws Exception {
+        when(connection.prepareStatement(CourseDao.SQL_CREATE)).thenReturn(statement);
+        when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+        try {
+            dao.create(defaultEntity);
+        } catch (DaoSystemException e) {}
+
+        verify(statement).close();
+    }
+
+    @Test
+    public void whenUpdateStatementFailsThenAllResourcesClosed() throws Exception {
+        when(connection.prepareStatement(CourseDao.SQL_UPDATE)).thenReturn(statement);
+        when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+        try {
+            dao.update(studentId, defaultEntity);
+        } catch (DaoSystemException e) {}
+
+        verify(statement).close();
+    }
+
+    @Test
+    public void whenDeleteByPkStatementFailsThenAllResourcesClosed() throws Exception {
+        when(connection.prepareStatement(CourseDao.SQL_DELETE_BY_PK)).thenReturn(statement);
+        when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+        try {
+            dao.delete(studentId);
+        } catch (DaoSystemException e) {}
+
+        verify(statement).close();
+    }
+
+    @Test
+    public void whenDeleteAllFailsThenAllResourcesClosed() throws Exception {
+        when(connection.prepareStatement(CourseDao.SQL_DELETE_ALL)).thenReturn(statement);
+        when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+        try {
+            dao.deleteAll();
+        } catch (DaoSystemException e) {}
+
+        verify(statement).close();
+    }
+
 
     private void adjustResultSet(ResultSet resultSet, boolean oneTime) throws Exception {
 
@@ -330,7 +421,6 @@ public class CourseDaoTest {
         verify(resultSet, times(resultSetNextTimes)).next();
         verify(resultSet, times(times)).getInt(TABLE_STUDENT_ID);
         verify(resultSet, times(times)).getString(TABLE_GROUP_NAME);
-        verify(resultSet, times(times)).getString(TABLE_COURSE_CODE);
         verify(resultSet, times(times)).getString(TABLE_COURSE_NAME);
         verify(resultSet, times(times)).getString(TABLE_COURSE_PROFILE);
         verify(resultSet, times(times)).getString(TABLE_QUALIFICATION);

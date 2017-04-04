@@ -36,20 +36,19 @@ public class GekMemberDao extends AbstractDao<GekMember, Integer> implements For
 
 	@Override
 	public List<GekMember> readByForeignKey(Integer fk) throws DaoSystemException, NoSuchEntityException {
-    	try {
-			PreparedStatement statement = this.connection.prepareStatement(SQL_READ_BY_FK);
+    	try(PreparedStatement statement = this.connection.prepareStatement(SQL_READ_BY_FK)) {
 			statement.setInt(1, fk);
-			ResultSet resultSet = statement.executeQuery();
 
-			List<GekMember> gekMembers = parseResultSet(resultSet);
-			if(gekMembers.isEmpty()) {
-				throw new NoSuchEntityException();
+			try(ResultSet resultSet = statement.executeQuery()) {
+				List<GekMember> gekMembers = parseResultSet(resultSet);
+
+				if(gekMembers.isEmpty()) {
+					throw new NoSuchEntityException();
+				}
+
+				return gekMembers;
 			}
 
-			resultSet.close();
-			statement.close();
-
-			return gekMembers;
 		} catch (SQLException e) {
     		throw new DaoSystemException(e);
 		}

@@ -38,20 +38,19 @@ public class VcrDao extends AbstractDao<VCR, String> implements ForeignKeyReadab
 
 	@Override
 	public List<VCR> readByForeignKey(Integer fk) throws DaoSystemException, NoSuchEntityException {
-		try {
-			PreparedStatement statement = this.connection.prepareStatement(SQL_READ_BY_FK);
+		try(PreparedStatement statement = this.connection.prepareStatement(SQL_READ_BY_FK)) {
 			statement.setInt(1, fk);
-			ResultSet resultSet = statement.executeQuery();
 
-			List<VCR> vcrs = parseResultSet(resultSet);
+			try(ResultSet resultSet = statement.executeQuery()) {
+				List<VCR> vcrs = parseResultSet(resultSet);
 
-			if(vcrs.isEmpty()){
-				throw new NoSuchEntityException();
+				if(vcrs.isEmpty()){
+					throw new NoSuchEntityException();
+				}
+
+				return vcrs;
 			}
 
-			resultSet.close();
-			statement.close();
-			return vcrs;
 		} catch (SQLException e) {
 			throw new DaoSystemException(e);
 		}

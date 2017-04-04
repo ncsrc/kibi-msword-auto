@@ -15,13 +15,12 @@ import java.util.List;
 
 import static ru.tstu.msword_auto.dao.ConnectionStorage.getConnection;
 
-// TODO change template methods to lambdas(executor class, composite in daos)
 
 abstract class AbstractDao<T, K> implements Dao<T, K> {
 	// protected in case you need direct access for connections
 	// for implementation of custom functionality not defined in Dao
 	protected Connection connection;
-	protected K lastInsertId; // this assigned in create() method after successful sql-statement execution
+
 
 	AbstractDao() {
 		this.connection = getConnection();
@@ -30,14 +29,8 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 
 	@Override
 	public void create(T dataset) throws DaoSystemException {
-		try {
-			PreparedStatement statement = this.getCreationStatement(dataset);
-			int created = statement.executeUpdate();
-
-			if(created > 0) {
-				setLastInsertId(dataset);
-			}
-			statement.close();
+		try(PreparedStatement statement = this.getCreationStatement(dataset)) {
+			statement.executeUpdate();
 		} catch (SQLException e) {
 			throw new DaoSystemException(e);
 		}
@@ -48,18 +41,17 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 
 	@Override
 	public T read(K pk) throws DaoSystemException, NoSuchEntityException {
-		try {
-			PreparedStatement statement = this.getReadingByPkStatement(pk);
-			ResultSet resultSet = statement.executeQuery();
-			List<T> results = this.parseResultSet(resultSet);
-			resultSet.close();
-			statement.close();
+		try(PreparedStatement statement = this.getReadingByPkStatement(pk)) {
 
-			if(results.isEmpty()){
-				throw new NoSuchEntityException();
+			try(ResultSet resultSet = statement.executeQuery()) {
+				List<T> results = this.parseResultSet(resultSet);
+				if(results.isEmpty()){
+					throw new NoSuchEntityException();
+				}
+
+				return results.get(0);
 			}
 
-			return results.get(0);
 		} catch (SQLException e) {
 			throw new DaoSystemException(e);
 		}
@@ -73,13 +65,12 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 
 	@Override
 	public List<T> readAll() throws DaoSystemException {
-		try {
-			PreparedStatement statement = this.getReadingAllStatement();
-			ResultSet resultSet = statement.executeQuery();
-			List<T> results = this.parseResultSet(resultSet);
-			resultSet.close();
-			statement.close();
-			return results;
+		try(PreparedStatement statement = this.getReadingAllStatement()) {
+
+			try(ResultSet resultSet = statement.executeQuery()) {
+				return this.parseResultSet(resultSet);
+			}
+
 		} catch (SQLException e) {
 			throw new DaoSystemException(e);
 		}
@@ -91,10 +82,8 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 
 	@Override
 	public void update(K pk, T dataset) throws DaoSystemException {
-		try {
-			PreparedStatement statement = this.getUpdateStatement(dataset, pk);
+		try(PreparedStatement statement = this.getUpdateStatement(dataset, pk)) {
 			statement.executeUpdate();
-			statement.close();
 		} catch (SQLException e) {
 			throw new DaoSystemException(e);
 		}
@@ -106,10 +95,8 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 
 	@Override
 	public void delete(K pk) throws DaoSystemException {
-		try {
-			PreparedStatement statement = this.getDeleteByPkStatement(pk);
+		try(PreparedStatement statement = this.getDeleteByPkStatement(pk)) {
 			statement.executeUpdate();
-			statement.close();
 		} catch (SQLException e) {
 			throw new DaoSystemException(e);
 		}
@@ -121,10 +108,8 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 
 	@Override
 	public void deleteAll() throws DaoSystemException {
-		try {
-			PreparedStatement statement = this.getDeleteAllStatement();
+		try(PreparedStatement statement = this.getDeleteAllStatement()) {
 			statement.executeUpdate();
-			statement.close();
 		} catch (SQLException e) {
 			throw new DaoSystemException(e);
 		}
@@ -132,41 +117,6 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 	}
 
 	protected abstract PreparedStatement getDeleteAllStatement() throws SQLException;
-
-
-	@Override
-	public K lastInsertId() {
-		// TODO can return null
-
-		return this.lastInsertId;
-	}
-
-
-	// TODO remove !!!
-	// TODO refactor method, fix unchecked casting and null returning
-	private void setLastInsertId(T dataset) throws DaoSystemException {
-		Class clazz = dataset.getClass();
-		Field[] fields = clazz.getDeclaredFields();
-
-		Field target = null;
-		for(Field field : fields) {
-			Annotation pk = field.getAnnotation(PrimaryKey.class);
-			if(pk != null){
-				target = field;
-				break;
-			}
-		}
-
-		K value;
-		try {
-			target.setAccessible(true);
-			value = (K) target.get(dataset); // TODO fix unchecked casting
-		} catch(IllegalAccessException e) {
-			throw new DaoSystemException("Can't reflectively get lastInsertId value, access denied"); // TODO think of more precise exception
-		}
-
-		this.lastInsertId = value;
-	}
 
 
 }

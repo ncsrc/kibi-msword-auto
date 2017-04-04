@@ -4,7 +4,6 @@ package ru.tstu.msword_auto.dao;
 import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
 import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
 
-import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -25,9 +24,6 @@ public interface Dao<T, K> {
 	void delete(K pk) throws DaoSystemException;
 
 	void deleteAll() throws DaoSystemException;
-
-	// TODO remove !!
-	K lastInsertId();	// works only after creation of new row by dao, otherwise returns null
 
 }
 

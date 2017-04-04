@@ -266,6 +266,99 @@ public class GekMemberDaoTest {
         dao.deleteAll();
     }
 
+    @Test
+    public void whenReadByPkStatementFailsThenAllResourcesClosed() throws Exception {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(connection.prepareStatement(GekMemberDao.SQL_READ_BY_PK)).thenReturn(statement);
+        when(statement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenThrow(SQLException.class);
+
+        try {
+            dao.read(memberId);
+        } catch (DaoSystemException e) {}
+
+        verify(resultSet).close();
+        verify(statement).close();
+    }
+
+    @Test
+    public void whenReadAllFailsThenAllResourcesClosed() throws Exception {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(connection.prepareStatement(GekMemberDao.SQL_READ_ALL)).thenReturn(statement);
+        when(statement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenThrow(SQLException.class);
+
+        try {
+            dao.readAll();
+        } catch (DaoSystemException e) {}
+
+        verify(resultSet).close();
+        verify(statement).close();
+    }
+
+    @Test
+    public void whenReadByFkStatementFailsThenAllResourcesClosed() throws Exception {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(connection.prepareStatement(GekMemberDao.SQL_READ_BY_FK)).thenReturn(statement);
+        when(statement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenThrow(SQLException.class);
+
+        try {
+            dao.readByForeignKey(memberId);
+        } catch (DaoSystemException e) {}
+
+        verify(resultSet).close();
+        verify(statement).close();
+    }
+
+    @Test
+    public void whenCreateStatementFailsThenAllResourcesClosed() throws Exception {
+        when(connection.prepareStatement(GekMemberDao.SQL_CREATE)).thenReturn(statement);
+        when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+        try {
+            dao.create(defaultEntity);
+        } catch (DaoSystemException e) {}
+
+        verify(statement).close();
+    }
+
+    @Test
+    public void whenUpdateStatementFailsThenAllResourcesClosed() throws Exception {
+        when(connection.prepareStatement(GekMemberDao.SQL_UPDATE)).thenReturn(statement);
+        when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+        try {
+            dao.update(memberId, defaultEntity);
+        } catch (DaoSystemException e) {}
+
+        verify(statement).close();
+    }
+
+    @Test
+    public void whenDeleteByPkStatementFailsThenAllResourcesClosed() throws Exception {
+        when(connection.prepareStatement(GekMemberDao.SQL_DELETE_BY_PK)).thenReturn(statement);
+        when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+        try {
+            dao.delete(memberId);
+        } catch (DaoSystemException e) {}
+
+        verify(statement).close();
+    }
+
+    @Test
+    public void whenDeleteAllFailsThenAllResourcesClosed() throws Exception {
+        when(connection.prepareStatement(GekMemberDao.SQL_DELETE_ALL)).thenReturn(statement);
+        when(statement.executeUpdate()).thenThrow(SQLException.class);
+
+        try {
+            dao.deleteAll();
+        } catch (DaoSystemException e) {}
+
+        verify(statement).close();
+    }
+
 
     private void adjustResultSet(ResultSet resultSet, boolean oneTime) throws Exception {
 
