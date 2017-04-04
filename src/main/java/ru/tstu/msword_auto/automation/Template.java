@@ -1,13 +1,14 @@
 package ru.tstu.msword_auto.automation;
 
 
-import ru.tstu.msword_auto.automation.constants.SaveFormat;
-import ru.tstu.msword_auto.automation.entity_aggregation.TemplateData;
+import ru.tstu.msword_auto.automation.entity_aggregators.DateParser;
+import ru.tstu.msword_auto.automation.options.SaveFormat;
+import ru.tstu.msword_auto.automation.entity_aggregators.TemplateData;
 import ru.tstu.msword_auto.entity.*;
 
 import java.util.List;
 
-// todo javadoc
+
 public abstract class Template implements AutoCloseable {
     protected Document doc;
 	protected String filename;
@@ -22,13 +23,13 @@ public abstract class Template implements AutoCloseable {
 	// -- Factory methods, returning concrete templates --
 
 	// type param resolved in webapp
-	public static Template newTemplate(String type, TemplateData data) {
+	public static Template newTemplate(String type, TemplateData data) throws IllegalTypeException {
     	if ("gos".equals(type)) {
     		return new GosTemplate(data);
 		} else if ("vcr".equals(type)) {
     		return new VcrTemplate(data);
 		} else {
-    		throw new TemplateRuntimeException(type + " - invalid type of template");
+    		throw new IllegalTypeException(type + " - invalid type of template");
 		}
 	}
 
@@ -49,8 +50,8 @@ public abstract class Template implements AutoCloseable {
 
 	protected abstract void fillDate();
 
-	// todo add throws TemplateException later, and checks; or remove if not needed
-	public abstract void fulfillTemplate() throws TemplateException;
+
+	public abstract void fulfillTemplate();
 
 	// e.g. initials - Протокол ГЭК по защите ВКР.docx
 	public String getFilename() {
@@ -124,7 +125,7 @@ public abstract class Template implements AutoCloseable {
 		}
 
 		@Override
-		public void fulfillTemplate() throws TemplateException {
+		public void fulfillTemplate() {
 			this.fillCommonData();
 			this.fillDate();
 			this.save();
@@ -132,10 +133,10 @@ public abstract class Template implements AutoCloseable {
 
 		@Override
 		protected void fillDate() {
-			ru.tstu.msword_auto.automation.entity_aggregation.Date date = data.getDate();
-			String day = date.getGosDay();
-			String month = date.getGosMonth();
-			String year = date.getGosYear();
+			DateParser dateParser = data.getDate();
+			String day = dateParser.getGosDay();
+			String month = dateParser.getGosMonth();
+			String year = dateParser.getGosYear();
 			doc.replace(TemplateRecord.DATE_DAY, day);
 			doc.replace(TemplateRecord.DATE_MONTH, month);
 			doc.replace(TemplateRecord.DATE_YEAR, year);
@@ -161,11 +162,29 @@ public abstract class Template implements AutoCloseable {
 		}
 
 		@Override
-		public void fulfillTemplate() throws TemplateException {
+		public void fulfillTemplate() {
 			this.fillCommonData();
 			this.fillDate();
+			this.fillStudentSpecificData();
+			this.fillVcrData();
 
-			// student/course vcr-specific data
+			this.save();
+		}
+
+		@Override
+		protected void fillDate() {
+			DateParser dateParser = data.getDate();
+			String day = dateParser.getVcrDay();
+			String month = dateParser.getVcrMonth();
+			String year = dateParser.getVcrYear();
+			doc.replace(TemplateRecord.DATE_DAY, day);
+			doc.replace(TemplateRecord.DATE_MONTH, month);
+			doc.replace(TemplateRecord.DATE_YEAR, year);
+		}
+
+
+		// student/course vcr-specific data
+		private void fillStudentSpecificData() {
 			Student student = this.data.getStudent();
 			String fullNameT = student.getFullNameD();
 			String initials = student.getInitials();
@@ -174,8 +193,9 @@ public abstract class Template implements AutoCloseable {
 			this.doc.replace(TemplateRecord.STUDENT_NAME_T, fullNameT);
 			this.doc.replace(TemplateRecord.STUDENT_INITIALS, initials);
 			this.doc.replace(TemplateRecord.STUDENT_COURSE_QUALIFICATION, qualification);
+		}
 
-			// vcr data
+		private void fillVcrData() {
 			VCR vcr = this.data.getStudentVcr();
 			String vcrName = vcr.getName();
 			String vcrHead = vcr.getHeadName();
@@ -183,23 +203,32 @@ public abstract class Template implements AutoCloseable {
 			this.doc.replace(TemplateRecord.STUDENT_VCR_NAME, vcrName);
 			this.doc.replace(TemplateRecord.STUDENT_VCR_HEAD, vcrHead);
 			this.doc.replace(TemplateRecord.STUDENT_VCR_REVIEWER, vcrReviewer);
-
-			this.save();
-		}
-
-		@Override
-		protected void fillDate() {
-			ru.tstu.msword_auto.automation.entity_aggregation.Date date = data.getDate();
-			String day = date.getVcrDay();
-			String month = date.getVcrMonth();
-			String year = date.getVcrYear();
-			doc.replace(TemplateRecord.DATE_DAY, day);
-			doc.replace(TemplateRecord.DATE_MONTH, month);
-			doc.replace(TemplateRecord.DATE_YEAR, year);
 		}
 
 	}
 
+
+	// Constants
+	interface TemplateRecord {
+		String DATE_DAY = "{Date_D}";
+		String DATE_MONTH = "{Date_M}";
+		String DATE_YEAR = "{Date_Y}";
+		String GEK_HEAD = "{GEK_Head}";
+		String GEK_SUBHEAD = "{GEK_Subhead}";
+		String GEK_SECRETARY = "{GEK_Secretary}";
+		String GEK_MEMBERS = "{GEK_Members}";
+		String STUDENT_NAME_I = "{Student_Name_I}";
+		String STUDENT_NAME_R = "{Student_Name_R}";
+		String STUDENT_NAME_T = "{Student_Name_T}";
+		String STUDENT_INITIALS = "{Student_Name_Initials}";
+		String STUDENT_COURSE_QUALIFICATION = "{Student_Qualification}";
+		String STUDENT_COURSE_NAME = "{Student_course}";
+		String STUDENT_COURSE_SPEC = "{Course_specialization}";
+		String STUDENT_VCR_NAME = "{Student_VCR_Name}";
+		String STUDENT_VCR_HEAD = "{VCR_Head}";
+		String STUDENT_VCR_REVIEWER = "{VCR_Reviewer}";
+
+	}
 
 
 }

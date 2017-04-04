@@ -2,8 +2,8 @@ package ru.tstu.msword_auto.automation;
 
 import org.junit.*;
 import org.junit.Test;
-import ru.tstu.msword_auto.automation.entity_aggregation.TemplateData;
-import ru.tstu.msword_auto.automation.entity_aggregation.Date;
+import ru.tstu.msword_auto.automation.entity_aggregators.DateParser;
+import ru.tstu.msword_auto.automation.entity_aggregators.TemplateData;
 import ru.tstu.msword_auto.entity.*;
 
 import java.io.File;
@@ -18,8 +18,8 @@ import static org.mockito.Mockito.*;
 public class TemplateTest {
 	private Template template;
 	private TemplateData data = mock(TemplateData.class);
-	private Date date = new Date(new ru.tstu.msword_auto.entity.Date("group", "2012-11-11", "2012-11-11"));
-	private GekHead gekHead = new GekHead(1, "asd", "asd", "asd", "asd");
+	private DateParser dateParser = new DateParser(new ru.tstu.msword_auto.entity.Date("group", "2012-11-11", "2012-11-11"));
+	private GekHead gekHead = new GekHead("asd", "asd", "asd", "asd");
 	private List<GekMember> gekMembers = Arrays.asList(
 			new GekMember(1, "asd"),
 			new GekMember(2, "qwe"));
@@ -37,7 +37,7 @@ public class TemplateTest {
 		Template itself is a abstract class, which contains only static factory methods
 		and inner classes, implementing Template
 
-		sets constants for template folders in static block from system properties, throws unchecked exception if not found
+		sets options for template folders in static block from system properties, throws unchecked exception if not found
 
 		static factory methods: newGosTemplate(TemplateData), newVcrTemplate(TemplateData)
 
@@ -57,8 +57,8 @@ public class TemplateTest {
 
 
 	@Before
-	public void setUp() {
-		when(data.getDate()).thenReturn(this.date);
+	public void setUp() throws Exception {
+		when(data.getDate()).thenReturn(this.dateParser);
 		when(data.getGekHead()).thenReturn(this.gekHead);
 		when(data.listOfGekMembers()).thenReturn(this.gekMembers);
 		when(data.getStudent()).thenReturn(this.student);
@@ -177,16 +177,12 @@ public class TemplateTest {
         verify(data).getStudentVcr();
     }
 
-    // todo
-	@Ignore
-	@Test(expected = TemplateException.class)
-	public void whenDateIsMissingThenException() throws Exception {
-		when(data.getDate()).thenReturn(null);
+	@Test(expected = IllegalTypeException.class)
+	public void whenInvalidTypePassedThenException() throws Exception {
+		Template.newTemplate("wrong_type", data);
 
 	}
 
-
-	// tests when some data are missing
 
 
 }

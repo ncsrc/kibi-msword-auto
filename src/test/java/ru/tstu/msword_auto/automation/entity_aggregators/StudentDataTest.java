@@ -1,4 +1,4 @@
-package ru.tstu.msword_auto.automation.entity_aggregation;
+package ru.tstu.msword_auto.automation.entity_aggregators;
 
 
 import org.junit.Test;
@@ -28,7 +28,7 @@ public class StudentDataTest {
         this.student = new Student("ads", "ads", "ads",
                 "adss", "adss", "adss", "adsd",
                 "adsd", "adsd");
-        this.course = new Course(1, "ads", "ads", "ads", "ads", "asd");
+        this.course = new Course(1, "ads", "ads", "ads", "asd");
         this.vcr = new VCR(1, "ads", "ads", "ads");
         this.studentData = new StudentData(student, course, vcr);
     }

@@ -3,9 +3,9 @@ package ru.tstu.msword_auto.automation;
 import com.jacob.com.LibraryLoader;
 import org.junit.*;
 import org.junit.Test;
-import ru.tstu.msword_auto.automation.constants.ReplacementStrategy;
-import ru.tstu.msword_auto.automation.constants.SaveFormat;
-import ru.tstu.msword_auto.automation.constants.SaveOptions;
+import ru.tstu.msword_auto.automation.options.ReplacementOption;
+import ru.tstu.msword_auto.automation.options.SaveFormat;
+import ru.tstu.msword_auto.automation.options.SaveOption;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,7 +61,7 @@ public class BasicDocumentTest {
 	@Test
 	public void ReplacingAllOccurrences() {
 		String replacement = "fdsa";
-		doc.replace(DOC_CONTENT, replacement, ReplacementStrategy.REPLACE_ALL);
+		doc.replace(DOC_CONTENT, replacement, ReplacementOption.REPLACE_ALL);
 		int count = findingCount(replacement);
 		assertEquals(DOC_CONTENT_COUNT, count);
 	}
@@ -82,7 +82,7 @@ public class BasicDocumentTest {
 		Document copiedDoc = new TestableBasicDocument(copyPath);
 		String replacement = "fdsa";
 		copiedDoc.replace("asdf", replacement);
-		copiedDoc.close(SaveOptions.SAVE);
+		copiedDoc.close(SaveOption.SAVE);
 
 		Document openedAgain = new TestableBasicDocument(copyPath);
 		int count = findingCount(replacement, openedAgain);

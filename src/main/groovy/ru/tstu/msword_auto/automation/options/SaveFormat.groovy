@@ -1,10 +1,10 @@
-package ru.tstu.msword_auto.automation.constants
+package ru.tstu.msword_auto.automation.options
 
-enum SaveFormat
-{
+
+enum SaveFormat {
+
     // WdSaveFormat
     // https://msdn.microsoft.com/ru-ru/library/office/ff839952.aspx
-
     RTF(6),
     DOC_97(0),
     DOC_DEFAULT(16),
@@ -14,17 +14,15 @@ enum SaveFormat
 
     // test last two, see if there is any difference
 
-    private int value;
+    private int value
 
-    private SaveFormat(int value)
-    {
+    private SaveFormat(int value) {
         this.value = value
     }
 
 
-    public int value()
-    {
-        return this.value;
+    int value() {
+        return this.value
     }
 
 

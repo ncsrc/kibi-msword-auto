@@ -3,12 +3,12 @@ package ru.tstu.msword_auto.automation
 import groovy.transform.PackageScope
 import org.codehaus.groovy.scriptom.ActiveXObject
 import org.codehaus.groovy.scriptom.Scriptom
-import ru.tstu.msword_auto.automation.constants.FindStrategy
-import ru.tstu.msword_auto.automation.constants.ReplacementStrategy
-import ru.tstu.msword_auto.automation.constants.SaveFormat
-import ru.tstu.msword_auto.automation.constants.SaveOptions
+import ru.tstu.msword_auto.automation.options.FindOption
+import ru.tstu.msword_auto.automation.options.ReplacementOption
+import ru.tstu.msword_auto.automation.options.SaveFormat
+import ru.tstu.msword_auto.automation.options.SaveOption
 
-// todo javadocs
+
 @PackageScope class BasicDocument implements Document {
     // protected access for testing extended class
     final def doc
@@ -31,36 +31,36 @@ import ru.tstu.msword_auto.automation.constants.SaveOptions
 
 
     void replace(String key, String replacement) {
-        this.replace(key, replacement, ReplacementStrategy.REPLACE_ALL)
+        this.replace(key, replacement, ReplacementOption.REPLACE_ALL)
     }
 
-    void replace(String key, String replacement, ReplacementStrategy strategy) {
-        def find = getFindObject(key, FindStrategy.CONTINUE)
+    void replace(String key, String replacement, ReplacementOption option) {
+        def find = getFindObject(key, FindOption.CONTINUE)
         setReplacementObject(replacement, find)
-        executeReplacement(find, strategy)
+        executeReplacement(find, option)
     }
 
     boolean find(String key) {
-        return this.find(key, FindStrategy.STOP)
+        return this.find(key, FindOption.STOP)
     }
 
-    boolean find(String key, FindStrategy strategy) {
+    boolean find(String key, FindOption strategy) {
         def find = getFindObject(key, strategy)
         return find.Execute()
     }
 
     void close() {
-        this.close(SaveOptions.DO_NOT_SAVE)
+        this.close(SaveOption.DO_NOT_SAVE)
     }
 
-    void close(SaveOptions options) {
+    void close(SaveOption options) {
         doc.close(options.value())
         application.quit()
     }
 
 
     void save() {
-        doc.save() // TODO change save option to format with macro
+        doc.save()
     }
 
     void saveAs(String location, String name, SaveFormat format) {
@@ -71,7 +71,7 @@ import ru.tstu.msword_auto.automation.constants.SaveOptions
         doc.SaveAs(name, format.value())
     }
 
-    private def getFindObject(String key, FindStrategy findStrategy) {
+    private def getFindObject(String key, FindOption findStrategy) {
         def find = application.Selection.Find
         find.ClearFormatting()
         find.Text = key
@@ -80,21 +80,18 @@ import ru.tstu.msword_auto.automation.constants.SaveOptions
         return find
     }
 
-    private void setReplacementObject(String replacement, def findObject) {
+    private void setReplacementObject(String replacement, findObject) {
         def replacementObject = findObject.Replacement
         replacementObject.ClearFormatting()
         replacementObject.Text = replacement
     }
 
 
-    private void executeReplacement(def findObject, ReplacementStrategy strategy) {
+    private void executeReplacement(def findObject, ReplacementOption strategy) {
         findObject.Execute(Scriptom.MISSING, Scriptom.MISSING, Scriptom.MISSING,
                 Scriptom.MISSING, Scriptom.MISSING, Scriptom.MISSING, Scriptom.MISSING,
                 Scriptom.MISSING, Scriptom.MISSING, Scriptom.MISSING, strategy.value())
     }
-
-
-    // TODO replace names in constants to human-readable, place links to ms docs, opt - brief description
 
 
 }

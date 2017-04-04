@@ -1,6 +1,6 @@
-package ru.tstu.msword_auto.automation.constants
+package ru.tstu.msword_auto.automation.options
 
-enum SaveOptions
+enum SaveOption
 {
     // WdSaveOptions
     DO_NOT_SAVE(0),
@@ -9,7 +9,7 @@ enum SaveOptions
 
     private int value
 
-    private SaveOptions(int value)
+    private SaveOption(int value)
     {
         this.value = value
     }

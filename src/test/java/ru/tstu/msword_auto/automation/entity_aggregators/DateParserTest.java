@@ -1,4 +1,4 @@
-package ru.tstu.msword_auto.automation.entity_aggregation;
+package ru.tstu.msword_auto.automation.entity_aggregators;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -6,8 +6,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 
-public class DateTest {
-    private Date date;
+public class DateParserTest {
+    private DateParser dateParser;
     private ru.tstu.msword_auto.entity.Date entity;
     private String gosDay;
     private String gosMonth;
@@ -20,7 +20,7 @@ public class DateTest {
     @Before
     public void setUp() {
         entity = new ru.tstu.msword_auto.entity.Date("group", "2001-03-12", "2002-08-22");
-        date = new Date(entity);
+        dateParser = new DateParser(entity);
         gosDay = "12";
         gosMonth = "марта";
         gosYear = "01";
@@ -32,57 +32,57 @@ public class DateTest {
 
     @Test
     public void whenGetEntityDateThenEqualsCorrectly() throws Exception {
-        ru.tstu.msword_auto.entity.Date entity = date.getEntityDate();
+        ru.tstu.msword_auto.entity.Date entity = dateParser.getEntityDate();
         assertEquals(this.entity, entity);
     }
 
     @Test
     public void whenGetGosDayThenEqualsCorrectly() throws Exception {
-        String actual = date.getGosDay();
+        String actual = dateParser.getGosDay();
         assertEquals(gosDay, actual);
     }
 
     @Test
     public void whenGetGosMonthThenEqualsCorrectly() throws Exception {
-        String actual = date.getGosMonth();
+        String actual = dateParser.getGosMonth();
         assertEquals(gosMonth, actual);
     }
 
     @Test
     public void whenGetGosYearThenEqualsCorrectly() throws Exception {
-        String actual = date.getGosYear();
+        String actual = dateParser.getGosYear();
         assertEquals(gosYear, actual);
     }
 
     @Test
     public void whenGetVcrDayThenEqualsCorrectly() throws Exception {
-        String actual = date.getVcrDay();
+        String actual = dateParser.getVcrDay();
         assertEquals(vcrDay, actual);
     }
 
     @Test
     public void whenGetVcrMonthThenEqualsCorrectly() throws Exception {
-        String actual = date.getVcrMonth();
+        String actual = dateParser.getVcrMonth();
         assertEquals(vcrMonth, actual);
     }
 
     @Test
     public void whenGetVcrYearThenEqualsCorrectly() throws Exception {
-        String actual = date.getVcrYear();
+        String actual = dateParser.getVcrYear();
         assertEquals(vcrYear, actual);
     }
 
     @Test
     public void whenEntityWithEmptyDatesThenAllParsedDataAreEmptyString() {
-        date = new Date(new ru.tstu.msword_auto.entity.Date("group"));
+        dateParser = new DateParser(new ru.tstu.msword_auto.entity.Date("group"));
         String expected = "";
 
-        assertEquals(expected, date.getGosDay());
-        assertEquals(expected, date.getGosMonth());
-        assertEquals(expected, date.getGosYear());
-        assertEquals(expected, date.getVcrDay());
-        assertEquals(expected, date.getVcrMonth());
-        assertEquals(expected, date.getVcrYear());
+        assertEquals(expected, dateParser.getGosDay());
+        assertEquals(expected, dateParser.getGosMonth());
+        assertEquals(expected, dateParser.getGosYear());
+        assertEquals(expected, dateParser.getVcrDay());
+        assertEquals(expected, dateParser.getVcrMonth());
+        assertEquals(expected, dateParser.getVcrYear());
     }
 
 }

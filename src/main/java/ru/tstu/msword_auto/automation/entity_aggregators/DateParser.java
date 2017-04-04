@@ -1,11 +1,11 @@
-package ru.tstu.msword_auto.automation.entity_aggregation;
+package ru.tstu.msword_auto.automation.entity_aggregators;
 
 
 import java.util.HashMap;
 import java.util.Map;
 
 // wrapper that parses date entity in a way that automation requires
-public class Date {
+public class DateParser {
     /** Key which points on day of map with parsed data */
     private static final transient String KEY_DAY = "day";
 
@@ -24,7 +24,7 @@ public class Date {
     private transient Map<String, String> parsedVcrDate;
 
 
-    public Date(ru.tstu.msword_auto.entity.Date date) {
+    public DateParser(ru.tstu.msword_auto.entity.Date date) {
         this.date = date;
         parsedGosDate = new HashMap<>();
         parsedVcrDate = new HashMap<>();

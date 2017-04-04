@@ -1,11 +1,11 @@
-package ru.tstu.msword_auto.automation.entity_aggregation;
+package ru.tstu.msword_auto.automation.entity_aggregators;
 
 import ru.tstu.msword_auto.entity.GekHead;
 import ru.tstu.msword_auto.entity.GekMember;
 
 import java.util.List;
 
-// todo javadoc
+
 public class Gek {
     private final GekHead gekHead;
     private final List<GekMember> gekMembers;

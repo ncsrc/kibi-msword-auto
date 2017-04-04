@@ -1,4 +1,4 @@
-package ru.tstu.msword_auto.automation.entity_aggregation;
+package ru.tstu.msword_auto.automation.entity_aggregators;
 
 import org.junit.Test;
 import ru.tstu.msword_auto.entity.GekHead;
@@ -26,7 +26,7 @@ public class GekTest {
      */
 
     public GekTest() {
-        this.gekHead = new GekHead(1, "gr","ads", "ads", "ads");
+        this.gekHead = new GekHead("gr","ads", "ads", "ads");
         this.gekMembers = Arrays.asList(
                 new GekMember(1, "asd"),
                 new GekMember(2, "qwe"),

@@ -1,4 +1,4 @@
-package ru.tstu.msword_auto.automation.entity_aggregation;
+package ru.tstu.msword_auto.automation.entity_aggregators;
 
 
 import ru.tstu.msword_auto.entity.Course;

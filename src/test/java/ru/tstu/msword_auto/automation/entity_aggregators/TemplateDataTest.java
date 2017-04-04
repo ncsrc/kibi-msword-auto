@@ -1,4 +1,4 @@
-package ru.tstu.msword_auto.automation.entity_aggregation;
+package ru.tstu.msword_auto.automation.entity_aggregators;
 
 import org.junit.Test;
 import ru.tstu.msword_auto.entity.*;
@@ -11,7 +11,7 @@ import static org.junit.Assert.*;
 
 public class TemplateDataTest {
     private final TemplateData data;
-    private final Date date;
+    private final DateParser dateParser;
     private final GekHead gekHead;
     private final List<GekMember> gekMembers;
     private final Student student;
@@ -32,26 +32,26 @@ public class TemplateDataTest {
 
 
     public TemplateDataTest() throws Exception {
-        this.date = new Date(
+        this.dateParser = new DateParser(
                 new ru.tstu.msword_auto.entity.Date("gr", "2013-11-12", "2013-11-12")
         );
-        this.gekHead = new GekHead(1, "asd", "asd", "asd", "asd");
+        this.gekHead = new GekHead("asd", "asd", "asd", "asd");
         this.gekMembers = Arrays.asList(new GekMember(1, "asd"));
         this.student = new Student("ads", "ads", "ads",
                 "adss", "adss", "adss", "adsd",
                 "adsd", "adsd");
-        this.course = new Course(1, "asd", "xc", "asd", "asd", "asd");
+        this.course = new Course(1, "xc", "asd", "asd", "asd");
         this.vcr = new VCR(1, "asd", "asd", "asd");
         Gek gek = new Gek(gekHead, gekMembers);
         StudentData studentData = new StudentData(student, course, vcr);
-        this.data = new TemplateData(date, gek, studentData);
+        this.data = new TemplateData(dateParser, gek, studentData);
     }
 
 
     @Test
     public void whenGetDateThenCorrectResult() {
-        Date actual = this.data.getDate();
-        assertEquals(this.date, actual);
+        DateParser actual = this.data.getDate();
+        assertEquals(this.dateParser, actual);
     }
 
     @Test
