@@ -19,16 +19,16 @@ public class CourseTest {
 	public void setUp() {
 		studentId = 1;
 		groupName = "asd";
-		code = "1.1.1";
-		qualification = "zxc";
-		courseName = "bdf";
+		code = "38.03.05";
+		qualification = "Бакалавр";
+		courseName = "Бизнес-информатика";
 		profile = "dbsd";
-		defaultEntity = new Course(studentId, groupName, code, qualification, courseName, profile);
+		defaultEntity = new Course(studentId, groupName, qualification, courseName, profile);
 	}
 
 	@Test
 	public void whenSameDataWithFullConstructorThenEqualsTrue() throws Exception {
-		Course second = new Course(studentId, groupName, code, qualification, courseName, profile);
+		Course second = new Course(studentId, groupName, qualification, courseName, profile);
 
 		assertEquals(defaultEntity, second);
 		assertTrue(defaultEntity.equals(second));
@@ -36,7 +36,7 @@ public class CourseTest {
 
 	@Test
 	public void whenDifferentDataThenEqualsFalse() {
-		Course other = new Course(34, groupName, "f", qualification, courseName, profile);
+		Course other = new Course(34, groupName, "f", courseName, profile);
 
 		assertNotEquals(defaultEntity, other);
 		assertFalse(defaultEntity.equals(other));

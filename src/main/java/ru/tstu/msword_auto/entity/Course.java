@@ -2,6 +2,7 @@ package ru.tstu.msword_auto.entity;
 
 
 public class Course {
+
 	@PrimaryKey
 	private final int studentId; // also foreign key
 	private final String groupName;
@@ -16,12 +17,12 @@ public class Course {
 		this.groupName = groupName;
 	}
 
-	public Course(int studentId, String groupName, String code, String qualification, String courseName, String profile) {
+	public Course(int studentId, String groupName, String qualification, String courseName, String profile) {
 		this.courseName = courseName;
 		this.groupName = groupName;
 		this.studentId = studentId;
 		this.qualification = qualification;
-		this.code = code;
+		this.code = defineCode();
 		this.profile = profile;
 	}
 
@@ -93,6 +94,26 @@ public class Course {
 		}
 
 		return false;
+	}
+
+
+	private String defineCode() {
+		String BACHELOR_BI_CODE = "38.03.05";
+		String BACHELOR_TD_CODE = "38.03.06";
+		String MASTER_BI_CODE = "38.04.05";
+		String MASTER_TD_CODE = "38.04.06";
+
+		if("Торговое дело".equals(courseName) && "Бакалавр".equals(qualification)) {
+			return BACHELOR_TD_CODE;
+		} else if("Торговое дело".equals(courseName) && "Магистр".equals(qualification)) {
+			return MASTER_TD_CODE;
+		} else if("Бизнес-информатика".equals(courseName) && "Бакалавр".equals(qualification)) {
+			return BACHELOR_BI_CODE;
+		} else if("Бизнес-информатика".equals(courseName) && "Магистр".equals(qualification)) {
+			return MASTER_BI_CODE;
+		}
+
+		return "";
 	}
 
 }
