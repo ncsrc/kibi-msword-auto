@@ -2,8 +2,6 @@ package ru.tstu.msword_auto.automation;
 
 import org.junit.*;
 import org.junit.Test;
-import ru.tstu.msword_auto.automation.entity_aggregators.DateParser;
-import ru.tstu.msword_auto.automation.entity_aggregators.TemplateData;
 import ru.tstu.msword_auto.entity.*;
 
 import java.io.File;
@@ -18,7 +16,7 @@ import static org.mockito.Mockito.*;
 public class TemplateTest {
 	private Template template;
 	private TemplateData data = mock(TemplateData.class);
-	private DateParser dateParser = new DateParser(new ru.tstu.msword_auto.entity.Date("group", "2012-11-11", "2012-11-11"));
+	private Date date = new Date("group", "2012-11-11", "2012-11-11");
 	private GekHead gekHead = new GekHead("asd", "asd", "asd", "asd");
 	private List<GekMember> gekMembers = Arrays.asList(
 			new GekMember(1, "asd"),
@@ -29,7 +27,7 @@ public class TemplateTest {
 									   "adss", "adss", "adss", "adsd",
 									   "adsd", "adsd");
 	private Course course = new Course(1, "asd");
-	private VCR vcr = new VCR(1, "asd", "asd", "asd");
+	private Vcr vcr = new Vcr(1, "asd", "asd", "asd");
 
 
 	/*
@@ -44,7 +42,7 @@ public class TemplateTest {
 		TemplateData resides in automation,
 		but fills in webapp with entities. Throws exception if some entity missing or was not set.
 
-		public fulfillTemplate() throws TemplateException(name ?), which fills it and saves.
+		public fillTemplate() throws TemplateException(name ?), which fills it and saves.
 		Filling conducts by extracting entities from TemplateData field, and if some data
 		in some entity is missing, then exception thrown with message to client about what is missing.
 
@@ -58,13 +56,13 @@ public class TemplateTest {
 
 	@Before
 	public void setUp() throws Exception {
-		when(data.getDate()).thenReturn(this.dateParser);
+		when(data.getDate()).thenReturn(this.date);
 		when(data.getGekHead()).thenReturn(this.gekHead);
-		when(data.listOfGekMembers()).thenReturn(this.gekMembers);
+		when(data.getGekMembers()).thenReturn(this.gekMembers);
 		when(data.getStudent()).thenReturn(this.student);
-		when(data.getStudentCourse()).thenReturn(this.course);
-		when(data.getStudentVcr()).thenReturn(this.vcr);
-		when(data.getGekMembersListInString()).thenReturn(this.gekMembersStr);
+		when(data.getCourse()).thenReturn(this.course);
+		when(data.getVcr()).thenReturn(this.vcr);
+		when(data.getGekMembersInString()).thenReturn(this.gekMembersStr);
 
 		String templatePath = this.getClass().getClassLoader().getResource("templates").getPath();
 		String templateSavePath = this.getClass().getClassLoader().getResource("templates/filled").getPath();
@@ -95,7 +93,7 @@ public class TemplateTest {
 		String filename = "ads A. A. - Протокол по приему гос экзамена.docx";
 
 		// act
-		template.fulfillTemplate();
+		template.fillTemplate();
 		String actual = template.getFilename();
 
 		// assert
@@ -104,7 +102,7 @@ public class TemplateTest {
 
 	@Test
 	public void whenFulfillGosTplWithFullDataThenSaved() throws Exception {
-		template.fulfillTemplate();
+		template.fillTemplate();
 		String filename = template.getFilename();
 
 		String path = AutomationService.templateSave + File.separator + filename;
@@ -130,7 +128,7 @@ public class TemplateTest {
 
 		try(Template tpl = Template.newTemplate("vcr", data)) {
 			String filename = "ads A. A. - Протокол по защите ВКР.docx";
-			tpl.fulfillTemplate();
+			tpl.fillTemplate();
 			String actual = tpl.getFilename();
 			assertEquals(filename, actual);
 		}
@@ -142,7 +140,7 @@ public class TemplateTest {
 
 		String filename;
 		try(Template tpl = Template.newTemplate("vcr", data)) {
-			tpl.fulfillTemplate();
+			tpl.fillTemplate();
 			filename = tpl.getFilename();
 		}
 
@@ -154,27 +152,27 @@ public class TemplateTest {
 
 	@Test
 	public void whenGosTplFulfillTemplateWithFullDataThenFilled() throws Exception {
-		template.fulfillTemplate();
+		template.fillTemplate();
 
 		verify(data).getGekHead();
-		verify(data).listOfGekMembers();
+		verify(data).getGekMembers();
 		verify(data).getDate();
 		verify(data, times(2)).getStudent();    // 1 in constructor
-		verify(data).getStudentCourse();
+		verify(data).getCourse();
 	}
 
     @Test
     public void whenVcrTplFulfillTemplateWithFullDataThenFilled() throws Exception {
         template.close();
 	    template = Template.newTemplate("vcr", data);
-	    template.fulfillTemplate();
+	    template.fillTemplate();
 
         verify(data).getGekHead();
-        verify(data).listOfGekMembers();
+        verify(data).getGekMembers();
         verify(data).getDate();
         verify(data, times(4)).getStudent();    // 1 in constructor in setUp, actual 3
-        verify(data, times(2)).getStudentCourse();
-        verify(data).getStudentVcr();
+        verify(data, times(2)).getCourse();
+        verify(data).getVcr();
     }
 
 	@Test(expected = IllegalTypeException.class)

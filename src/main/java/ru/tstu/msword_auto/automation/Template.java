@@ -1,9 +1,7 @@
 package ru.tstu.msword_auto.automation;
 
 
-import ru.tstu.msword_auto.automation.entity_aggregators.DateParser;
 import ru.tstu.msword_auto.automation.options.SaveFormat;
-import ru.tstu.msword_auto.automation.entity_aggregators.TemplateData;
 import ru.tstu.msword_auto.entity.*;
 
 import java.util.List;
@@ -51,7 +49,7 @@ public abstract class Template implements AutoCloseable {
 	protected abstract void fillDate();
 
 
-	public abstract void fulfillTemplate();
+	public abstract void fillTemplate();
 
 	// e.g. initials - Протокол ГЭК по защите ВКР.docx
 	public String getFilename() {
@@ -77,7 +75,7 @@ public abstract class Template implements AutoCloseable {
 		String fullNameR = student.getFullNameR();
 		doc.replace(TemplateRecord.STUDENT_NAME_R, fullNameR);
 
-		Course course = data.getStudentCourse();
+		Course course = data.getCourse();
 		String courseInfo = course.getInfo();
 		String profile = course.getProfile();
 		doc.replace(TemplateRecord.STUDENT_COURSE_NAME, courseInfo);
@@ -93,14 +91,14 @@ public abstract class Template implements AutoCloseable {
 		doc.replace(TemplateRecord.GEK_SUBHEAD, subHead);
 		doc.replace(TemplateRecord.GEK_SECRETARY, secretary);
 
-		List<GekMember> members = data.listOfGekMembers();
+		List<GekMember> members = data.getGekMembers();
 		for(int i = 1; i <= members.size(); i++) {
 			doc.replace("{GEK_Member" + i + "}", members.get(i-1).getMember());
 		}
 
-		String fullMembersList = data.getGekMembersListInString();
+		String fullMembersList = data.getGekMembersInString();
 		doc.replace(TemplateRecord.GEK_MEMBERS, fullMembersList);
-}
+	}
 
 
 
@@ -125,7 +123,7 @@ public abstract class Template implements AutoCloseable {
 		}
 
 		@Override
-		public void fulfillTemplate() {
+		public void fillTemplate() {
 			this.fillCommonData();
 			this.fillDate();
 			this.save();
@@ -133,7 +131,7 @@ public abstract class Template implements AutoCloseable {
 
 		@Override
 		protected void fillDate() {
-			DateParser dateParser = data.getDate();
+			Date dateParser = data.getDate();
 			String day = dateParser.getGosDay();
 			String month = dateParser.getGosMonth();
 			String year = dateParser.getGosYear();
@@ -162,7 +160,7 @@ public abstract class Template implements AutoCloseable {
 		}
 
 		@Override
-		public void fulfillTemplate() {
+		public void fillTemplate() {
 			this.fillCommonData();
 			this.fillDate();
 			this.fillStudentSpecificData();
@@ -173,7 +171,7 @@ public abstract class Template implements AutoCloseable {
 
 		@Override
 		protected void fillDate() {
-			DateParser dateParser = data.getDate();
+			Date dateParser = data.getDate();
 			String day = dateParser.getVcrDay();
 			String month = dateParser.getVcrMonth();
 			String year = dateParser.getVcrYear();
@@ -188,7 +186,7 @@ public abstract class Template implements AutoCloseable {
 			Student student = this.data.getStudent();
 			String fullNameT = student.getFullNameD();
 			String initials = student.getInitials();
-			Course course = this.data.getStudentCourse();
+			Course course = this.data.getCourse();
 			String qualification = course.getQualification();
 			this.doc.replace(TemplateRecord.STUDENT_NAME_T, fullNameT);
 			this.doc.replace(TemplateRecord.STUDENT_INITIALS, initials);
@@ -196,7 +194,7 @@ public abstract class Template implements AutoCloseable {
 		}
 
 		private void fillVcrData() {
-			VCR vcr = this.data.getStudentVcr();
+			Vcr vcr = this.data.getVcr();
 			String vcrName = vcr.getName();
 			String vcrHead = vcr.getHeadName();
 			String vcrReviewer = vcr.getReviewerName();
