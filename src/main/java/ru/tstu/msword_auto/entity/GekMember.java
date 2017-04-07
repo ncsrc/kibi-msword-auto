@@ -4,9 +4,11 @@ package ru.tstu.msword_auto.entity;
 public class GekMember {
 	@PrimaryKey
 	private int gekMemberId;
-	private final int gekHeadId; // foreign key
-	private final String member;
+	private int gekHeadId; // foreign key
+	private String member = "";
 
+
+	public GekMember() {}
 
 	public GekMember(int gekHeadId, String member) {
 		this.gekHeadId = gekHeadId;

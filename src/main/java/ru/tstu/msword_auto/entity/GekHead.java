@@ -3,13 +3,16 @@ package ru.tstu.msword_auto.entity;
 
 // gek stands for "Государственная экзаменационная комиссия"
 public class GekHead {
+
 	@PrimaryKey
 	private int gekId;
-	private final String courseName;
+	private String courseName = "";
 	private String head = "";
 	private String subhead = "";
 	private String secretary = "";
 
+
+	public GekHead() {}
 
 	public GekHead(String courseName) {
 		this.courseName = courseName;

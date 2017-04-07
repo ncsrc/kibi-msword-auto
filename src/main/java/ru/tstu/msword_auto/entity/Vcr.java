@@ -2,21 +2,23 @@ package ru.tstu.msword_auto.entity;
 
 
 // stands for "Выпускная квалификационная работа"
-public class VCR {
-	private final int studentId; // foreign key
+public class Vcr {
+	private int studentId; // foreign key
 
 	@PrimaryKey
-	private final String name;
+	private String name = "";
 	private String head = "";
 	private String reviewer = "";
 
 
-	public VCR(int studentId, String name) {
+	public Vcr() {}
+
+	public Vcr(int studentId, String name) {
 		this.studentId = studentId;
 		this.name = name;
 	}
 
-	public VCR(int studentId, String name, String head, String reviewer) {
+	public Vcr(int studentId, String name, String head, String reviewer) {
 		this.studentId = studentId;
 		this.name = name;
 		this.head = head;
@@ -53,7 +55,7 @@ public class VCR {
 			return false;
 		}
 
-		VCR other = (VCR) obj;
+		Vcr other = (Vcr) obj;
 		if(
 				this.studentId == other.studentId
 				&& this.name.equals(other.name)

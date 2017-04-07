@@ -4,13 +4,15 @@ package ru.tstu.msword_auto.entity;
 public class Course {
 
 	@PrimaryKey
-	private final int studentId; // also foreign key
-	private final String groupName;
+	private int studentId; // also foreign key
+	private String groupName = "";
 	private String code = "";
 	private String qualification = "";
 	private String courseName = "";
 	private String profile = "";
 
+
+	public Course() {}
 
 	public Course(int studentId, String groupName) {
 		this.studentId = studentId;

@@ -12,13 +12,28 @@ public class DateTest {
 	private String vcrDate;
 	private Date defaultEntity;
 
+	// parsed
+	private String gosDay;
+	private String gosMonth;
+	private String gosYear;
+	private String vcrDay;
+	private String vcrMonth;
+	private String vcrYear;
+
 
 	@Before
 	public void setUp() throws Exception {
 		groupName = "asd";
 		gosDate = "2001-01-12";
-		vcrDate = "2005-01-11";
+		vcrDate = "2005-06-11";
 		defaultEntity = new Date(groupName, gosDate, vcrDate);
+
+		gosDay = "12";
+		vcrDay = "11";
+		gosMonth = "января";
+		vcrMonth = "июня";
+		gosYear = "01";
+		vcrYear = "05";
 	}
 
 
@@ -60,6 +75,56 @@ public class DateTest {
 	@Test(expected = DateFormatException.class)
 	public void exceptionThrownWhenInvalidDayInDate() throws Exception {
 		new Date(groupName, "2003-03-32", "2004-09-01");
+	}
+
+
+	@Test
+	public void whenGetGosDayThenEqualsCorrectly() throws Exception {
+		String actual = defaultEntity.getGosDay();
+		assertEquals(gosDay, actual);
+	}
+
+	@Test
+	public void whenGetGosMonthThenEqualsCorrectly() throws Exception {
+		String actual = defaultEntity.getGosMonth();
+		assertEquals(gosMonth, actual);
+	}
+
+	@Test
+	public void whenGetGosYearThenEqualsCorrectly() throws Exception {
+		String actual = defaultEntity.getGosYear();
+		assertEquals(gosYear, actual);
+	}
+
+	@Test
+	public void whenGetVcrDayThenEqualsCorrectly() throws Exception {
+		String actual = defaultEntity.getVcrDay();
+		assertEquals(vcrDay, actual);
+	}
+
+	@Test
+	public void whenGetVcrMonthThenEqualsCorrectly() throws Exception {
+		String actual = defaultEntity.getVcrMonth();
+		assertEquals(vcrMonth, actual);
+	}
+
+	@Test
+	public void whenGetVcrYearThenEqualsCorrectly() throws Exception {
+		String actual = defaultEntity.getVcrYear();
+		assertEquals(vcrYear, actual);
+	}
+
+	@Test
+	public void whenEntityWithEmptyDatesThenAllParsedDataAreEmptyString() {
+		Date entity = new Date("qwe");
+		String expected = "";
+
+		assertEquals(expected, entity.getGosDay());
+		assertEquals(expected, entity.getGosMonth());
+		assertEquals(expected, entity.getGosYear());
+		assertEquals(expected, entity.getVcrDay());
+		assertEquals(expected, entity.getVcrMonth());
+		assertEquals(expected, entity.getVcrYear());
 	}
 
 

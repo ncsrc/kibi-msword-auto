@@ -5,9 +5,10 @@ import java.util.regex.Pattern;
 
 
 public class Date {
+
 	/** Entity value of GROUP_NAME from database table, primary key */
 	@PrimaryKey
-	private final String groupName;
+	private String groupName = "";
 
 	/** Entity value of DATE_GOS from database table,
 	 *  cannot be null, so needs contain at least empty string for correct sending to frontend
@@ -19,6 +20,23 @@ public class Date {
 	 */
 	private String vcrDate = "";
 
+	/** Parses dates for templates */
+	private transient DateParser parser;
+
+
+	/** Default constructor with empty strings */
+	public Date() {
+		this.parser = new DateParser();
+	}
+
+	/**
+	 * Simple constructor, all entity values will be equal to empty strings
+	 * @param groupName GROUP_NAME in db table
+	 */
+	public Date(String groupName) {
+		this.groupName = groupName;
+		this.parser = new DateParser();
+	}
 
 	/**
 	 * Full constructor with all entity values.
@@ -36,14 +54,7 @@ public class Date {
 
 		this.gosDate = gosDate;
 		this.vcrDate = vcrDate;
-	}
-
-	/**
-	 * Simple constructor, all entity values will be equal to empty strings
-	 * @param groupName GROUP_NAME in db table
-	 */
-	public Date(String groupName) {
-		this.groupName = groupName;
+		this.parser = new DateParser();
 	}
 
 
@@ -66,6 +77,54 @@ public class Date {
 	 */
 	public String getGroupName() {
 		return this.groupName;
+	}
+
+	/**
+	 * Returns information about day of gos date in a way which document requires
+	 * @return day of gos date
+	 */
+	public String getGosDay() {
+		return parser.getGosDay();
+	}
+
+	/**
+	 * Returns information about day of vcr date in a way which document requires
+	 * @return day of vcr date
+	 */
+	public String getVcrDay() {
+		return parser.getVcrDay();
+	}
+
+	/**
+	 * Returns information about month of gos date in a way which document requires
+	 * @return month of gos date
+	 */
+	public String getGosMonth() {
+		return parser.getGosMonth();
+	}
+
+	/**
+	 * Returns information about month of vcr date in a way which document requires
+	 * @return month of vcr date
+	 */
+	public String getVcrMonth() {
+		return parser.getVcrMonth();
+	}
+
+	/**
+	 * Returns information about year of gos date in a way which document requires
+	 * @return year of gos date
+	 */
+	public String getGosYear() {
+		return parser.getGosYear();
+	}
+
+	/**
+	 * Returns information about year of vcr date in a way which document requires
+	 * @return year of vcr date
+	 */
+	public String getVcrYear() {
+		return parser.getVcrYear();
 	}
 
 	/** Compares just by entity values */
@@ -106,6 +165,100 @@ public class Date {
 
 		return false;
 	}
+
+
+	// parser for representation for templates
+	// wrapper that parses date entity in a way that automation requires
+	private class DateParser {
+
+
+		public DateParser() {}
+
+
+		public String getGosDay() {
+			if("".equals(gosDate)) {
+				return "";
+			} else {
+				return gosDate.substring(8);
+			}
+
+		}
+
+		public String getVcrDay() {
+			if("".equals(vcrDate)) {
+				return "";
+			} else {
+				return vcrDate.substring(8);
+			}
+		}
+
+		public String getGosMonth() {
+			if("".equals(gosDate)) {
+				return "";
+			} else {
+				return parseMonth(gosDate.substring(5, 7));
+			}
+		}
+
+		public String getVcrMonth() {
+			if("".equals(vcrDate)) {
+				return "";
+			} else {
+				return parseMonth(vcrDate.substring(5, 7));
+			}
+		}
+
+		public String getGosYear() {
+			if("".equals(gosDate)) {
+				return "";
+			} else {
+				return gosDate.substring(2, 4);
+			}
+		}
+
+		public String getVcrYear() {
+			if("".equals(vcrDate)) {
+				return "";
+			} else {
+				return vcrDate.substring(2, 4);
+			}
+		}
+
+
+		private String parseMonth(String month) {
+			switch(month)
+			{
+				case "01":
+					return "января";
+				case "02":
+					return "февраля";
+				case "03":
+					return "марта";
+				case "04":
+					return "апреля";
+				case "05":
+					return "мая";
+				case "06":
+					return "июня";
+				case "07":
+					return "июля";
+				case "08":
+					return "августа";
+				case "09":
+					return "сентября";
+				case "10":
+					return "октября";
+				case "11":
+					return "ноября";
+				case "12":
+					return "декабря";
+				default:
+					return "";
+			}
+		}
+
+	}
+
 
 
 }

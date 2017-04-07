@@ -6,12 +6,12 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
-public class VCRTest {
+public class VcrTest {
 	private int studentId;
 	private String vcrName;
 	private String vcrHead;
 	private String vcrReviewer;
-	private VCR defaultEntity;
+	private Vcr defaultEntity;
 
 
 	@Before
@@ -20,12 +20,12 @@ public class VCRTest {
 		vcrName = "name";
 		vcrHead = "head";
 		vcrReviewer = "rev";
-		defaultEntity = new VCR(studentId, vcrName, vcrHead, vcrReviewer);
+		defaultEntity = new Vcr(studentId, vcrName, vcrHead, vcrReviewer);
 	}
 
 	@Test
 	public void whenSameDataWithFullConstructorThenEqualsTrue() throws Exception {
-		VCR second = new VCR(studentId, vcrName, vcrHead, vcrReviewer);
+		Vcr second = new Vcr(studentId, vcrName, vcrHead, vcrReviewer);
 
 		assertEquals(defaultEntity, second);
 		assertTrue(defaultEntity.equals(second));
@@ -33,7 +33,7 @@ public class VCRTest {
 
 	@Test
 	public void whenDifferentDataThenEqualsFalse() {
-		VCR other = new VCR(2, vcrName, "dsf", "w");
+		Vcr other = new Vcr(2, vcrName, "dsf", "w");
 
 		assertNotEquals(defaultEntity, other);
 		assertFalse(defaultEntity.equals(other));
@@ -41,8 +41,8 @@ public class VCRTest {
 
 	@Test
 	public void whenSameDataWithSimpleConstructorThenEqualsTrue() {
-		VCR first = new VCR(studentId, vcrName);
-		VCR second = new VCR(studentId, vcrName);
+		Vcr first = new Vcr(studentId, vcrName);
+		Vcr second = new Vcr(studentId, vcrName);
 
 		assertEquals(first, second);
 		assertTrue(first.equals(second));
@@ -50,7 +50,7 @@ public class VCRTest {
 
 	@Test
 	public void whenSimpleConstructorThenAllOptionalDataAreEmptyString() {
-		VCR entity = new VCR(studentId, vcrName);
+		Vcr entity = new Vcr(studentId, vcrName);
 		String expected = "";
 
 		assertEquals(expected, entity.getHeadName());

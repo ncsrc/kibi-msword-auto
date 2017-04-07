@@ -2,6 +2,7 @@ package ru.tstu.msword_auto.entity;
 
 
 public class Student {
+
 	@PrimaryKey
 	private int studentId;
 
