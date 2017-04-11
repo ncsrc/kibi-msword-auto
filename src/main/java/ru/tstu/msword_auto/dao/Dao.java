@@ -1,6 +1,7 @@
 package ru.tstu.msword_auto.dao;
 
 
+import ru.tstu.msword_auto.dao.exceptions.AlreadyExistingException;
 import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
 import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
 
@@ -13,13 +14,13 @@ import java.util.List;
  */
 public interface Dao<T, K> {
 
-	void create(T dataset) throws DaoSystemException;
+	void create(T dataset) throws DaoSystemException, AlreadyExistingException;
 
 	T read(K pk) throws DaoSystemException, NoSuchEntityException;
 
 	List<T> readAll() throws DaoSystemException;
 
-	void update(K pk, T dataset) throws DaoSystemException;
+	void update(K pk, T dataset) throws DaoSystemException, AlreadyExistingException;
 
 	void delete(K pk) throws DaoSystemException;
 

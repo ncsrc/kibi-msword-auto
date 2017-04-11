@@ -3,9 +3,10 @@ package ru.tstu.msword_auto.dao.impl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import ru.tstu.msword_auto.dao.exceptions.AlreadyExistingException;
 import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
 import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
-import ru.tstu.msword_auto.entity.VCR;
+import ru.tstu.msword_auto.entity.Vcr;
 
 
 import java.sql.Connection;
@@ -20,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static ru.tstu.msword_auto.dao.impl.AbstractDao.EXCEPTION_ALREADY_EXISTS;
 
 
 public class VcrDaoTest {
@@ -36,8 +38,8 @@ public class VcrDaoTest {
 	private String vcrReviewer;
 
 	// entities
-	private VCR defaultEntity;
-	private VCR additionalEntity;
+	private Vcr defaultEntity;
+	private Vcr additionalEntity;
 
 
 	@Before
@@ -52,8 +54,8 @@ public class VcrDaoTest {
 		vcrHead = "head";
 		vcrReviewer = "reviewer";
 
-		defaultEntity = new VCR(studentId, vcrName, vcrHead, vcrReviewer);
-		additionalEntity = new VCR(2, vcrName, vcrHead, vcrReviewer);
+		defaultEntity = new Vcr(studentId, vcrName, vcrHead, vcrReviewer);
+		additionalEntity = new Vcr(2, vcrName, vcrHead, vcrReviewer);
 
 	}
 
@@ -87,7 +89,7 @@ public class VcrDaoTest {
 
 		adjustResultSet(resultSet, true);
 
-		VCR entity = dao.read(vcrName);
+		Vcr entity = dao.read(vcrName);
 
 		verifyQuery(VcrDao.SQL_READ_BY_PK, resultSet, 1, true);
 		verify(resultSet).close();
@@ -104,14 +106,14 @@ public class VcrDaoTest {
 
 		adjustResultSet(resultSet, false);
 
-		List<VCR> entities = dao.readAll();
+		List<Vcr> entities = dao.readAll();
 
 		verifyQuery(VcrDao.SQL_READ_ALL, resultSet, 2, true);
 		verify(resultSet).close();
 		verify(statement).close();
 
-		VCR actual1 = entities.get(0);
-		VCR actual2 = entities.get(1);
+		Vcr actual1 = entities.get(0);
+		Vcr actual2 = entities.get(1);
 		assertEquals(defaultEntity, actual1);
 		assertEquals(additionalEntity, actual2);
 
@@ -166,7 +168,7 @@ public class VcrDaoTest {
 
 		adjustResultSet(resultSet, true);
 
-		VCR entity = dao.readByForeignKey(studentId).get(0);
+		Vcr entity = dao.readByForeignKey(studentId).get(0);
 
 		verifyQuery(VcrDao.SQL_READ_BY_FK, resultSet, 1, false);
 		verify(resultSet).close();
@@ -183,7 +185,7 @@ public class VcrDaoTest {
 		when(statement.executeQuery()).thenReturn(resultSet);
 		when(resultSet.next()).thenReturn(false);
 
-		VCR entity = dao.read(vcrName);
+		Vcr entity = dao.read(vcrName);
 
 		verify(connection).prepareStatement(VcrDao.SQL_READ_BY_PK);
 		verify(statement).setString(1, vcrName);
@@ -202,7 +204,7 @@ public class VcrDaoTest {
 		when(statement.executeQuery()).thenReturn(resultSet);
 		when(resultSet.next()).thenReturn(false);
 
-		List<VCR> entities = dao.readByForeignKey(studentId);
+		List<Vcr> entities = dao.readByForeignKey(studentId);
 
 		verify(connection).prepareStatement(VcrDao.SQL_READ_BY_FK);
 		verify(statement).setInt(1, studentId);
@@ -363,6 +365,21 @@ public class VcrDaoTest {
 		verify(statement).close();
 	}
 
+	@Test(expected = AlreadyExistingException.class)
+	public void whenCreateAlreadyExistingThenException() throws Exception {
+		when(connection.prepareStatement(VcrDao.SQL_CREATE)).thenReturn(statement);
+		when(statement.executeUpdate()).thenThrow(new SQLException(EXCEPTION_ALREADY_EXISTS));
+		dao.create(defaultEntity);
+
+	}
+
+	@Test(expected = AlreadyExistingException.class)
+	public void whenUpdateAlreadyExistingThenException() throws Exception {
+		when(connection.prepareStatement(VcrDao.SQL_UPDATE)).thenReturn(statement);
+		when(statement.executeUpdate()).thenThrow(new SQLException(EXCEPTION_ALREADY_EXISTS));
+		dao.update(vcrName, defaultEntity);
+
+	}
 
 
 	private void adjustResultSet(ResultSet resultSet, boolean oneTime) throws Exception {

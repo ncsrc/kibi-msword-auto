@@ -1,6 +1,7 @@
 package ru.tstu.msword_auto.dao.impl;
 
 import ru.tstu.msword_auto.dao.Dao;
+import ru.tstu.msword_auto.dao.exceptions.AlreadyExistingException;
 import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
 import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
 import ru.tstu.msword_auto.entity.PrimaryKey;
@@ -17,6 +18,8 @@ import static ru.tstu.msword_auto.dao.ConnectionStorage.getConnection;
 
 
 abstract class AbstractDao<T, K> implements Dao<T, K> {
+	static final String EXCEPTION_ALREADY_EXISTS = "Unique index or primary key violation";
+
 	// protected in case you need direct access for connections
 	// for implementation of custom functionality not defined in Dao
 	protected Connection connection;
@@ -28,11 +31,16 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 
 
 	@Override
-	public void create(T dataset) throws DaoSystemException {
+	public void create(T dataset) throws DaoSystemException, AlreadyExistingException {
 		try(PreparedStatement statement = this.getCreationStatement(dataset)) {
 			statement.executeUpdate();
 		} catch (SQLException e) {
-			throw new DaoSystemException(e);
+			if(EXCEPTION_ALREADY_EXISTS.equals(e.getMessage())) {
+				throw new AlreadyExistingException(e);
+			} else {
+				throw new DaoSystemException(e);
+			}
+
 		}
 	}
 
@@ -50,6 +58,8 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 				}
 
 				return results.get(0);
+			} catch (SQLException e) {
+				throw new DaoSystemException(e);
 			}
 
 		} catch (SQLException e) {
@@ -69,6 +79,8 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 
 			try(ResultSet resultSet = statement.executeQuery()) {
 				return this.parseResultSet(resultSet);
+			} catch (SQLException e) {
+				throw new DaoSystemException(e);
 			}
 
 		} catch (SQLException e) {
@@ -81,11 +93,15 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 
 
 	@Override
-	public void update(K pk, T dataset) throws DaoSystemException {
+	public void update(K pk, T dataset) throws DaoSystemException, AlreadyExistingException {
 		try(PreparedStatement statement = this.getUpdateStatement(dataset, pk)) {
 			statement.executeUpdate();
 		} catch (SQLException e) {
-			throw new DaoSystemException(e);
+			if(EXCEPTION_ALREADY_EXISTS.equals(e.getMessage())) {
+				throw new AlreadyExistingException(e);
+			} else {
+				throw new DaoSystemException(e);
+			}
 		}
 
 	}

@@ -128,6 +128,8 @@ public class CourseDao extends AbstractDao<Course, Integer> implements ForeignKe
 				}
 
 				return courses;
+			} catch (SQLException e) {
+				throw new DaoSystemException(e);
 			}
 
 		} catch (SQLException e) {

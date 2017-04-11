@@ -3,6 +3,7 @@ package ru.tstu.msword_auto.dao.impl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import ru.tstu.msword_auto.dao.exceptions.AlreadyExistingException;
 import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
 import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
 import ru.tstu.msword_auto.entity.Date;
@@ -18,6 +19,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static ru.tstu.msword_auto.dao.impl.AbstractDao.EXCEPTION_ALREADY_EXISTS;
 
 
 public class DateDaoTest {
@@ -358,6 +360,44 @@ public class DateDaoTest {
         } catch (DaoSystemException e) {}
 
         verify(statement).close();
+    }
+
+    @Test(expected = AlreadyExistingException.class)
+    public void whenCreateAlreadyExistingThenException() throws Exception {
+        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
+        java.sql.Date parsedGos = new java.sql.Date(parser.parse(defaultEntity.getGosDate()).getTime());
+        java.sql.Date parsedVcr = new java.sql.Date(parser.parse(defaultEntity.getVcrDate()).getTime());
+
+        when(connection.prepareStatement(DateDao.SQL_CREATE)).thenReturn(statement);
+        when(statement.executeUpdate()).thenThrow(new SQLException(EXCEPTION_ALREADY_EXISTS));
+        dao.create(defaultEntity);
+
+        verify(connection).prepareStatement(DateDao.SQL_CREATE);
+        verify(connection).prepareStatement(DateDao.SQL_CREATE);
+        verify(statement).setString(1, groupName);
+        verify(statement).setDate(2, parsedGos);
+        verify(statement).setDate(3, parsedVcr);
+        verify(statement).executeUpdate();
+        verify(statement).close();
+
+    }
+
+    @Test(expected = AlreadyExistingException.class)
+    public void whenUpdateAlreadyExistingThenException() throws Exception {
+        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
+        java.sql.Date parsedGos = new java.sql.Date(parser.parse(defaultEntity.getGosDate()).getTime());
+        java.sql.Date parsedVcr = new java.sql.Date(parser.parse(defaultEntity.getVcrDate()).getTime());
+        when(connection.prepareStatement(DateDao.SQL_UPDATE)).thenReturn(statement);
+        when(statement.executeUpdate()).thenThrow(new SQLException(EXCEPTION_ALREADY_EXISTS));
+        dao.update(groupName, defaultEntity);
+
+        verify(connection).prepareStatement(DateDao.SQL_UPDATE);
+        verify(statement).setString(1, "asd");
+        verify(statement).setDate(2, parsedGos);
+        verify(statement).setDate(3, parsedVcr);
+        verify(statement).executeUpdate();
+        verify(statement).close();
+
     }
 
 

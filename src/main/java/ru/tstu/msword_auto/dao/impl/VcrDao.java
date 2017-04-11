@@ -4,7 +4,7 @@ package ru.tstu.msword_auto.dao.impl;
 import ru.tstu.msword_auto.dao.ForeignKeyReadableDao;
 import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
 import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
-import ru.tstu.msword_auto.entity.VCR;
+import ru.tstu.msword_auto.entity.Vcr;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class VcrDao extends AbstractDao<VCR, String> implements ForeignKeyReadableDao<VCR, Integer> {
+public class VcrDao extends AbstractDao<Vcr, String> implements ForeignKeyReadableDao<Vcr, Integer> {
 
 	// sql statements
 	static final String SQL_CREATE = "INSERT INTO VCRs VALUES(?, ?, ?, ?)";
@@ -37,12 +37,12 @@ public class VcrDao extends AbstractDao<VCR, String> implements ForeignKeyReadab
 
 
 	@Override
-	public List<VCR> readByForeignKey(Integer fk) throws DaoSystemException, NoSuchEntityException {
+	public List<Vcr> readByForeignKey(Integer fk) throws DaoSystemException, NoSuchEntityException {
 		try(PreparedStatement statement = this.connection.prepareStatement(SQL_READ_BY_FK)) {
 			statement.setInt(1, fk);
 
 			try(ResultSet resultSet = statement.executeQuery()) {
-				List<VCR> vcrs = parseResultSet(resultSet);
+				List<Vcr> vcrs = parseResultSet(resultSet);
 
 				if(vcrs.isEmpty()){
 					throw new NoSuchEntityException();
@@ -58,7 +58,7 @@ public class VcrDao extends AbstractDao<VCR, String> implements ForeignKeyReadab
 	}
 
 	@Override
-	protected PreparedStatement getCreationStatement(VCR dataset) throws SQLException {
+	protected PreparedStatement getCreationStatement(Vcr dataset) throws SQLException {
 		PreparedStatement statement = connection.prepareStatement(SQL_CREATE);
 		statement.setInt(1, dataset.getStudentId());
 		statement.setString(2, dataset.getName());
@@ -80,7 +80,7 @@ public class VcrDao extends AbstractDao<VCR, String> implements ForeignKeyReadab
 	}
 
 	@Override
-	protected PreparedStatement getUpdateStatement(VCR dataset, String pk) throws SQLException {
+	protected PreparedStatement getUpdateStatement(Vcr dataset, String pk) throws SQLException {
 		PreparedStatement statement = connection.prepareStatement(SQL_UPDATE);
 		statement.setString(1, dataset.getName());
 		statement.setString(2, dataset.getHeadName());
@@ -102,10 +102,10 @@ public class VcrDao extends AbstractDao<VCR, String> implements ForeignKeyReadab
 	}
 
 	@Override
-	protected List<VCR> parseResultSet(ResultSet resultSet) throws SQLException {
-		List<VCR> list = new ArrayList<>();
+	protected List<Vcr> parseResultSet(ResultSet resultSet) throws SQLException {
+		List<Vcr> list = new ArrayList<>();
 		while(resultSet.next()) {
-			list.add(new VCR(
+			list.add(new Vcr(
 					resultSet.getInt(TABLE_STUDENT_ID),
 					resultSet.getString(TABLE_VCR_NAME),
 					resultSet.getString(TABLE_VCR_HEAD),

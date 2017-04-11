@@ -44,20 +44,21 @@ public class GekHeadDao extends AbstractDao<GekHead, Integer> {
 
 
 	public GekHead readByCourseName(String courseName) throws DaoSystemException, NoSuchEntityException {
-		try {
-			PreparedStatement statement = connection.prepareStatement(SQL_READ_BY_COURSENAME);
+		try(PreparedStatement statement = connection.prepareStatement(SQL_READ_BY_COURSENAME)) {
 			statement.setString(1, courseName);
-			ResultSet resultSet = statement.executeQuery();
-			List<GekHead> entities = parseResultSet(resultSet);
 
-			if(entities.isEmpty()) {
-				throw new NoSuchEntityException();
+			try(ResultSet resultSet = statement.executeQuery()) {
+				List<GekHead> entities = parseResultSet(resultSet);
+
+				if(entities.isEmpty()) {
+					throw new NoSuchEntityException();
+				}
+
+				return entities.get(0);
+			} catch (SQLException e) {
+				throw new DaoSystemException(e);
 			}
 
-			resultSet.close();
-			statement.close();
-
-			return entities.get(0);
 		} catch (SQLException e) {
 			throw new DaoSystemException(e);
 		}

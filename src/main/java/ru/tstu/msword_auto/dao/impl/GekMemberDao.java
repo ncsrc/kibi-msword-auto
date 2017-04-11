@@ -47,6 +47,8 @@ public class GekMemberDao extends AbstractDao<GekMember, Integer> implements For
 				}
 
 				return gekMembers;
+			} catch (SQLException e) {
+				throw new DaoSystemException(e);
 			}
 
 		} catch (SQLException e) {

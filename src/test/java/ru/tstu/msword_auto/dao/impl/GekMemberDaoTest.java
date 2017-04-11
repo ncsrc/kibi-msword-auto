@@ -4,6 +4,7 @@ package ru.tstu.msword_auto.dao.impl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import ru.tstu.msword_auto.dao.exceptions.AlreadyExistingException;
 import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
 import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
 import ru.tstu.msword_auto.entity.GekMember;
@@ -20,6 +21,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static ru.tstu.msword_auto.dao.impl.AbstractDao.EXCEPTION_ALREADY_EXISTS;
 
 
 public class GekMemberDaoTest {
@@ -357,6 +359,35 @@ public class GekMemberDaoTest {
         } catch (DaoSystemException e) {}
 
         verify(statement).close();
+    }
+
+    @Test(expected = AlreadyExistingException.class)
+    public void whenCreateAlreadyExistingThenException() throws Exception {
+        when(connection.prepareStatement(GekMemberDao.SQL_CREATE)).thenReturn(statement);
+        when(statement.executeUpdate()).thenThrow(new SQLException(EXCEPTION_ALREADY_EXISTS));
+        dao.create(defaultEntity);
+
+        verify(connection).prepareStatement(GekMemberDao.SQL_CREATE);
+        verify(statement).setInt(1, headId);
+        verify(statement).setString(2, gekMember);
+        verify(statement).executeUpdate();
+        verify(statement).close();
+
+    }
+
+    @Test(expected = AlreadyExistingException.class)
+    public void whenUpdateAlreadyExistingThenException() throws Exception {
+        when(connection.prepareStatement(GekMemberDao.SQL_UPDATE)).thenReturn(statement);
+        when(statement.executeUpdate()).thenThrow(new SQLException(EXCEPTION_ALREADY_EXISTS));
+        dao.update(memberId, defaultEntity);
+
+        verify(connection).prepareStatement(GekMemberDao.SQL_UPDATE);
+        verify(statement).setInt(1, headId);
+        verify(statement).setString(2, gekMember);
+        verify(statement).setInt(3, memberId);
+        verify(statement).executeUpdate();
+        verify(statement).close();
+
     }
 
 

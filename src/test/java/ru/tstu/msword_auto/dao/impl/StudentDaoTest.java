@@ -4,6 +4,7 @@ package ru.tstu.msword_auto.dao.impl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import ru.tstu.msword_auto.dao.exceptions.AlreadyExistingException;
 import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
 import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
 import ru.tstu.msword_auto.entity.Student;
@@ -21,6 +22,7 @@ import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static ru.tstu.msword_auto.dao.impl.AbstractDao.EXCEPTION_ALREADY_EXISTS;
 
 
 public class StudentDaoTest {
@@ -334,6 +336,21 @@ public class StudentDaoTest {
 		verify(statement).close();
 	}
 
+	@Test(expected = AlreadyExistingException.class)
+	public void whenCreateAlreadyExistingThenException() throws Exception {
+		when(connection.prepareStatement(StudentDao.SQL_CREATE)).thenReturn(statement);
+		when(statement.executeUpdate()).thenThrow(new SQLException(EXCEPTION_ALREADY_EXISTS));
+		dao.create(defaultEntity);
+
+	}
+
+	@Test(expected = AlreadyExistingException.class)
+	public void whenUpdateAlreadyExistingThenException() throws Exception {
+		when(connection.prepareStatement(StudentDao.SQL_UPDATE)).thenReturn(statement);
+		when(statement.executeUpdate()).thenThrow(new SQLException(EXCEPTION_ALREADY_EXISTS));
+		dao.update(studentId, defaultEntity);
+
+	}
 
 
 	private void adjustResultSet(ResultSet resultSet, boolean oneTime) throws Exception {

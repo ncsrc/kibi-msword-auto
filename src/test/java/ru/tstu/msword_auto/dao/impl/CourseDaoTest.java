@@ -4,6 +4,7 @@ package ru.tstu.msword_auto.dao.impl;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import ru.tstu.msword_auto.dao.exceptions.AlreadyExistingException;
 import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
 import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
 import ru.tstu.msword_auto.entity.Course;
@@ -379,6 +380,42 @@ public class CourseDaoTest {
         } catch (DaoSystemException e) {}
 
         verify(statement).close();
+    }
+
+    @Test(expected = AlreadyExistingException.class)
+    public void whenCreateAlreadyExistingThenException() throws Exception {
+        when(connection.prepareStatement(SQL_CREATE)).thenReturn(statement);
+        when(statement.executeUpdate()).thenThrow(new SQLException(EXCEPTION_ALREADY_EXISTS));
+        dao.create(defaultEntity);
+
+        verify(connection).prepareStatement(SQL_CREATE);
+        verify(statement).setInt(1, studentId);
+        verify(statement).setString(2, groupName);
+        verify(statement).setString(3, code);
+        verify(statement).setString(4, courseName);
+        verify(statement).setString(5, profile);
+        verify(statement).setString(6, qualification);
+        verify(statement).executeUpdate();
+        verify(statement).close();
+
+    }
+
+    @Test(expected = AlreadyExistingException.class)
+    public void whenUpdateAlreadyExistingThenException() throws Exception {
+        when(connection.prepareStatement(SQL_UPDATE)).thenReturn(statement);
+        when(statement.executeUpdate()).thenThrow(new SQLException(EXCEPTION_ALREADY_EXISTS));
+        dao.update(studentId, defaultEntity);
+
+        verify(connection).prepareStatement(SQL_UPDATE);
+        verify(statement).setString(1, groupName);
+        verify(statement).setString(2, code);
+        verify(statement).setString(3, courseName);
+        verify(statement).setString(4, profile);
+        verify(statement).setString(5, qualification);
+        verify(statement).setInt(6, studentId);
+        verify(statement).executeUpdate();
+        verify(statement).close();
+
     }
 
 
