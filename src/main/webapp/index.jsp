@@ -11,7 +11,7 @@
     <link rel="icon" href="favicon.png">
 
     <meta charset="UTF-8">
-    <title>MSWord-auto</title>
+    <title>ВКР</title>
 </head>
 <body>
     <div class="wrapper">

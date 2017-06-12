@@ -6,6 +6,7 @@ import ru.tstu.msword_auto.dao.ConnectionStorage;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import java.sql.Connection;
 
 public class ConnectionStorageInitializer implements ServletContextListener {
 
@@ -13,7 +14,8 @@ public class ConnectionStorageInitializer implements ServletContextListener {
     @Override
     public void contextInitialized(ServletContextEvent servletContextEvent) {
         ServletContext servletContext = servletContextEvent.getServletContext();
-        ConnectionStorage.setConnection(servletContext);
+        Connection connection = (Connection) servletContext.getAttribute("connection");
+        ConnectionStorage.setConnection(connection);
     }
 
     @Override

@@ -1,24 +1,29 @@
-package ru.tstu.msword_auto.webapp;
+package ru.tstu.msword_auto.webapp.servlets;
 
 
-import ru.tstu.msword_auto.dao.exceptions.DaoException;
+import ru.tstu.msword_auto.dao.exceptions.AlreadyExistingException;
+import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
+import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
 import ru.tstu.msword_auto.dao.impl.VcrDao;
 import ru.tstu.msword_auto.entity.Vcr;
 
 import javax.servlet.http.HttpServletRequest;
-import java.sql.SQLException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-
-// TODO add exception if vcr_name already exist
 
 public class VcrHandler extends AbstractTableHandler {
-	private static final String PARAM_STUDENT_ID = "studentId";
-	private static final String PARAM_NAME = "name";
-	private static final String PARAM_HEAD = "head";
-	private static final String PARAM_REVIEWER = "reviewer";
+	static final String PARAM_STUDENT_ID = "studentId";
+	static final String PARAM_NAME = "name";
+	static final String PARAM_HEAD = "head";
+	static final String PARAM_REVIEWER = "reviewer";
+	static final String RESPONSE_ERROR_EMPTY_VCR_NAME = "Укажите тему ВКР.";
+	static final String RESPONSE_ERROR_VCR_NAME_ALREADY_EXIST = "Введенная тема ВКР уже есть у кого-то из студентов.";
+	static final String RESPONSE_ERROR_ROW_EXISTS = "У студента может быть только одна ВКР.";
 
-	private VcrDao dao = new VcrDao();
+	VcrDao dao = new VcrDao();
 
 
 	@Override
@@ -28,8 +33,10 @@ public class VcrHandler extends AbstractTableHandler {
 		try {
 			List<Vcr> table = dao.readByForeignKey(id);
 			return gson.toJson(table);
-		}catch(SQLException e){
+		} catch (DaoSystemException e) {
 			throw new HandlingException(RESPONSE_ERROR_BD);
+		} catch (NoSuchEntityException e) {
+			return gson.toJson(Collections.EMPTY_LIST);
 		}
 
 	}
@@ -40,50 +47,87 @@ public class VcrHandler extends AbstractTableHandler {
 		String vcrName = request.getParameter(PARAM_NAME);
 		String vcrHead = request.getParameter(PARAM_HEAD);
 		String vcrReviewer = request.getParameter(PARAM_REVIEWER);
-		// TODO add empty field validation
+		Map<String, String> validatedParams = validateParameters(vcrName, vcrHead, vcrReviewer);
 
-		Vcr entity = new Vcr(id, vcrName, vcrHead, vcrReviewer);
-		try{
+		Vcr entity = new Vcr(
+				id,
+				validatedParams.get(PARAM_NAME),
+				validatedParams.get(PARAM_HEAD),
+				validatedParams.get(PARAM_REVIEWER)
+		);
+
+		try {
 			dao.create(entity);
-
-			return gson.toJson(entity);
-		}catch(SQLException | DaoException e){	// TODO separate handling
+		} catch (DaoSystemException e) {
 			throw new HandlingException(RESPONSE_ERROR_BD);
+		} catch (AlreadyExistingException e) {
+			String errorMessage = e.getMessage();
+			if(errorMessage.contains("vcr_exists")) {
+				throw new HandlingException(RESPONSE_ERROR_VCR_NAME_ALREADY_EXIST);
+			} else {
+				throw new HandlingException(RESPONSE_ERROR_ROW_EXISTS);
+			}
 		}
-
+		return gson.toJson(entity);
 	}
 
 	@Override
 	protected String doUpdate(HttpServletRequest request) throws HandlingException {
+
+		// TODO validate ?
 		String key = request.getParameter(PARAM_KEY);
+
 		String vcrName = request.getParameter(PARAM_NAME);
 		String vcrHead = request.getParameter(PARAM_HEAD);
 		String vcrReviewer = request.getParameter(PARAM_REVIEWER);
 
-		Vcr entity = new Vcr(0, vcrName, vcrHead, vcrReviewer);
-		try {
-			dao.update(key, entity);
+		Map<String, String> validatedParams = validateParameters(vcrName, vcrHead, vcrReviewer);
 
-			return RESPONSE_OK;
-		} catch(SQLException e){
-			throw new HandlingException(RESPONSE_ERROR_BD);
-		}
+		Vcr entity = new Vcr();
+		entity.setName(validatedParams.get(PARAM_NAME));
+		entity.setHead(validatedParams.get(PARAM_HEAD));
+		entity.setReviewer(validatedParams.get(PARAM_REVIEWER));
 
+		return update(dao, entity, key, RESPONSE_ERROR_VCR_NAME_ALREADY_EXIST);
 	}
 
 	@Override
 	protected String doDelete(HttpServletRequest request) throws HandlingException {
+
+		// TODO validate ?
 		String key = request.getParameter(PARAM_NAME);
 
 		try {
 			dao.delete(key);
-
 			return RESPONSE_OK;
-		} catch(SQLException e){
+		} catch (DaoSystemException e) {
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
 
 	}
+
+
+	private Map<String, String> validateParameters(String vcrName, String vcrHead, String vcrReviewer) throws HandlingException {
+		Map<String, String> results = new HashMap<>();
+		if(vcrName == null || vcrName.isEmpty()) {
+			throw new HandlingException(RESPONSE_ERROR_EMPTY_VCR_NAME);	// vcr should be specified and can't be avoided
+		}
+
+		if(vcrHead == null) {
+			vcrHead = "";
+		}
+
+		if(vcrReviewer == null) {
+			vcrReviewer = "";
+		}
+
+		results.put(PARAM_NAME, vcrName);
+		results.put(PARAM_HEAD, vcrHead);
+		results.put(PARAM_REVIEWER, vcrReviewer);
+
+		return results;
+	}
+
 
 }
 

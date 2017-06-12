@@ -1,34 +1,42 @@
-package ru.tstu.msword_auto.webapp;
+package ru.tstu.msword_auto.webapp.servlets;
 
 
-import ru.tstu.msword_auto.dao.exceptions.DaoException;
-import ru.tstu.msword_auto.entity.Course;
+import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
+import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
+import ru.tstu.msword_auto.dao.impl.CourseDao;
+import ru.tstu.msword_auto.dao.impl.DateDao;
+import ru.tstu.msword_auto.entity.*;
+import ru.tstu.msword_auto.entity.Date;
 
 import javax.servlet.http.HttpServletRequest;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 
 public class CourseHandler extends AbstractTableHandler {
-	private static final String PARAM_OPTIONS = "options";
-	private static final String PARAM_STUDENT_ID = "studentId";
-	private static final String PARAM_COURSE_NAME = "name";
-	private static final String PARAM_STUDENT_PROFILE = "profile";
-	private static final String PARAM_STUDENT_QUALIFICATION = "qualification";
+	static final String PARAM_OPTIONS = "options";
+	static final String PARAM_OPTIONS_PROFILE_VALUE = "value";
+	static final String PARAM_STUDENT_ID = "studentId";
+	static final String PARAM_SUBGROUP_ID = "subgroupId";
+	static final String PARAM_GROUP_NAME = "groupName";
+	static final String PARAM_COURSE_NAME = "courseName"; // TODO fix in tables
+	static final String PARAM_STUDENT_PROFILE = "profile";
+	static final String PARAM_STUDENT_QUALIFICATION = "qualification";
+	static final String RESPONSE_ERROR_ALREADY_EXISTS = "У студента может быть только одно направление обучения.";
 
-	private CourseDao dao = new CourseDao();
+	CourseDao dao = new CourseDao();
 
 
 	@Override
 	protected String doList(HttpServletRequest request) throws HandlingException {
 		int studentId = Integer.parseInt(request.getParameter(PARAM_STUDENT_ID));
 
-		try{
+		try {
 			List<Course> courses = dao.readByForeignKey(studentId);
 			return gson.toJson(courses);
-		}catch(SQLException e){
+		} catch (DaoSystemException e) {
 			throw new HandlingException(RESPONSE_ERROR_BD);
+		} catch (NoSuchEntityException e) {
+			return gson.toJson(Collections.emptyList());
 		}
 
 	}
@@ -36,75 +44,115 @@ public class CourseHandler extends AbstractTableHandler {
 	@Override
 	protected String doCreate(HttpServletRequest request) throws HandlingException {
 		int studentId = Integer.parseInt(request.getParameter(PARAM_STUDENT_ID));
+		int subgroupId = Integer.valueOf(request.getParameter(PARAM_SUBGROUP_ID));
+		String groupName = request.getParameter(PARAM_GROUP_NAME);
 		String courseName = request.getParameter(PARAM_COURSE_NAME);
-		String studentProfile = request.getParameter(PARAM_STUDENT_PROFILE);
-		String studentQualification = request.getParameter(PARAM_STUDENT_QUALIFICATION);
-		// TODO add empty field validation
-
-		String courseCode = defineCode(courseName, studentQualification);
-
-		Course entity = new Course(courseCode, studentId, studentQualification, courseName, studentProfile);
-		try {
-			dao.create(entity);
-
-			return gson.toJson(entity);
-		} catch(SQLException | DaoException e){
-			throw new HandlingException(RESPONSE_ERROR_BD);
-		}
-
-	}
-
-	@Override	// now pk=fk, so TODO use pk instead
-	protected String doUpdate(HttpServletRequest request) throws HandlingException {
-		int id = Integer.parseInt(request.getParameter(PARAM_STUDENT_ID));
-		String course = request.getParameter(PARAM_COURSE_NAME);
 		String profile = request.getParameter(PARAM_STUDENT_PROFILE);
 		String qualification = request.getParameter(PARAM_STUDENT_QUALIFICATION);
-		String code = defineCode(course, qualification);
-		Course entity = new Course(code, 0, qualification, course, profile);
-		// TODO add empty field validation
+		Map<String, String> validatedParams = validateParams(groupName, courseName, profile, qualification);
 
-		try {
-			// TODO change to usual
-			dao.updateByForeignKey(id, entity);
+		Course course = new Course(
+				studentId,
+				subgroupId,
+				validatedParams.get(PARAM_GROUP_NAME),
+				validatedParams.get(PARAM_STUDENT_QUALIFICATION),
+				validatedParams.get(PARAM_COURSE_NAME),
+				validatedParams.get(PARAM_STUDENT_PROFILE)
+		);
 
-			return RESPONSE_OK;
-		} catch(SQLException e){
-			throw new HandlingException(RESPONSE_ERROR_BD);
-		}
-
+		create(dao, course, RESPONSE_ERROR_ALREADY_EXISTS);
+		return gson.toJson(course);
 	}
 
-	@Override	// now pk=fk
+	@Override
+	protected String doUpdate(HttpServletRequest request) throws HandlingException {
+		int id = Integer.parseInt(request.getParameter(PARAM_STUDENT_ID));
+		int subgroupId = Integer.valueOf(request.getParameter(PARAM_SUBGROUP_ID));
+		String groupName = request.getParameter(PARAM_GROUP_NAME);
+		String courseName = request.getParameter(PARAM_COURSE_NAME);
+		String profile = request.getParameter(PARAM_STUDENT_PROFILE);
+		String qualification = request.getParameter(PARAM_STUDENT_QUALIFICATION);
+		Map<String, String> validatedParams = validateParams(groupName, courseName, profile, qualification);
+
+		Course course = new Course();
+		course.setSubgroupId(subgroupId);
+		course.setGroupName(validatedParams.get(PARAM_GROUP_NAME));
+		course.setCourseName(validatedParams.get(PARAM_COURSE_NAME));
+		course.setProfile(validatedParams.get(PARAM_STUDENT_PROFILE));
+		course.setQualification(validatedParams.get(PARAM_STUDENT_QUALIFICATION));
+
+		return update(dao, course, id, RESPONSE_ERROR_ALREADY_EXISTS);
+	}
+
+	@Override
 	protected String doDelete(HttpServletRequest request) throws HandlingException {
-		int key = Integer.parseInt(request.getParameter(PARAM_STUDENT_ID));
+		int id = Integer.parseInt(request.getParameter(PARAM_STUDENT_ID));
 
 		try {
-			// TODO change to usual
-			dao.deleteByForeignKey(key);
-
+			dao.delete(id);
 			return RESPONSE_OK;
-		} catch(SQLException e){
+		} catch (DaoSystemException e) {
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
 
 	}
 
-	// TODO: refactor(rename)
 	@Override
 	protected String handleOptions(HttpServletRequest req) {
 		String request = req.getParameter(PARAM_OPTIONS);
 		List<String> options = new ArrayList<>();
-		if(request.equals("Бизнес-информатика")) {
-			options.add("Информационные технологии в бизнесе");
-		} else if(request.equals("Торговое дело")){
-			options.add("Коммерция");
-			options.add("Коммерческая деятельность");
+
+		if("profile".equals(request)) {
+			String value = req.getParameter(PARAM_OPTIONS_PROFILE_VALUE);
+			if(value.equals("Бизнес-информатика")) {
+				options.add("Информационные технологии в бизнесе");
+			} else if(value.equals("Торговое дело")){
+				options.add("Коммерция");
+				options.add("Коммерческая деятельность");
+			}
+		} else if("group".equals(request)) {
+			String value = req.getParameter(PARAM_OPTIONS_PROFILE_VALUE);
+			DateDao dateDao = new DateDao();
+			try {
+				for(Date date : dateDao.readByGroupName(value)) {
+					options.add(String.valueOf(date.getSubgroupId()));
+				}
+			} catch (DaoSystemException e) {
+				// return empty list
+			}
 		}
 
 		return gson.toJson(options);
 	}
 
+
+	private Map<String, String> validateParams(String groupName, String courseName, String profile, String qualification) {
+		Map<String, String> validatedParams = new HashMap<>();
+		String emptyString = "";
+
+		if(groupName == null) {
+			groupName = emptyString;
+		}
+
+		if(courseName == null) {
+			courseName = emptyString;
+		}
+
+		if(profile == null) {
+			profile = emptyString;
+		}
+
+		if(qualification == null) {
+			qualification = emptyString;
+		}
+
+		validatedParams.put(PARAM_GROUP_NAME, groupName);
+		validatedParams.put(PARAM_COURSE_NAME, courseName);
+		validatedParams.put(PARAM_STUDENT_PROFILE, profile);
+		validatedParams.put(PARAM_STUDENT_QUALIFICATION, qualification);
+
+		return validatedParams;
+	}
 
 }
 

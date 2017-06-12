@@ -1,4 +1,4 @@
-package ru.tstu.msword_auto.webapp;
+package ru.tstu.msword_auto.webapp.servlets;
 
 
 public class HandlingException extends Exception

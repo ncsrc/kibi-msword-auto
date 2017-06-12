@@ -1,25 +1,26 @@
-package ru.tstu.msword_auto.webapp;
+package ru.tstu.msword_auto.webapp.servlets;
 
-import ru.tstu.msword_auto.dao.exceptions.DaoException;
-import ru.tstu.msword_auto.dao.DateDao;
+import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
+import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
+import ru.tstu.msword_auto.dao.impl.DateDao;
 import ru.tstu.msword_auto.entity.Date;
-import ru.tstu.msword_auto.entity.DateFormatException;
 
 import javax.servlet.http.HttpServletRequest;
-import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class DateHandler extends AbstractTableHandler {
-	private static final String PARAM_ID = "id";
-	private static final String PARAM_DATE_GOS = "gosDate";
-	private static final String PARAM_DATE_VCR = "vcrDate";
-	private static final String RESPONSE_ERROR_DATE_FORMAT = "Неправильный формат даты. Должен быть: yyyy-mm-dd";
+	static final String PARAM_DATE_ID = "dateId";
+	static final String PARAM_GROUP_ID = "subgroupId";
+	static final String PARAM_GROUP = "groupName";
+	static final String PARAM_DATE_GOS = "gosDate";
+	static final String PARAM_DATE_VCR = "vcrDate";
+	static final String RESPONSE_ERROR_EMPTY_GROUP_NAME = "Укажите группу.";
+	static final String RESPONSE_ERROR_GROUP_NAME_ALREADY_EXISTS = "Даты по данной группе уже указаны.";
 
-	// TODO remove
-	private static final String RESPONSE_ERROR_EMPTY_DATE = "Укажите обе даты";
-
-	private DateDao dao = new DateDao();
+	DateDao dao = new DateDao();
 
 
 	@Override
@@ -27,71 +28,107 @@ public class DateHandler extends AbstractTableHandler {
 		try {
 			List<Date> dates = dao.readAll();
 			return gson.toJson(dates);
-		} catch(SQLException e){
+		} catch (DaoSystemException e) {
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
 	}
 
 	@Override
 	protected String doCreate(HttpServletRequest request) throws HandlingException {
+		String groupName = request.getParameter(PARAM_GROUP);
+		String dateGos = request.getParameter(PARAM_DATE_GOS);
+		String dateVcr = request.getParameter(PARAM_DATE_VCR);
+		Map<String, String> validatedParams = validateParameters(groupName, dateGos, dateVcr);
+
+		int newGroupId = 0;
 		try {
-			// TODO move parameter extraction outside try block
-
-			String dateGos = request.getParameter(PARAM_DATE_GOS);
-			String dateVcr = request.getParameter(PARAM_DATE_VCR);
-
-			// vcr date may be unknown. remove?
-//			if(dateGos.isEmpty() || dateVcr.isEmpty()){
-//				throw new HandlingException(RESPONSE_ERROR_EMPTY_DATE);
-//			}
-
-			Date dateEntity = new Date(0, dateGos, dateVcr);
-			dao.create(dateEntity);
-
-			dateEntity = new Date(dao.lastInsertId(), dateGos, dateVcr); // TODO fix necessity of making new instance
-			return gson.toJson(dateEntity);
-		} catch(SQLException | DaoException e){	// TODO separate DaoException handling
+			int lastGroupId = dao.readByGroupName(groupName).size();
+			newGroupId = lastGroupId + 1;
+		} catch (DaoSystemException e) {
 			throw new HandlingException(RESPONSE_ERROR_BD);
-		} catch(DateFormatException e){
-			throw new HandlingException(RESPONSE_ERROR_DATE_FORMAT);
 		}
+
+		Date date = new Date();
+		date.setSubgroupId(newGroupId);
+		date.setGroupName(validatedParams.get(PARAM_GROUP));
+		date.setGosDate(validatedParams.get(PARAM_DATE_GOS));
+		date.setVcrDate(validatedParams.get(PARAM_DATE_VCR));
+
+		int insertedId = create(dao, date, RESPONSE_ERROR_GROUP_NAME_ALREADY_EXISTS);
+		date.setDateId(insertedId);
+		return gson.toJson(date);
 	}
 
 	@Override
 	protected String doUpdate(HttpServletRequest request) throws HandlingException {
+		int key = Integer.valueOf(request.getParameter(PARAM_DATE_ID));
+		int groupId = 0;
+		String group = request.getParameter(PARAM_GROUP);
+		String dateGos = request.getParameter(PARAM_DATE_GOS);
+		String dateVcr = request.getParameter(PARAM_DATE_VCR);
+		Map<String, String> validatedParams = validateParameters(group, dateGos, dateVcr);
+
+		boolean sameGroup = false;
+		// TODO set manually, if different group -> check and update id
 		try {
-			// TODO move parameter extraction outside try block
-
-			int id = Integer.parseInt(request.getParameter(PARAM_ID));
-
-			String dateGos = request.getParameter(PARAM_DATE_GOS);
-			String dateVcr = request.getParameter(PARAM_DATE_VCR);
-
-			// TODO remove, they can be empty
-			if(dateGos.isEmpty() || dateVcr.isEmpty()){
-				throw new HandlingException(RESPONSE_ERROR_EMPTY_DATE);
+			groupId = dao.readByGroupName(group).size();
+			String groupName = dao.read(key).getGroupName();
+			if(group.equals(groupName)) {
+				sameGroup = true;
 			}
-
-			dao.update(id, new Date(0, dateGos, dateVcr));
-			return RESPONSE_OK;
-		} catch(SQLException e){
+		} catch (DaoSystemException e) {
 			throw new HandlingException(RESPONSE_ERROR_BD);
-		} catch(DateFormatException e){
-			throw new HandlingException(RESPONSE_ERROR_DATE_FORMAT);
+		} catch (NoSuchEntityException e) {
+			/*NOP*/
 		}
+
+		if(!sameGroup) {
+			groupId++;
+		}
+
+		Date date = new Date();
+		date.setSubgroupId(groupId);
+		date.setGroupName(validatedParams.get(PARAM_GROUP));
+		date.setGosDate(validatedParams.get(PARAM_DATE_GOS));
+		date.setVcrDate(validatedParams.get(PARAM_DATE_VCR));
+
+		return update(dao, date, key, RESPONSE_ERROR_GROUP_NAME_ALREADY_EXISTS);
 	}
 
 	@Override
 	protected String doDelete(HttpServletRequest request) throws HandlingException {
-		try {
-			// TODO move parameter extraction outside try block
+		int key = Integer.valueOf(request.getParameter(PARAM_DATE_ID));
 
-			int id = Integer.parseInt(request.getParameter(PARAM_ID));
-			dao.delete(id);
+		try {
+			dao.delete(key);
 			return RESPONSE_OK;
-		} catch(SQLException e){
+		} catch (DaoSystemException e) {
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
+	}
+
+
+	private Map<String, String> validateParameters(String groupName, String gosDate, String vcrName) throws HandlingException {
+		Map<String, String> validatedParams = new HashMap<>();
+		String emptyString = "";
+
+		if(groupName == null || groupName.isEmpty()) {
+			throw new HandlingException(RESPONSE_ERROR_EMPTY_GROUP_NAME);
+		}
+
+		if(gosDate == null) {
+			gosDate = emptyString;
+		}
+
+		if(vcrName == null) {
+			vcrName = emptyString;
+		}
+
+		validatedParams.put(PARAM_GROUP, groupName);
+		validatedParams.put(PARAM_DATE_GOS, gosDate);
+		validatedParams.put(PARAM_DATE_VCR, vcrName);
+
+		return validatedParams;
 	}
 
 

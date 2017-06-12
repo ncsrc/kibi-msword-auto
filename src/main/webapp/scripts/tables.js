@@ -19,12 +19,34 @@ $(document).ready(function () {
             deleteAction: 'dateHandler?table=date&action=delete'
         },
         fields: {
-            id: {
-                title: 'id',
+            dateId: {
                 key: true,
+                list: false, // debug
+                create: false,
+                edit: false
+            },
+            subgroupId: {
+                title: '№',
                 create: false,
                 edit: false,
-                list: false // true for debug
+                list: true
+            },
+            groupName: {
+                title: 'Группа',
+                options: {
+                    'ББИ-41':'ББИ-41',
+                    'ББИ-41в':'ББИ-41в',
+                    'БТД-41':'БТД-41',
+                    'БТД-31у':'БТД-31у',
+                    'БТД-41з':'БТД-41з',
+                    'БТД-31зу':'БТД-31зу',
+                    'ККД-31':'ККД-31',
+                    'ККД-32':'ККД-32',
+                    'МБИ-21':'МБИ-21',
+                    'МБИ-21в':'МБИ-21в',
+                    'МБИ-21з':'МБИ-21з',
+                    'МТД-21':'МТД-21'
+                }
             },
             gosDate: {
                 title: 'По приему гос экзамена',
@@ -50,12 +72,22 @@ $(document).ready(function () {
             deleteAction: 'gekHeadHandler?action=delete'
         },
         fields: {
-            head: {
-                title: 'Председатель',
+            gekId: {    // trues for debug
+                title: 'id',
                 key: true,
-                create: true,
-                list: true,
-                edit: true
+                create: false,
+                list: false,
+                edit: false
+            },
+            courseName: {
+                title: 'Обр. программа',
+                options: {
+                    'Бизнес-информатика':'Бизнес-информатика',
+                    'Торговое дело':'Торговое дело'
+                }
+            },
+            head: {
+                title: 'Председатель'
             },
             subhead: {
                 title: 'Заместитель'
@@ -69,30 +101,39 @@ $(document).ready(function () {
                 sorting: false,
                 edit: false,
                 create: false,
-                display: function (data) {
+                display: function (gekHeadData) {
                     //Create an image that will be used to open child table
                     var $img = $('<img src="scripts/jtable/themes/lightcolor/blue/list_metro.png" title="Список членов ГЭК" />');
                     //Open child table when user clicks the image
                     $img.click(function () {
+
+                        var gekHeadId = gekHeadData.record.gekId;
+
                         gekTable.jtable('openChildTable',
                             $img.closest('tr'),
                             {
                                 title: 'Члены ГЭК',
                                 actions: {
-                                    listAction: 'gekMembersHandler?action=list',
-                                    createAction: 'gekMembersHandler?action=create',
-                                    updateAction: 'gekMembersHandler?action=update',
+                                    listAction: 'gekMembersHandler?action=list&gekHeadId=' + gekHeadId,
+                                    createAction: 'gekMembersHandler?action=create&gekHeadId=' + gekHeadId,
+                                    updateAction: 'gekMembersHandler?action=update&gekHeadId=' + gekHeadId,
                                     deleteAction: 'gekMembersHandler?action=delete'
                                 },
                                 fields: {
-                                    head: {     // TODO remove it
+                                    gekMemberId: {
+                                        title: 'id',
+                                        key: true,
                                         create: false,
                                         edit: false,
-                                        list: false,
-                                        type: 'hidden'
+                                        list: false
+                                    },
+                                    gekHeadId: {
+                                        title: 'внешн. id',
+                                        create: false,
+                                        edit: false,
+                                        list: false
                                     },
                                     member: {
-                                        key: true,
                                         create: true,
                                         edit: true,
                                         list: true,
@@ -103,6 +144,7 @@ $(document).ready(function () {
                                 data.childTable.jtable('load');
                             });
                     });
+
                     //Return image to show on the person row
                     return $img;
                 }
@@ -123,7 +165,7 @@ $(document).ready(function () {
             deleteAction: 'studentHandler?action=delete'
         },
         fields: {
-            id: {
+            studentId: {
                 key: true,
                 list: false,
                 create: false,
@@ -180,7 +222,7 @@ $(document).ready(function () {
                     //Open child table when user clicks the image
                     $img.click(function () {
                         // for passing in listing operation
-                        var studentId = studentData.record.id;
+                        var studentId = studentData.record.studentId;
 
                         studentsTable.jtable('openChildTable',
                             $img.closest('tr'),
@@ -190,10 +232,40 @@ $(document).ready(function () {
                                     listAction: 'courseHandler?action=list&studentId='+studentId,
                                     createAction: 'courseHandler?action=create&studentId='+studentId,
                                     updateAction: 'courseHandler?action=update&studentId='+studentId,
-                                    deleteAction: 'courseHandler?action=delete&studentId='+studentId,
+                                    deleteAction: 'courseHandler?action=delete&studentId='+studentId
                                 },
                                 fields: {
-                                    name: {
+                                    studentId: {
+                                        title: 'id',
+                                        create: false,
+                                        edit: false,
+                                        list: false
+                                    },
+                                    groupName: {
+                                        title: 'Группа',
+                                        options: {
+                                            'ББИ-41':'ББИ-41',
+                                            'ББИ-41в':'ББИ-41в',
+                                            'БТД-41':'БТД-41',
+                                            'БТД-31у':'БТД-31у',
+                                            'БТД-41з':'БТД-41з',
+                                            'БТД-31зу':'БТД-31зу',
+                                            'ККД-31':'ККД-31',
+                                            'ККД-32':'ККД-32',
+                                            'МБИ-21':'МБИ-21',
+                                            'МБИ-21в':'МБИ-21в',
+                                            'МБИ-21з':'МБИ-21з',
+                                            'МТД-21':'МТД-21'
+                                        }
+                                    },
+                                    subgroupId : {
+                                        title: '№ подгруппы',
+                                        dependsOn: 'groupName',
+                                        options: function(data) {
+                                            return 'courseHandler?options=group&value=' + data.dependedValues.groupName;
+                                        }
+                                    },
+                                    courseName: {
                                         title: 'Направление',
                                         options: {
                                             'Бизнес-информатика':'Бизнес-информатика',
@@ -202,9 +274,9 @@ $(document).ready(function () {
                                     },
                                     profile: {
                                         title: 'Профиль',
-                                        dependsOn: 'name',
+                                        dependsOn: 'courseName',
                                         options: function(data) {
-                                            return 'courseHandler?options=' + data.dependedValues.name;
+                                            return 'courseHandler?options=profile&value=' + data.dependedValues.courseName;
                                         }
                                     },
                                     qualification: {
@@ -240,7 +312,7 @@ $(document).ready(function () {
                     //Open child table when user clicks the image
                     $img.click(function () {
                         // for passing in listing operation
-                        var studentId = studentData.record.id;
+                        var studentId = studentData.record.studentId;
 
                         studentsTable.jtable('openChildTable',
                             $img.closest('tr'),
@@ -253,6 +325,12 @@ $(document).ready(function () {
                                     deleteAction: 'vcrHandler?action=delete'
                                 },
                                 fields: {
+                                    studentId: {
+                                        title: 'id',
+                                        create: false,
+                                        edit: false,
+                                        list: false
+                                    },
                                     name: {
                                         title: 'Тема',
                                         key: true,
@@ -284,7 +362,7 @@ $(document).ready(function () {
                 edit: false,
                 create: false,
                 display: function (data) {
-                    var id = data.record.id;
+                    var id = data.record.studentId;
 
                     var $button = $('<button id="opener" title="Создать документ" class="jtable-command-button jtable-build-doc-command-button"><span>Создать документ</span></button>');
 

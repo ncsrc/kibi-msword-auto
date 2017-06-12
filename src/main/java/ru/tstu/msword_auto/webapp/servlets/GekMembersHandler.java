@@ -1,108 +1,91 @@
-package ru.tstu.msword_auto.webapp;
+package ru.tstu.msword_auto.webapp.servlets;
 
 
-import ru.tstu.msword_auto.dao.exceptions.DaoException;
-import ru.tstu.msword_auto.dao.GekHeadDao;
-import ru.tstu.msword_auto.dao.GekMemberDao;
-import ru.tstu.msword_auto.entity.GekHead;
+import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
+import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
+import ru.tstu.msword_auto.dao.impl.GekMemberDao;
 import ru.tstu.msword_auto.entity.GekMember;
 
 import javax.servlet.http.HttpServletRequest;
-import java.sql.SQLException;
+import java.util.Collections;
 import java.util.List;
 
 
-
 public class GekMembersHandler extends AbstractTableHandler {
-	private static final String PARAM_MEMBER = "member";
-	private static final String RESPONSE_ERROR_PARENT_TABLE_IS_EMPTY = "Укажите сначала данные в родительской таблице";
-	private static final String RESPONSE_ERROR_DUPLICATE_ENTRY = "Один из членов ГЭК с таким именем уже есть в таблице";
+	static final String PARAM_MEMBER_ID = "gekMemberId";
+	static final String PARAM_HEAD_ID = "gekHeadId";
+	static final String PARAM_MEMBER = "member";
+	static final String RESPONSE_ERROR_PARENT_TABLE_IS_EMPTY = "Укажите сначала данные в родительской таблице";	// TODO, fix message
+	static final String RESPONSE_ERROR_MEMBER_ALREADY_EXISTS = "Один из членов ГЭК с таким именем уже есть в таблице";
 
-	private GekMemberDao dao = new GekMemberDao();
+	GekMemberDao dao = new GekMemberDao();
 
 
+	// TODO new test to no such entity, fix other tests
 	@Override
 	protected String doList(HttpServletRequest request) throws HandlingException {
+		int id = Integer.valueOf(request.getParameter(PARAM_HEAD_ID));
+
 		try {
-			List<GekMember> gekMembers = dao.readAll();
+			List<GekMember> gekMembers = dao.readByForeignKey(id);
 			return gson.toJson(gekMembers);
-		} catch(SQLException e){
+		} catch (DaoSystemException e) {
 			throw new HandlingException(RESPONSE_ERROR_BD);
+		} catch (NoSuchEntityException e) {
+			return gson.toJson(Collections.emptyList());
 		}
 
 	}
 
 	@Override
 	protected String doCreate(HttpServletRequest request) throws HandlingException {
-		try {
-			// TODO move parameter extraction outside try block
+//		int idPrev = Integer.valueOf(request.getParameter(PARAM_MEMBER_ID));
+//		int idNew = idPrev + 1;
 
-			String head;
-			String member = request.getParameter(PARAM_MEMBER);
+		int headId = Integer.valueOf(request.getParameter(PARAM_HEAD_ID));
+		String member = request.getParameter(PARAM_MEMBER);
+		String validatedMember = validateMember(member);
 
-			// reads parent table to check if it's empty, throws error message to user if it is,
-			// otherwise gets its necessary data
-			// TODO think of more proper way, do i really need this ?
-			// TODO check correctness
-			GekHeadDao headDao = new GekHeadDao();
-			List<GekHead> parentTable = headDao.readAll();
-			if(parentTable.isEmpty()){
-				throw new HandlingException(RESPONSE_ERROR_PARENT_TABLE_IS_EMPTY);
-			}
-			head = parentTable.get(0).getHead();
+		GekMember gekMember = new GekMember(headId, validatedMember);
 
-			if(member.isEmpty()){
-				throw new HandlingException(RESPONSE_ERROR_EMPTY_FIELD);
-			}
-
-			GekMember newMember = new GekMember(head, member);
-			dao.create(newMember);
-
-			return gson.toJson(newMember);
-		}catch(SQLException | DaoException e){ // TODO separate exception handling
-			if(e.getMessage().contains("Duplicate entry")){
-				throw new HandlingException(RESPONSE_ERROR_DUPLICATE_ENTRY);
-			}
-
-			throw new HandlingException(RESPONSE_ERROR_BD);
-		}
-
+		int generatedId = create(dao, gekMember, RESPONSE_ERROR_MEMBER_ALREADY_EXISTS);
+		gekMember.setGekMemberId(generatedId);
+		return gson.toJson(gekMember);
 	}
 
 	@Override
 	protected String doUpdate(HttpServletRequest request) throws HandlingException {
-		try {
-			// TODO move parameter extraction outside try block
+		int id = Integer.valueOf(request.getParameter(PARAM_MEMBER_ID));
+		int headId = Integer.valueOf(request.getParameter(PARAM_HEAD_ID));
+		String member = request.getParameter(PARAM_MEMBER);
+		String validatedMember = validateMember(member);
 
-			String key = request.getParameter(PARAM_KEY);
-			String member = request.getParameter(PARAM_MEMBER);
+		GekMember gekMember = new GekMember(headId, validatedMember);
 
-			// TODO check correctness
-			if(member.isEmpty()){
-				throw new HandlingException(RESPONSE_ERROR_EMPTY_FIELD);
-			}
-
-			GekMember entity = new GekMember("", member); // TODO fix "" issue
-			dao.update(key, entity);
-
-			return RESPONSE_OK;
-		}catch(SQLException e){
-			throw new HandlingException(RESPONSE_ERROR_BD);
-		}
+		return update(dao, gekMember, id, RESPONSE_ERROR_MEMBER_ALREADY_EXISTS);
 
 	}
 
 	@Override
 	protected String doDelete(HttpServletRequest request) throws HandlingException {
+		int id = Integer.valueOf(request.getParameter(PARAM_MEMBER_ID));
+
 		try {
-			// TODO move parameter extraction outside try block
-			String member = request.getParameter(PARAM_MEMBER);
-			dao.delete(member);
+			dao.delete(id);
 			return RESPONSE_OK;
-		} catch(SQLException e){
+		} catch (DaoSystemException e) {
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
 
+	}
+
+
+	private String validateMember(String member) {
+		if(member == null) {
+			return "";
+		} else {
+			return member;
+		}
 	}
 
 }

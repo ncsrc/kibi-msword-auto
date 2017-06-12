@@ -5,7 +5,7 @@
     <!--context-params-->
     <context-param>
         <param-name>db.url</param-name>
-        <param-value>jdbc:h2:~/msword_auto</param-value>
+        <param-value>jdbc:h2:~/msword_automation-0.9.1</param-value>
     </context-param>
     <context-param>
         <param-name>db.user</param-name>
@@ -25,7 +25,7 @@
     <listener>
         <listener-class>ru.tstu.msword_auto.webapp.listeners.DbTablesCreator</listener-class>
     </listener>
-    <!--Dao connection storage initializer-->
+    <!--DefaultDaoCRUD connection storage initializer-->
     <listener>
         <listener-class>ru.tstu.msword_auto.webapp.listeners.ConnectionStorageInitializer</listener-class>
     </listener>
@@ -35,10 +35,10 @@
     </listener>
 
     <!--SERVLETS-->
-    <!--date table handler-->
+    <!--dateParser table handler-->
     <servlet>
         <servlet-name>DateHandler</servlet-name>
-        <servlet-class>ru.tstu.msword_auto.webapp.DateHandler</servlet-class>
+        <servlet-class>ru.tstu.msword_auto.webapp.servlets.DateHandler</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>DateHandler</servlet-name>
@@ -47,7 +47,7 @@
     <!--gek_head table handler-->
     <servlet>
         <servlet-name>GekHeadHandler</servlet-name>
-        <servlet-class>ru.tstu.msword_auto.webapp.GekHeadHandler</servlet-class>
+        <servlet-class>ru.tstu.msword_auto.webapp.servlets.GekHeadHandler</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>GekHeadHandler</servlet-name>
@@ -56,7 +56,7 @@
     <!--gek_members subtable handler-->
     <servlet>
         <servlet-name>GekMembersHandler</servlet-name>
-        <servlet-class>ru.tstu.msword_auto.webapp.GekMembersHandler</servlet-class>
+        <servlet-class>ru.tstu.msword_auto.webapp.servlets.GekMembersHandler</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>GekMembersHandler</servlet-name>
@@ -65,7 +65,7 @@
     <!--students table handler-->
     <servlet>
         <servlet-name>StudentHandler</servlet-name>
-        <servlet-class>ru.tstu.msword_auto.webapp.StudentHandler</servlet-class>
+        <servlet-class>ru.tstu.msword_auto.webapp.servlets.StudentHandler</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>StudentHandler</servlet-name>
@@ -74,7 +74,7 @@
     <!--course subtable handler-->
     <servlet>
         <servlet-name>CourseHandler</servlet-name>
-        <servlet-class>ru.tstu.msword_auto.webapp.CourseHandler</servlet-class>
+        <servlet-class>ru.tstu.msword_auto.webapp.servlets.CourseHandler</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>CourseHandler</servlet-name>
@@ -83,7 +83,7 @@
     <!--vcr subtable handler-->
     <servlet>
         <servlet-name>VcrHandler</servlet-name>
-        <servlet-class>ru.tstu.msword_auto.webapp.VcrHandler</servlet-class>
+        <servlet-class>ru.tstu.msword_auto.webapp.servlets.VcrHandler</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>VcrHandler</servlet-name>
@@ -92,7 +92,7 @@
     <!--document builder-->
     <servlet>
         <servlet-name>DocBuilder</servlet-name>
-        <servlet-class>ru.tstu.msword_auto.webapp.DocBuilder</servlet-class>
+        <servlet-class>ru.tstu.msword_auto.webapp.servlets.DocBuilder</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>DocBuilder</servlet-name>

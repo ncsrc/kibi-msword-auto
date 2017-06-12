@@ -1,11 +1,10 @@
-package ru.tstu.msword_auto.webapp;
+package ru.tstu.msword_auto.webapp.servlets;
 
 
-import ru.tstu.msword_auto.automation.AutomationService;
-import ru.tstu.msword_auto.automation.Template;
-import ru.tstu.msword_auto.automation.TemplateException;
-import ru.tstu.msword_auto.dao.impl.StudentDao;
-import ru.tstu.msword_auto.dao.impl.VcrDao;
+import ru.tstu.msword_auto.automation.*;
+import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
+import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
+import ru.tstu.msword_auto.dao.impl.*;
 import ru.tstu.msword_auto.entity.*;
 
 import javax.servlet.ServletException;
@@ -18,21 +17,46 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
-import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
 
 public class DocBuilder extends HttpServlet {
-	private static final String PARAM_ID = "id";
-	private static final String PARAM_TYPE = "type";
-	private static final String ERROR_BD = "Ошибка при работе с БД";
+	static final String KEY_STUDENT_ID = "id";
+	static final String KEY_GROUP_ID = "group_id";
+	static final String KEY_GROUP_NAME = "group_name";
+	static final String KEY_COURSE_NAME = "course_name";
+	static final String KEY_GEK_HEAD_ID = "gek_head_id";
+
+	static final String PARAM_ID = "id";
+	static final String PARAM_TYPE = "type";
+	static final String ERROR_BD = "Ошибка при работе с БД";
+
+	private final StudentDao studentDao = new StudentDao();
+	private final CourseDao courseDao = new CourseDao();
+	private final DateDao dateDao = new DateDao();
+	private final VcrDao vcrDao = new VcrDao();
+	private final GekHeadDao gekHeadDao = new GekHeadDao();
+	private final GekMemberDao gekMemberDao = new GekMemberDao();
 
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		int id = Integer.parseInt(req.getParameter(PARAM_ID));
 		String docType = req.getParameter(PARAM_TYPE);
-		TemplateData data = getTemplateData(id);
-		String templateFilename = "";
+
+		TemplateData data;
+		try {
+			data = getTemplateData(id);
+		} catch (HandlingException e) {
+			String response = "{\"Result\": \"ERROR\",\"Message\": \"" + e.getMessage() + "\"}";
+			resp.setCharacterEncoding("UTF-8");
+			resp.setContentType("application/json");
+			resp.getWriter().print(response);
+			return;
+		}
+		String templateFilename;
 
 		// sync needed to ensure single access to template file
 		synchronized (this) {
@@ -42,6 +66,7 @@ public class DocBuilder extends HttpServlet {
 			} catch (TemplateException e) {
 				e.printStackTrace();
 				// todo handle if thrown
+				return;
 			}
 		}
 
@@ -49,60 +74,115 @@ public class DocBuilder extends HttpServlet {
 	}
 
 
-	private TemplateData getTemplateData(int id) {
-		// todo fix null
-		// what if null gets to template ?
-		Date date = null;
-		Gek gek = null;
-		StudentData studentData = null;
-		try {
-			DateDao dateDao = new DateDao();
+	// TODO chain of responsibility ? buildDate - buildStudent - buildCourse - etc ?
+	private TemplateData getTemplateData(int id) throws HandlingException {
+		Map<String, String> searchKeys = new HashMap<>();
+		searchKeys.put(KEY_STUDENT_ID, String.valueOf(id));
+		TemplateDataBuilder tplDataBuilder = new TemplateDataBuilder();
 
-			// TODO fix handle no such entity
-			List<Date> dates = dateDao.readAll();
-			date = dateDao.readAll().get(0); // there should be always only one row
+		// student, course, vcr
+		getStudentData(tplDataBuilder, searchKeys);
 
-			GekHeadDao gekHeadDao = new GekHeadDao();
+		// date
+		getDateData(tplDataBuilder, searchKeys);
 
-			/*
-				new gekHead logic:
-				get student course_name,
-				call getByCourseName(String courseName)
+		// gekhead, gekmembers
+		getGekData(tplDataBuilder, searchKeys);
 
-				get gekHead id
-				get all members by gekHead id
-			 */
-
-
-			// TODO handle no such entity
-			List<GekHead> gekHeads = gekHeadDao.readAll();
-			GekHead gekHead = gekHeadDao.readAll().get(0); // there should be always only one row
-
-			// TODO fix {template-strings}
-			GekMemberDao gekMemberDao = new GekMemberDao();
-			List<GekMember> gekMembers = gekMemberDao.readAll();
-			gek = new Gek(gekHead, gekMembers);
-
-			StudentDao studentDao = new StudentDao();
-			Student student = studentDao.read(id);
-			CourseDao courseDao = new CourseDao();
-
-			// TODO handle no such entity
-			Course course = courseDao.readByForeignKey(id).get(0); // 1:1
-			VcrDao vcrDao = new VcrDao();
-
-			// TODO handle no such entity
-			Vcr vcr = vcrDao.readByForeignKey(id).get(0); // 1:1
-			studentData = new StudentData(student, course, vcr);
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-			// TODO handle, check for missing data
-		}
-
-		return new TemplateData(date, gek, studentData);
+		return tplDataBuilder.build();
 	}
 
+	private void getStudentData(TemplateDataBuilder builder, Map<String, String> searchKeys) throws HandlingException {
+		int studentId = Integer.valueOf(searchKeys.get(KEY_STUDENT_ID));
+		try {
+			Student student = studentDao.read(studentId);
+			builder.setStudent(student);
+		} catch (DaoSystemException e) {
+			throw new HandlingException(ERROR_BD);
+		} catch (NoSuchEntityException e) {
+			/*NOP*/
+		}
+
+		this.getCourseData(builder, searchKeys);
+		this.getVcrData(builder, searchKeys);
+	}
+
+	private void getCourseData(TemplateDataBuilder builder, Map<String, String> searchKeys) throws HandlingException {
+		int studentId = Integer.valueOf(searchKeys.get(KEY_STUDENT_ID));
+		try {
+			List<Course> courses = courseDao.readByForeignKey(studentId);
+			Course course = courses.get(0);
+			builder.setCourse(course);
+			searchKeys.put(KEY_GROUP_ID, String.valueOf(course.getSubgroupId()));
+			searchKeys.put(KEY_GROUP_NAME, course.getGroupName());
+			searchKeys.put(KEY_COURSE_NAME, course.getCourseName());
+		} catch (DaoSystemException e) {
+			throw new HandlingException(ERROR_BD);
+		} catch (NoSuchEntityException e) {
+			/*NOP*/
+		}
+	}
+
+	private void getVcrData(TemplateDataBuilder builder, Map<String, String> searchKeys) throws HandlingException {
+		int studentId = Integer.valueOf(searchKeys.get(KEY_STUDENT_ID));
+		try {
+			List<Vcr> vcrs = vcrDao.readByForeignKey(studentId);
+			builder.setVcr(vcrs.get(0));
+		} catch (DaoSystemException e) {
+			throw new HandlingException(ERROR_BD);
+		} catch (NoSuchEntityException e) {
+			/*NOP*/
+		}
+	}
+
+	private void getDateData(TemplateDataBuilder builder, Map<String, String> searchKeys) throws HandlingException {
+		String groupId = searchKeys.get(KEY_GROUP_ID);
+		String groupName = searchKeys.get(KEY_GROUP_NAME);
+		try {
+			if(groupId != null && groupName != null) {
+				Date date = dateDao.readByGroupNameAndGroupId(groupName, Integer.valueOf(groupId));
+				builder.setDate(date);
+			}
+		} catch (DaoSystemException e) {
+			throw new HandlingException(ERROR_BD);
+		} catch (NoSuchEntityException e) {
+			/*NOP*/
+		}
+	}
+
+	// gek head
+	private void getGekData(TemplateDataBuilder builder, Map<String, String> searchKeys) throws HandlingException {
+		String courseName = searchKeys.get(KEY_COURSE_NAME);
+		try {
+			if(courseName != null && !courseName.isEmpty()) {
+				GekHead gekHead = gekHeadDao.readByCourseName(courseName);
+				searchKeys.put(KEY_GEK_HEAD_ID, String.valueOf(gekHead.getGekId()));
+				builder.setGekHead(gekHead);
+			}
+		} catch (DaoSystemException e) {
+			throw new HandlingException(ERROR_BD);
+		} catch (NoSuchEntityException e) {
+			/*NOP*/
+		}
+
+		this.getGekMembersData(builder, searchKeys);
+	}
+
+	private void getGekMembersData(TemplateDataBuilder builder, Map<String, String> searchKeys) throws HandlingException {
+		String gekHeadId = searchKeys.get(KEY_GEK_HEAD_ID);
+		try {
+			if(gekHeadId != null) {
+				List<GekMember> gekMembers = gekMemberDao.readByForeignKey(Integer.valueOf(gekHeadId));
+				builder.setGekMembers(gekMembers);
+			}
+		} catch (DaoSystemException e) {
+			throw new HandlingException(ERROR_BD);
+		} catch (NoSuchEntityException e) {
+			// builder sets empty list internally
+		}
+	}
+
+	// todo send filled template without saving it inb4
 	private void sendDocument(HttpServletResponse resp, String templateFilename) throws IOException {
 		resp.setContentType("application/vnd.openxmlformats-officedocument.wordprocessingml.document; charset=utf-8");
 		String fileName = templateFilename.replace(' ', '_');	// replaces spaces with underscores because spaces decode to plus signs
@@ -122,6 +202,8 @@ public class DocBuilder extends HttpServlet {
 		in.close();
 		out.flush();
 	}
+
+
 
 }
 
