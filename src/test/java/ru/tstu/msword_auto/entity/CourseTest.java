@@ -7,6 +7,7 @@ import static org.junit.Assert.*;
 
 public class CourseTest {
 	private int studentId;
+	private int subgroupId;
 	private String groupName;
 	private String code;
 	private String qualification;
@@ -18,17 +19,18 @@ public class CourseTest {
 	@Before
 	public void setUp() {
 		studentId = 1;
+		subgroupId = 2;
 		groupName = "asd";
 		code = "38.03.05";
 		qualification = "Бакалавр";
 		courseName = "Бизнес-информатика";
 		profile = "dbsd";
-		defaultEntity = new Course(studentId, groupName, qualification, courseName, profile);
+		defaultEntity = new Course(studentId, subgroupId, groupName, qualification, courseName, profile);
 	}
 
 	@Test
 	public void whenSameDataWithFullConstructorThenEqualsTrue() throws Exception {
-		Course second = new Course(studentId, groupName, qualification, courseName, profile);
+		Course second = new Course(studentId, subgroupId, groupName, qualification, courseName, profile);
 
 		assertEquals(defaultEntity, second);
 		assertTrue(defaultEntity.equals(second));
@@ -36,7 +38,7 @@ public class CourseTest {
 
 	@Test
 	public void whenDifferentDataThenEqualsFalse() {
-		Course other = new Course(34, groupName, "f", courseName, profile);
+		Course other = new Course(34, 12, groupName, "f", courseName, profile);
 
 		assertNotEquals(defaultEntity, other);
 		assertFalse(defaultEntity.equals(other));
@@ -44,8 +46,8 @@ public class CourseTest {
 
 	@Test
 	public void whenSameDataWithSimpleConstructorThenEqualsTrue() {
-		Course first = new Course(studentId, groupName);
-		Course second = new Course(studentId, groupName);
+		Course first = new Course(studentId, subgroupId, groupName);
+		Course second = new Course(studentId, subgroupId, groupName);
 
 		assertEquals(first, second);
 		assertTrue(first.equals(second));
@@ -53,7 +55,7 @@ public class CourseTest {
 
 	@Test
 	public void whenSimpleConstructorThenAllOptionalDataAreEmptyString() {
-		Course entity = new Course(studentId, groupName);
+		Course entity = new Course(studentId, subgroupId, groupName);
 		String expected = "";
 
 		// getInfo() isn't tested, because it just combines two optional values

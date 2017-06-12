@@ -7,6 +7,8 @@ import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
 public class DateTest {
+	private int dateId;
+	private int groupId;
 	private String groupName;
 	private String gosDate;
 	private String vcrDate;
@@ -23,10 +25,12 @@ public class DateTest {
 
 	@Before
 	public void setUp() throws Exception {
+		dateId = 1;
+		groupId = 1;
 		groupName = "asd";
 		gosDate = "2001-01-12";
 		vcrDate = "2005-06-11";
-		defaultEntity = new Date(groupName, gosDate, vcrDate);
+		defaultEntity = new Date(dateId, groupId, groupName, gosDate, vcrDate);
 
 		gosDay = "12";
 		vcrDay = "11";
@@ -39,7 +43,7 @@ public class DateTest {
 
 	@Test
 	public void whenSameDataWithFullStringConstructorThenEqualsTrue() throws Exception {
-		Date second = new Date(groupName, gosDate, vcrDate);
+		Date second = new Date(dateId, groupId, groupName, gosDate, vcrDate);
 
 		assertEquals(defaultEntity, second);
 		assertTrue(defaultEntity.equals(second));
@@ -47,7 +51,7 @@ public class DateTest {
 
 	@Test
 	public void whenDifferentDataThenEqualsFalse() {
-		Date other = new Date("xcz", vcrDate, gosDate);
+		Date other = new Date(2, 2, "xcz", vcrDate, gosDate);
 
 		assertNotEquals(defaultEntity, other);
 		assertFalse(defaultEntity.equals(other));
@@ -64,17 +68,17 @@ public class DateTest {
 
 	@Test(expected = DateFormatException.class)
 	public void exceptionThrownWhenIncorrectDelimitersInDate() throws Exception {
-		new Date(groupName, "2003.03.12", "2004/25/01");
+		new Date(dateId, groupId, groupName, "2003.03.12", "2004/25/01");
 	}
 
 	@Test(expected = DateFormatException.class)
 	public void exceptionThrownWhenInvalidMonthInDate() throws Exception {
-		new Date(groupName, "2003-03-12", "2004-25-01");
+		new Date(dateId, groupId, groupName, "2003-03-12", "2004-25-01");
 	}
 
 	@Test(expected = DateFormatException.class)
 	public void exceptionThrownWhenInvalidDayInDate() throws Exception {
-		new Date(groupName, "2003-03-32", "2004-09-01");
+		new Date(dateId, groupId, groupName, "2003-03-32", "2004-09-01");
 	}
 
 
