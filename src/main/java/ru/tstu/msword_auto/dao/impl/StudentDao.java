@@ -6,6 +6,7 @@ import ru.tstu.msword_auto.entity.Student;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
 public class StudentDao extends AbstractDao<Student, Integer> {
 
 	// sql queries
-	static final String SQL_CREATE = "INSERT INTO Students VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+	static final String SQL_CREATE = "INSERT INTO Students(FIRST_NAME_I, LAST_NAME_I, MIDDLE_NAME_I, FIRST_NAME_R, LAST_NAME_R, MIDDLE_NAME_R, FIRST_NAME_T, LAST_NAME_T, MIDDLE_NAME_T) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 	static final String SQL_READ_BY_PK = "SELECT student_id, first_name_i, last_name_i, middle_name_i," +
 												 "first_name_r, last_name_r, middle_name_r," +
@@ -53,7 +54,7 @@ public class StudentDao extends AbstractDao<Student, Integer> {
 
 	@Override
 	protected PreparedStatement getCreationStatement(Student dataset) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement(SQL_CREATE);
+		PreparedStatement statement = connection.prepareStatement(SQL_CREATE, Statement.RETURN_GENERATED_KEYS);
 
 		// I case
 		statement.setString(1, dataset.getFirstNameI());

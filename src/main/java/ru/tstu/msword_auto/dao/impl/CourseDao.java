@@ -15,26 +15,27 @@ import java.util.List;
 public class CourseDao extends AbstractDao<Course, Integer> implements ForeignKeyReadableDao<Course, Integer> {
 
 	// sql queries
-	static final String SQL_CREATE = "INSERT INTO COURSES(STUDENT_ID, GROUP_NAME, COURSE_CODE, COURSE_NAME, COURSE_PROFILE, QUALIFICATION) " +
-							   		 "VALUES(?, ?, ?, ?, ?, ?);";
+	static final String SQL_CREATE = "INSERT INTO COURSES(STUDENT_ID, SUBGROUP_ID, GROUP_NAME, COURSE_CODE, COURSE_NAME, COURSE_PROFILE, QUALIFICATION) " +
+							   		 "VALUES(?, ?, ?, ?, ?, ?, ?);";
 
-	static final String SQL_READ_BY_PK = "SELECT STUDENT_ID, GROUP_NAME, COURSE_CODE, COURSE_NAME, COURSE_PROFILE, QUALIFICATION " +
+	static final String SQL_READ_BY_PK = "SELECT STUDENT_ID, SUBGROUP_ID, GROUP_NAME, COURSE_CODE, COURSE_NAME, COURSE_PROFILE, QUALIFICATION " +
 										 "FROM COURSES WHERE STUDENT_ID = ?";
 
-	static final String SQL_READ_ALL = "SELECT STUDENT_ID, GROUP_NAME, COURSE_CODE, COURSE_NAME, COURSE_PROFILE, QUALIFICATION FROM COURSES";
+	static final String SQL_READ_ALL = "SELECT STUDENT_ID, SUBGROUP_ID, GROUP_NAME, COURSE_CODE, COURSE_NAME, COURSE_PROFILE, QUALIFICATION FROM COURSES";
 
-	static final String SQL_UPDATE = "UPDATE COURSES SET GROUP_NAME = ?, COURSE_CODE = ?, COURSE_NAME = ?, COURSE_PROFILE = ?, QUALIFICATION = ? " +
+	static final String SQL_UPDATE = "UPDATE COURSES SET SUBGROUP_ID=?, GROUP_NAME = ?, COURSE_CODE = ?, COURSE_NAME = ?, COURSE_PROFILE = ?, QUALIFICATION = ? " +
 									 "WHERE STUDENT_ID = ?";
 
 	static final String SQL_DELETE_BY_PK = "DELETE FROM COURSES WHERE STUDENT_ID = ?";
 
 	static final String SQL_DELETE_ALL = "DELETE FROM COURSES";
 
-	static final String SQL_READ_BY_FK = "SELECT STUDENT_ID, GROUP_NAME, COURSE_CODE, COURSE_NAME, COURSE_PROFILE, QUALIFICATION " +
+	static final String SQL_READ_BY_FK = "SELECT STUDENT_ID, SUBGROUP_ID, GROUP_NAME, COURSE_CODE, COURSE_NAME, COURSE_PROFILE, QUALIFICATION " +
 										 "FROM COURSES WHERE STUDENT_ID = ?";
 
 	// table column names
 	static final String TABLE_STUDENT_ID = "STUDENT_ID";
+	static final String TABLE_SUBGROUP_ID = "subgroup_id";
 	static final String TABLE_GROUP_NAME = "GROUP_NAME";
 	static final String TABLE_COURSE_CODE = "COURSE_CODE";
 	static final String TABLE_COURSE_NAME = "COURSE_NAME";
@@ -46,16 +47,18 @@ public class CourseDao extends AbstractDao<Course, Integer> implements ForeignKe
 		super();
 	}
 
+	// TODO FIX
 
 	@Override
 	protected PreparedStatement getCreationStatement(Course dataset) throws SQLException {
 		PreparedStatement statement = connection.prepareStatement(SQL_CREATE);
 		statement.setInt(1, dataset.getStudentId());
-		statement.setString(2, dataset.getGroupName());
-		statement.setString(3, dataset.getCode());
-		statement.setString(4, dataset.getCourseName());
-		statement.setString(5, dataset.getProfile());
-		statement.setString(6, dataset.getQualification());
+		statement.setInt(2, dataset.getSubgroupId());
+		statement.setString(3, dataset.getGroupName());
+		statement.setString(4, dataset.getCode());
+		statement.setString(5, dataset.getCourseName());
+		statement.setString(6, dataset.getProfile());
+		statement.setString(7, dataset.getQualification());
 
 		return statement;
 	}
@@ -74,6 +77,7 @@ public class CourseDao extends AbstractDao<Course, Integer> implements ForeignKe
 		while(resultSet.next()){
 			courses.add(new Course(
 					resultSet.getInt(TABLE_STUDENT_ID),
+					resultSet.getInt(TABLE_SUBGROUP_ID),
 					resultSet.getString(TABLE_GROUP_NAME),
 					resultSet.getString(TABLE_QUALIFICATION),
 					resultSet.getString(TABLE_COURSE_NAME),
@@ -93,12 +97,13 @@ public class CourseDao extends AbstractDao<Course, Integer> implements ForeignKe
 	@Override
 	protected PreparedStatement getUpdateStatement(Course dataset, Integer pk) throws SQLException {
 		PreparedStatement statement = connection.prepareStatement(SQL_UPDATE);
-		statement.setString(1, dataset.getGroupName());
-		statement.setString(2, dataset.getCode());
-		statement.setString(3, dataset.getCourseName());
-		statement.setString(4, dataset.getProfile());
-		statement.setString(5, dataset.getQualification());
-		statement.setInt(6, pk);
+		statement.setInt(1, dataset.getSubgroupId());
+		statement.setString(2, dataset.getGroupName());
+		statement.setString(3, dataset.getCode());
+		statement.setString(4, dataset.getCourseName());
+		statement.setString(5, dataset.getProfile());
+		statement.setString(6, dataset.getQualification());
+		statement.setInt(7, pk);
 
 		return statement;
 	}

@@ -2,6 +2,7 @@ package ru.tstu.msword_auto.dao.impl;
 
 
 import ru.tstu.msword_auto.dao.ForeignKeyReadableDao;
+import ru.tstu.msword_auto.dao.exceptions.AlreadyExistingException;
 import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
 import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
 import ru.tstu.msword_auto.entity.Vcr;
@@ -30,6 +31,9 @@ public class VcrDao extends AbstractDao<Vcr, String> implements ForeignKeyReadab
 	static final String TABLE_VCR_HEAD = "VCR_HEAD";
 	static final String TABLE_VCR_REVIEWER = "VCR_REVIEWER";
 
+	static final String EXCEPTION_ALREADY_EXIST_ROW = "CONSTRAINT_INDEX_2 ON PUBLIC.VCRS(STUDENT_ID)";
+	static final String EXCEPTION_ALREADY_EXIST_VCR = "PRIMARY_KEY_2 ON PUBLIC.VCRS(VCR_NAME)";
+
 
 	public VcrDao() {
 		super();
@@ -55,6 +59,36 @@ public class VcrDao extends AbstractDao<Vcr, String> implements ForeignKeyReadab
 			throw new DaoSystemException(e);
 		}
 
+	}
+
+	@Override
+	public int create(Vcr dataset) throws DaoSystemException, AlreadyExistingException {
+		try(PreparedStatement statement = this.getCreationStatement(dataset)) {
+			statement.executeUpdate();
+
+			try(ResultSet genKeys = statement.getGeneratedKeys()) {
+				if(genKeys != null && genKeys.next()) {
+					return genKeys.getInt(1);
+				} else {
+					return -1;	// if no key was created(e.g. if key is string)
+				}
+
+			} catch (SQLException e) {
+				throw new DaoSystemException(e);
+			}
+
+		} catch (SQLException e) {
+			String exceptionMessage = e.getMessage();
+			if(exceptionMessage != null && exceptionMessage.contains(EXCEPTION_ALREADY_EXIST_VCR)) {
+				throw new AlreadyExistingException("vcr_exists", e);
+			} else if(exceptionMessage != null && exceptionMessage.contains(EXCEPTION_ALREADY_EXIST_ROW)) {
+				throw new AlreadyExistingException("row_exists", e);
+			}
+			else {
+				throw new DaoSystemException(e);
+			}
+
+		}
 	}
 
 	@Override

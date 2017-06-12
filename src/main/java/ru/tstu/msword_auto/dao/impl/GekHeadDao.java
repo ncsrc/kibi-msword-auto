@@ -8,6 +8,7 @@ import ru.tstu.msword_auto.entity.GekHead;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,7 +43,6 @@ public class GekHeadDao extends AbstractDao<GekHead, Integer> {
 	}
 
 
-
 	public GekHead readByCourseName(String courseName) throws DaoSystemException, NoSuchEntityException {
 		try(PreparedStatement statement = connection.prepareStatement(SQL_READ_BY_COURSENAME)) {
 			statement.setString(1, courseName);
@@ -68,7 +68,7 @@ public class GekHeadDao extends AbstractDao<GekHead, Integer> {
 
 	@Override
 	protected PreparedStatement getCreationStatement(GekHead dataset) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement(SQL_CREATE);
+		PreparedStatement statement = connection.prepareStatement(SQL_CREATE, Statement.RETURN_GENERATED_KEYS);
 		statement.setString(1, dataset.getCourseName());
         statement.setString(2, dataset.getHead());
 		statement.setString(3, dataset.getSubhead());

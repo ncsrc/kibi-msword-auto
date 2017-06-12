@@ -9,6 +9,7 @@ import ru.tstu.msword_auto.entity.GekMember;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -59,7 +60,7 @@ public class GekMemberDao extends AbstractDao<GekMember, Integer> implements For
 
 	@Override
 	protected PreparedStatement getCreationStatement(GekMember dataset) throws SQLException {
-		PreparedStatement statement = connection.prepareStatement(SQL_CREATE);
+		PreparedStatement statement = connection.prepareStatement(SQL_CREATE, Statement.RETURN_GENERATED_KEYS);
 		statement.setInt(1, dataset.getGekHeadId());
 		statement.setString(2, dataset.getMember());
 		return statement;

@@ -1,13 +1,10 @@
 package ru.tstu.msword_auto.dao.impl;
 
-import ru.tstu.msword_auto.dao.Dao;
+import ru.tstu.msword_auto.dao.DefaultDaoCRUD;
 import ru.tstu.msword_auto.dao.exceptions.AlreadyExistingException;
 import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
 import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
-import ru.tstu.msword_auto.entity.PrimaryKey;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Field;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -17,11 +14,11 @@ import java.util.List;
 import static ru.tstu.msword_auto.dao.ConnectionStorage.getConnection;
 
 
-abstract class AbstractDao<T, K> implements Dao<T, K> {
+abstract class AbstractDao<T, K> implements DefaultDaoCRUD<T, K> {
 	static final String EXCEPTION_ALREADY_EXISTS = "Unique index or primary key violation";
 
 	// protected in case you need direct access for connections
-	// for implementation of custom functionality not defined in Dao
+	// for implementation of custom functionality not defined in DefaultDaoCRUD
 	protected Connection connection;
 
 
@@ -31,11 +28,24 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 
 
 	@Override
-	public void create(T dataset) throws DaoSystemException, AlreadyExistingException {
+	public int create(T dataset) throws DaoSystemException, AlreadyExistingException {
 		try(PreparedStatement statement = this.getCreationStatement(dataset)) {
 			statement.executeUpdate();
+
+			try(ResultSet genKeys = statement.getGeneratedKeys()) {
+				if(genKeys != null && genKeys.next()) {
+					return genKeys.getInt(1);
+				} else {
+					return -1;	// if no key was created(e.g. if key is string)
+				}
+
+			} catch (SQLException e) {
+				throw new DaoSystemException(e);
+			}
+
 		} catch (SQLException e) {
-			if(EXCEPTION_ALREADY_EXISTS.equals(e.getMessage())) {
+			String exceptionMessage = e.getMessage();
+			if(exceptionMessage != null && exceptionMessage.contains(EXCEPTION_ALREADY_EXISTS)) {
 				throw new AlreadyExistingException(e);
 			} else {
 				throw new DaoSystemException(e);
@@ -97,12 +107,14 @@ abstract class AbstractDao<T, K> implements Dao<T, K> {
 		try(PreparedStatement statement = this.getUpdateStatement(dataset, pk)) {
 			statement.executeUpdate();
 		} catch (SQLException e) {
-			if(EXCEPTION_ALREADY_EXISTS.equals(e.getMessage())) {
+			String exceptionMessage = e.getMessage();
+			if(exceptionMessage != null && exceptionMessage.contains(EXCEPTION_ALREADY_EXISTS)) {
 				throw new AlreadyExistingException(e);
 			} else {
 				throw new DaoSystemException(e);
 			}
 		}
+
 
 	}
 
