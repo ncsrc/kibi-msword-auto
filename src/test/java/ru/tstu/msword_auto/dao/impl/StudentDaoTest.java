@@ -10,10 +10,7 @@ import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
 import ru.tstu.msword_auto.entity.Student;
 
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 
@@ -89,11 +86,11 @@ public class StudentDaoTest {
 
 	@Test
 	public void whenCreateFullEntityThenAllRight() throws Exception {
-		when(connection.prepareStatement(StudentDao.SQL_CREATE)).thenReturn(statement);
+		when(connection.prepareStatement(StudentDao.SQL_CREATE, Statement.RETURN_GENERATED_KEYS)).thenReturn(statement);
 
 		dao.create(defaultEntity);
 
-		verify(connection).prepareStatement(StudentDao.SQL_CREATE);
+		verify(connection).prepareStatement(StudentDao.SQL_CREATE, Statement.RETURN_GENERATED_KEYS);
 		verify(statement).setString(1, firstNameI);
 		verify(statement).setString(2, lastNameI);
 		verify(statement).setString(3, middleNameI);
@@ -212,7 +209,7 @@ public class StudentDaoTest {
 
 	@Test(expected = DaoSystemException.class)
 	public void whenCreateThrowsSqlExceptionThenThrownDaoSystemException() throws Exception {
-		when(connection.prepareStatement(StudentDao.SQL_CREATE)).thenReturn(statement);
+		when(connection.prepareStatement(StudentDao.SQL_CREATE, Statement.RETURN_GENERATED_KEYS)).thenReturn(statement);
 		when(statement.executeUpdate()).thenThrow(SQLException.class);
 
 		dao.create(defaultEntity);
@@ -290,7 +287,7 @@ public class StudentDaoTest {
 
 	@Test
 	public void whenCreateStatementFailsThenAllResourcesClosed() throws Exception {
-		when(connection.prepareStatement(StudentDao.SQL_CREATE)).thenReturn(statement);
+		when(connection.prepareStatement(StudentDao.SQL_CREATE, Statement.RETURN_GENERATED_KEYS)).thenReturn(statement);
 		when(statement.executeUpdate()).thenThrow(SQLException.class);
 
 		try {
@@ -338,7 +335,7 @@ public class StudentDaoTest {
 
 	@Test(expected = AlreadyExistingException.class)
 	public void whenCreateAlreadyExistingThenException() throws Exception {
-		when(connection.prepareStatement(StudentDao.SQL_CREATE)).thenReturn(statement);
+		when(connection.prepareStatement(StudentDao.SQL_CREATE, Statement.RETURN_GENERATED_KEYS)).thenReturn(statement);
 		when(statement.executeUpdate()).thenThrow(new SQLException(EXCEPTION_ALREADY_EXISTS));
 		dao.create(defaultEntity);
 

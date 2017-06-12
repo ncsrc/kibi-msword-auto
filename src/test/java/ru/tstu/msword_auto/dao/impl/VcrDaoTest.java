@@ -368,7 +368,7 @@ public class VcrDaoTest {
 	@Test(expected = AlreadyExistingException.class)
 	public void whenCreateAlreadyExistingThenException() throws Exception {
 		when(connection.prepareStatement(VcrDao.SQL_CREATE)).thenReturn(statement);
-		when(statement.executeUpdate()).thenThrow(new SQLException(EXCEPTION_ALREADY_EXISTS));
+		when(statement.executeUpdate()).thenThrow(new SQLException(VcrDao.EXCEPTION_ALREADY_EXIST_ROW));
 		dao.create(defaultEntity);
 
 	}

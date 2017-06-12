@@ -9,10 +9,7 @@ import ru.tstu.msword_auto.dao.exceptions.DaoSystemException;
 import ru.tstu.msword_auto.dao.exceptions.NoSuchEntityException;
 import ru.tstu.msword_auto.entity.GekMember;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -65,11 +62,11 @@ public class GekMemberDaoTest {
 
     @Test
     public void whenCreateFullEntityThenAllRight() throws Exception {
-        when(connection.prepareStatement(GekMemberDao.SQL_CREATE)).thenReturn(statement);
+        when(connection.prepareStatement(GekMemberDao.SQL_CREATE, Statement.RETURN_GENERATED_KEYS)).thenReturn(statement);
 
         dao.create(defaultEntity);
 
-        verify(connection).prepareStatement(GekMemberDao.SQL_CREATE);
+        verify(connection).prepareStatement(GekMemberDao.SQL_CREATE, Statement.RETURN_GENERATED_KEYS);
         verify(statement).setInt(1, headId);
         verify(statement).setString(2, gekMember);
         verify(statement).executeUpdate();
@@ -214,7 +211,7 @@ public class GekMemberDaoTest {
 
     @Test(expected = DaoSystemException.class)
     public void whenCreateThrowsSqlExceptionThenThrownDaoSystemException() throws Exception {
-        when(connection.prepareStatement(GekMemberDao.SQL_CREATE)).thenReturn(statement);
+        when(connection.prepareStatement(GekMemberDao.SQL_CREATE, Statement.RETURN_GENERATED_KEYS)).thenReturn(statement);
         when(statement.executeUpdate()).thenThrow(SQLException.class);
 
         dao.create(defaultEntity);
@@ -315,7 +312,7 @@ public class GekMemberDaoTest {
 
     @Test
     public void whenCreateStatementFailsThenAllResourcesClosed() throws Exception {
-        when(connection.prepareStatement(GekMemberDao.SQL_CREATE)).thenReturn(statement);
+        when(connection.prepareStatement(GekMemberDao.SQL_CREATE, Statement.RETURN_GENERATED_KEYS)).thenReturn(statement);
         when(statement.executeUpdate()).thenThrow(SQLException.class);
 
         try {
@@ -363,7 +360,7 @@ public class GekMemberDaoTest {
 
     @Test(expected = AlreadyExistingException.class)
     public void whenCreateAlreadyExistingThenException() throws Exception {
-        when(connection.prepareStatement(GekMemberDao.SQL_CREATE)).thenReturn(statement);
+        when(connection.prepareStatement(GekMemberDao.SQL_CREATE, Statement.RETURN_GENERATED_KEYS)).thenReturn(statement);
         when(statement.executeUpdate()).thenThrow(new SQLException(EXCEPTION_ALREADY_EXISTS));
         dao.create(defaultEntity);
 
