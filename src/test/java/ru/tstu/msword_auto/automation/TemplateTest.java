@@ -12,11 +12,10 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 
-
 public class TemplateTest {
 	private Template template;
 	private TemplateData data = mock(TemplateData.class);
-	private Date date = new Date("group", "2012-11-11", "2012-11-11");
+	private Date date = new Date(1, 1,"group", "2012-11-11", "2012-11-11");
 	private GekHead gekHead = new GekHead("asd", "asd", "asd", "asd");
 	private List<GekMember> gekMembers = Arrays.asList(
 			new GekMember(1, "asd"),
@@ -26,7 +25,7 @@ public class TemplateTest {
 	private Student student = new Student("ads", "ads", "ads",
 									   "adss", "adss", "adss", "adsd",
 									   "adsd", "adsd");
-	private Course course = new Course(1, "asd");
+	private Course course = new Course(1, 1, "asd");
 	private Vcr vcr = new Vcr(1, "asd", "asd", "asd");
 
 

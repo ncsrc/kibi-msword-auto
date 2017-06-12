@@ -28,8 +28,8 @@ public class TemplateDataBuilderTest {
 
     @Before
     public void setUp() throws Exception {
-        this.course = new Course(1, "group", "q", "cs", "pr");
-        this.date = new Date("gr", "2001-01-01", "2001-01-01");
+        this.course = new Course(1, 1, "group", "q", "cs", "pr");
+        this.date = new Date(1, 1, "gr", "2001-01-01", "2001-01-01");
         this.gekHead = new GekHead("cs", "sa", "asd", "s");
         this.gekMembers = Arrays.asList(
                 new GekMember(0, 0, "qwe"),
