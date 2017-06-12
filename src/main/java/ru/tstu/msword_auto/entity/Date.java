@@ -6,8 +6,12 @@ import java.util.regex.Pattern;
 
 public class Date {
 
-	/** Entity value of GROUP_NAME from database table, primary key */
-	@PrimaryKey
+	/** Primary key */
+	private int dateId;
+
+	private int subgroupId;
+
+	/** Entity value of GROUP_NAME from database table */
 	private String groupName = "";
 
 	/** Entity value of DATE_GOS from database table,
@@ -45,7 +49,9 @@ public class Date {
 	 * @param vcrDate DATE_VCR in db table
 	 * @throws DateFormatException thrown when parameters contain invalid date format. Required: yyyy-MM-dd
 	 */
-	public Date(String groupName, String gosDate, String vcrDate) throws DateFormatException {
+	public Date(int dateId, int subgroupId, String groupName, String gosDate, String vcrDate) throws DateFormatException {
+		this.dateId = dateId;
+		this.subgroupId = subgroupId;
 		this.groupName = groupName;
 
 		if(!datesAreValid(gosDate, vcrDate)) {
@@ -57,6 +63,34 @@ public class Date {
 		this.parser = new DateParser();
 	}
 
+
+	public void setDateId(int dateId) {
+		this.dateId = dateId;
+	}
+
+	public void setSubgroupId(int subgroupId) {
+		this.subgroupId = subgroupId;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
+
+	public void setGosDate(String gosDate) {
+		this.gosDate = gosDate;
+	}
+
+	public void setVcrDate(String vcrDate) {
+		this.vcrDate = vcrDate;
+	}
+
+	public int getDateId() {
+		return dateId;
+	}
+
+	public int getSubgroupId() {
+		return subgroupId;
+	}
 
 	/**
 	 * @return gos date entity value
@@ -143,7 +177,11 @@ public class Date {
 		}
 
 		Date other = (Date) obj;
-		if(groupName.equals(other.groupName) && gosDate.equals(other.gosDate) && vcrDate.equals(other.vcrDate)) {
+		if(dateId == other.dateId
+				&& subgroupId == other.subgroupId
+				&& groupName.equals(other.groupName)
+				&& gosDate.equals(other.gosDate)
+				&& vcrDate.equals(other.vcrDate)) {
 			return true;
 		}
 

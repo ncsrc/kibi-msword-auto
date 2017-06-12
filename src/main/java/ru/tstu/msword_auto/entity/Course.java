@@ -5,6 +5,7 @@ public class Course {
 
 	@PrimaryKey
 	private int studentId; // also foreign key
+	private int subgroupId;
 	private String groupName = "";
 	private String code = "";
 	private String qualification = "";
@@ -14,20 +15,34 @@ public class Course {
 
 	public Course() {}
 
-	public Course(int studentId, String groupName) {
+	public Course(int studentId, int subgroupId, String groupName) {
 		this.studentId = studentId;
+		this.subgroupId = subgroupId;
 		this.groupName = groupName;
 	}
 
-	public Course(int studentId, String groupName, String qualification, String courseName, String profile) {
+	public Course(int studentId, int subgroupId, String groupName, String qualification, String courseName, String profile) {
 		this.courseName = courseName;
 		this.groupName = groupName;
 		this.studentId = studentId;
+		this.subgroupId = subgroupId;
 		this.qualification = qualification;
 		this.code = defineCode();
 		this.profile = profile;
 	}
 
+
+	public void setStudentId(int studentId) {
+		this.studentId = studentId;
+	}
+
+	public void setSubgroupId(int subgroupId) {
+		this.subgroupId = subgroupId;
+	}
+
+	public void setGroupName(String groupName) {
+		this.groupName = groupName;
+	}
 
 	public void setCode(String code) {
 		this.code = code;
@@ -47,6 +62,10 @@ public class Course {
 
 	public int getStudentId() {
 		return this.studentId;
+	}
+
+	public int getSubgroupId() {
+		return this.subgroupId;
 	}
 
 	public String getGroupName() {
@@ -89,6 +108,7 @@ public class Course {
 
 		Course other = (Course) obj;
 		if(this.code.equals(other.code) && this.studentId == other.studentId
+				&& this.subgroupId == other.subgroupId
 				&& this.courseName.equals(other.courseName) && this.profile.equals(other.profile)
 				&& this.qualification.equals(other.qualification) && this.groupName.equals(other.groupName)){
 

@@ -41,6 +41,22 @@ public class Vcr {
 		return this.reviewer;
 	}
 
+	public void setStudentId(int studentId) {
+		this.studentId = studentId;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public void setHead(String head) {
+		this.head = head;
+	}
+
+	public void setReviewer(String reviewer) {
+		this.reviewer = reviewer;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if(this == obj){

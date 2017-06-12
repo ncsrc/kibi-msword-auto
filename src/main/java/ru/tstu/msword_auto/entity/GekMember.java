@@ -25,6 +25,10 @@ public class GekMember {
 		this.gekMemberId = gekMemberId;
 	}
 
+	public void setGekHeadId(int gekHeadId) {
+		this.gekHeadId = gekHeadId;
+	}
+
 	public int getGekMemberId() {
 		return this.gekMemberId;
 	}
