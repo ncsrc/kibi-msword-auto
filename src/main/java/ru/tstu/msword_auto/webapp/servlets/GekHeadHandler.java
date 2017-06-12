@@ -1,7 +1,7 @@
 package ru.tstu.msword_auto.webapp;
 
 
-import ru.tstu.msword_auto.dao.DaoException;
+import ru.tstu.msword_auto.dao.exceptions.DaoException;
 import ru.tstu.msword_auto.dao.GekHeadDao;
 import ru.tstu.msword_auto.entity.GekHead;
 
@@ -24,7 +24,6 @@ public class GekHeadHandler extends AbstractTableHandler {
 			List<GekHead> gek = dao.readAll();
 			return gson.toJson(gek);
 		} catch(SQLException e){
-			// TODO logging
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
 
@@ -39,7 +38,6 @@ public class GekHeadHandler extends AbstractTableHandler {
 			String subHead = request.getParameter(PARAM_SUBHEAD);
 			String secretary = request.getParameter(PARAM_SECRETARY);
 
-			// todo check business-logic correctness
 			if(head.isEmpty() || subHead.isEmpty() || secretary.isEmpty()){
 				throw new HandlingException(RESPONSE_ERROR_EMPTY_FIELD);
 			}
@@ -49,7 +47,6 @@ public class GekHeadHandler extends AbstractTableHandler {
 
 			return gson.toJson(entity);
 		}catch(SQLException | DaoException e){ // TODO separate DaoException handling
-			// TODO logging
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
 
@@ -65,7 +62,7 @@ public class GekHeadHandler extends AbstractTableHandler {
 			String subHead = request.getParameter(PARAM_SUBHEAD);
 			String secretary = request.getParameter(PARAM_SECRETARY);
 
-			// TODO check correctness
+
 			if(head.isEmpty() || subHead.isEmpty() || secretary.isEmpty()){
 				throw new HandlingException(RESPONSE_ERROR_EMPTY_FIELD);
 			}
@@ -73,7 +70,6 @@ public class GekHeadHandler extends AbstractTableHandler {
 			dao.update(key, new GekHead(head, subHead, secretary));
 			return RESPONSE_OK;
 		} catch(SQLException e){
-			// TODO logging
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
 

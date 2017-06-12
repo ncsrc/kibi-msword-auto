@@ -1,9 +1,9 @@
 package ru.tstu.msword_auto.webapp;
 
 
-import ru.tstu.msword_auto.dao.DaoException;
-import ru.tstu.msword_auto.dao.VcrDao;
-import ru.tstu.msword_auto.entity.VCR;
+import ru.tstu.msword_auto.dao.exceptions.DaoException;
+import ru.tstu.msword_auto.dao.impl.VcrDao;
+import ru.tstu.msword_auto.entity.Vcr;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.SQLException;
@@ -26,10 +26,9 @@ public class VcrHandler extends AbstractTableHandler {
 		int id = Integer.parseInt(request.getParameter(PARAM_STUDENT_ID));
 
 		try {
-			List<VCR> table = dao.readByForeignKey(id);
+			List<Vcr> table = dao.readByForeignKey(id);
 			return gson.toJson(table);
 		}catch(SQLException e){
-			// TODO logging
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
 
@@ -43,13 +42,12 @@ public class VcrHandler extends AbstractTableHandler {
 		String vcrReviewer = request.getParameter(PARAM_REVIEWER);
 		// TODO add empty field validation
 
-		VCR entity = new VCR(id, vcrName, vcrHead, vcrReviewer);
+		Vcr entity = new Vcr(id, vcrName, vcrHead, vcrReviewer);
 		try{
 			dao.create(entity);
 
 			return gson.toJson(entity);
 		}catch(SQLException | DaoException e){	// TODO separate handling
-			// TODO logging
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
 
@@ -62,13 +60,12 @@ public class VcrHandler extends AbstractTableHandler {
 		String vcrHead = request.getParameter(PARAM_HEAD);
 		String vcrReviewer = request.getParameter(PARAM_REVIEWER);
 
-		VCR entity = new VCR(0, vcrName, vcrHead, vcrReviewer); // TODO fix 0 issue
+		Vcr entity = new Vcr(0, vcrName, vcrHead, vcrReviewer);
 		try {
 			dao.update(key, entity);
 
 			return RESPONSE_OK;
 		} catch(SQLException e){
-			// TODO logging
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
 
@@ -83,7 +80,6 @@ public class VcrHandler extends AbstractTableHandler {
 
 			return RESPONSE_OK;
 		} catch(SQLException e){
-			// TODO logging
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
 

@@ -4,10 +4,8 @@ package ru.tstu.msword_auto.webapp;
 import ru.tstu.msword_auto.automation.AutomationService;
 import ru.tstu.msword_auto.automation.Template;
 import ru.tstu.msword_auto.automation.TemplateException;
-import ru.tstu.msword_auto.automation.entity_aggregation.Gek;
-import ru.tstu.msword_auto.automation.entity_aggregation.StudentData;
-import ru.tstu.msword_auto.automation.entity_aggregation.TemplateData;
-import ru.tstu.msword_auto.dao.*;
+import ru.tstu.msword_auto.dao.impl.StudentDao;
+import ru.tstu.msword_auto.dao.impl.VcrDao;
 import ru.tstu.msword_auto.entity.*;
 
 import javax.servlet.ServletException;
@@ -39,11 +37,11 @@ public class DocBuilder extends HttpServlet {
 		// sync needed to ensure single access to template file
 		synchronized (this) {
 			try(Template template = Template.newTemplate(docType, data)) {
-				template.fulfillTemplate();
+				template.fillTemplate();
 				templateFilename = template.getFilename();
 			} catch (TemplateException e) {
 				e.printStackTrace();
-				// todo handle
+				// todo handle if thrown
 			}
 		}
 
@@ -60,13 +58,23 @@ public class DocBuilder extends HttpServlet {
 		try {
 			DateDao dateDao = new DateDao();
 
-			// TODO fix IndexOutOfBoundsException
+			// TODO fix handle no such entity
 			List<Date> dates = dateDao.readAll();
 			date = dateDao.readAll().get(0); // there should be always only one row
 
 			GekHeadDao gekHeadDao = new GekHeadDao();
 
-			// TODO fix IndexOutOfBoundsException if empty
+			/*
+				new gekHead logic:
+				get student course_name,
+				call getByCourseName(String courseName)
+
+				get gekHead id
+				get all members by gekHead id
+			 */
+
+
+			// TODO handle no such entity
 			List<GekHead> gekHeads = gekHeadDao.readAll();
 			GekHead gekHead = gekHeadDao.readAll().get(0); // there should be always only one row
 
@@ -79,12 +87,12 @@ public class DocBuilder extends HttpServlet {
 			Student student = studentDao.read(id);
 			CourseDao courseDao = new CourseDao();
 
-			// TODO fix IndexOutOfBoundsException
+			// TODO handle no such entity
 			Course course = courseDao.readByForeignKey(id).get(0); // 1:1
 			VcrDao vcrDao = new VcrDao();
 
-			// TODO fix IndexOutOfBoundsException if empty
-			VCR vcr = vcrDao.readByForeignKey(id).get(0); // 1:1
+			// TODO handle no such entity
+			Vcr vcr = vcrDao.readByForeignKey(id).get(0); // 1:1
 			studentData = new StudentData(student, course, vcr);
 
 		} catch (SQLException e) {
@@ -102,7 +110,6 @@ public class DocBuilder extends HttpServlet {
 
 		resp.setHeader("Content-disposition", "attachment; filename=" + "\"" + encodedFileName + "\"");
 
-//		 TODO handle IOExceptions
 		ServletOutputStream out = resp.getOutputStream();
 		String file = AutomationService.templateSave + File.separator + templateFilename;
 		BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));

@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
+// TODO clean code
 
 abstract class AbstractTableHandler extends HttpServlet
 {
@@ -23,7 +24,6 @@ abstract class AbstractTableHandler extends HttpServlet
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException
 	{
-		// TODO add comment
 		String response;
 		String action = req.getParameter(PARAM_ACTION);
 		if(action != null){

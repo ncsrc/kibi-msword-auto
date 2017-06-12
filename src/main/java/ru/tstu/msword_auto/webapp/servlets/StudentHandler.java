@@ -1,8 +1,8 @@
 package ru.tstu.msword_auto.webapp;
 
 
-import ru.tstu.msword_auto.dao.DaoException;
-import ru.tstu.msword_auto.dao.StudentDao;
+import ru.tstu.msword_auto.dao.exceptions.DaoException;
+import ru.tstu.msword_auto.dao.impl.StudentDao;
 import ru.tstu.msword_auto.entity.Student;
 
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +35,6 @@ public class StudentHandler extends AbstractTableHandler {
 			List<Student> data = dao.readAll();
 			return gson.toJson(data);
 		} catch(SQLException e){
-			// TODO logging
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
 
@@ -78,7 +77,6 @@ public class StudentHandler extends AbstractTableHandler {
 			dao.create(entity);
 			return gson.toJson(entity);
 		} catch(SQLException | DaoException e){ // TODO separate handling
-			// TODO logging
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
 
@@ -111,7 +109,7 @@ public class StudentHandler extends AbstractTableHandler {
 				throw new HandlingException(RESPONSE_ERROR_EMPTY_FIELD);
 			}
 
-			// TODO fix 0 issue
+
 			Student entity = new Student(0, firstNameI, lastNameI, middleNameI,
 										 firstNameR, lastNameR, middleNameR,
 										 firstNameD, lastNameD, middleNameD);
@@ -119,7 +117,6 @@ public class StudentHandler extends AbstractTableHandler {
 			dao.update(id, entity);
 			return RESPONSE_OK;
 		}catch(SQLException e){
-			// TODO logging
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
 
@@ -135,7 +132,6 @@ public class StudentHandler extends AbstractTableHandler {
 
 			return RESPONSE_OK;
 		} catch(SQLException e){
-			// TODO logging
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
 

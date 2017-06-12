@@ -1,7 +1,7 @@
 package ru.tstu.msword_auto.webapp;
 
 
-import ru.tstu.msword_auto.dao.DaoException;
+import ru.tstu.msword_auto.dao.exceptions.DaoException;
 import ru.tstu.msword_auto.dao.GekHeadDao;
 import ru.tstu.msword_auto.dao.GekMemberDao;
 import ru.tstu.msword_auto.entity.GekHead;
@@ -12,7 +12,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 
-// TODO add validation that input is proper(Фамилия И.О.)
 
 public class GekMembersHandler extends AbstractTableHandler {
 	private static final String PARAM_MEMBER = "member";
@@ -28,7 +27,6 @@ public class GekMembersHandler extends AbstractTableHandler {
 			List<GekMember> gekMembers = dao.readAll();
 			return gson.toJson(gekMembers);
 		} catch(SQLException e){
-			// TODO logging
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
 
@@ -44,7 +42,7 @@ public class GekMembersHandler extends AbstractTableHandler {
 
 			// reads parent table to check if it's empty, throws error message to user if it is,
 			// otherwise gets its necessary data
-			// TODO think of more proper way
+			// TODO think of more proper way, do i really need this ?
 			// TODO check correctness
 			GekHeadDao headDao = new GekHeadDao();
 			List<GekHead> parentTable = headDao.readAll();
@@ -62,7 +60,6 @@ public class GekMembersHandler extends AbstractTableHandler {
 
 			return gson.toJson(newMember);
 		}catch(SQLException | DaoException e){ // TODO separate exception handling
-			// TODO logging
 			if(e.getMessage().contains("Duplicate entry")){
 				throw new HandlingException(RESPONSE_ERROR_DUPLICATE_ENTRY);
 			}
@@ -90,7 +87,6 @@ public class GekMembersHandler extends AbstractTableHandler {
 
 			return RESPONSE_OK;
 		}catch(SQLException e){
-			// TODO logging
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
 
@@ -104,7 +100,6 @@ public class GekMembersHandler extends AbstractTableHandler {
 			dao.delete(member);
 			return RESPONSE_OK;
 		} catch(SQLException e){
-			// TODO logging
 			throw new HandlingException(RESPONSE_ERROR_BD);
 		}
 
