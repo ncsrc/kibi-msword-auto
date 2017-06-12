@@ -2,7 +2,7 @@ package ru.tstu.msword_auto.dao.exceptions;
 
 
 /**
- * General superclass for all Dao exceptions
+ * General superclass for all DefaultDaoCRUD exceptions
  */
 public class DaoException extends Exception {
 
