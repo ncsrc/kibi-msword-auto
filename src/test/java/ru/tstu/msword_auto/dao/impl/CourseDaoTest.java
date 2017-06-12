@@ -31,6 +31,7 @@ public class CourseDaoTest {
 
     // entity content
     private int studentId;
+    private int subgroupId;
     private String groupName;
     private String code;
     private String courseName;
@@ -49,6 +50,7 @@ public class CourseDaoTest {
         dao.connection = this.connection;
 
         studentId = 1;
+        subgroupId = 2;
         groupName = "group";
         code = "38.03.06";
         courseName = "Торговое дело";
@@ -57,6 +59,7 @@ public class CourseDaoTest {
 
         defaultEntity = new Course(
                 studentId,
+                subgroupId,
                 groupName,
                 qualification,
                 courseName,
@@ -64,6 +67,7 @@ public class CourseDaoTest {
         );
         additionalEntity = new Course(
                 2,
+                subgroupId,
                 groupName,
                 qualification,
                 courseName,
@@ -86,11 +90,12 @@ public class CourseDaoTest {
 
         verify(connection).prepareStatement(SQL_CREATE);
         verify(statement).setInt(1, studentId);
-        verify(statement).setString(2, groupName);
-        verify(statement).setString(3, code);
-        verify(statement).setString(4, courseName);
-        verify(statement).setString(5, profile);
-        verify(statement).setString(6, qualification);
+        verify(statement).setInt(2, subgroupId);
+        verify(statement).setString(3, groupName);
+        verify(statement).setString(4, code);
+        verify(statement).setString(5, courseName);
+        verify(statement).setString(6, profile);
+        verify(statement).setString(7, qualification);
         verify(statement).executeUpdate();
         verify(statement).close();
 
@@ -141,12 +146,13 @@ public class CourseDaoTest {
         dao.update(studentId, additionalEntity);
 
         verify(connection).prepareStatement(SQL_UPDATE);
-        verify(statement).setString(1, groupName);
-        verify(statement).setString(2, code);
-        verify(statement).setString(3, courseName);
-        verify(statement).setString(4, profile);
-        verify(statement).setString(5, qualification);
-        verify(statement).setInt(6, studentId);
+        verify(statement).setInt(1, additionalEntity.getSubgroupId());
+        verify(statement).setString(2, additionalEntity.getGroupName());
+        verify(statement).setString(3, code);
+        verify(statement).setString(4, courseName);
+        verify(statement).setString(5, profile);
+        verify(statement).setString(6, qualification);
+        verify(statement).setInt(7, studentId);
         verify(statement).executeUpdate();
         verify(statement).close();
 
@@ -439,6 +445,7 @@ public class CourseDaoTest {
                     .thenReturn(2); // second id, second entity
         }
 
+        when(resultSet.getInt(TABLE_SUBGROUP_ID)).thenReturn(subgroupId);
         when(resultSet.getString(TABLE_GROUP_NAME)).thenReturn(groupName);
         when(resultSet.getString(TABLE_COURSE_CODE)).thenReturn(code);
         when(resultSet.getString(TABLE_COURSE_NAME)).thenReturn(courseName);
@@ -457,6 +464,7 @@ public class CourseDaoTest {
         int resultSetNextTimes = times + 1; // because there would be last, that returns false
         verify(resultSet, times(resultSetNextTimes)).next();
         verify(resultSet, times(times)).getInt(TABLE_STUDENT_ID);
+        verify(resultSet, times(times)).getInt(TABLE_SUBGROUP_ID);
         verify(resultSet, times(times)).getString(TABLE_GROUP_NAME);
         verify(resultSet, times(times)).getString(TABLE_COURSE_NAME);
         verify(resultSet, times(times)).getString(TABLE_COURSE_PROFILE);

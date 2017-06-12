@@ -14,7 +14,7 @@ import java.util.List;
  */
 public interface Dao<T, K> {
 
-	void create(T dataset) throws DaoSystemException, AlreadyExistingException;
+	int create(T dataset) throws DaoSystemException, AlreadyExistingException;
 
 	T read(K pk) throws DaoSystemException, NoSuchEntityException;
 

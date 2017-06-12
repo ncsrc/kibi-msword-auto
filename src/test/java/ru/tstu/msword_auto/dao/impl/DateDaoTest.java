@@ -30,6 +30,8 @@ public class DateDaoTest {
     private PreparedStatement statement;
 
     // entity content
+    private int dateId;
+    private int groupId;
     private String groupName;
     private String gosDate;
     private String vcrDate;
@@ -46,12 +48,14 @@ public class DateDaoTest {
         dao = new DateDao();
         dao.connection = this.connection;
 
+        dateId = 1;
+        groupId = 2;
         groupName = "name";
         gosDate = "2001-01-02";
         vcrDate = "2003-03-04";
 
-        defaultEntity = new Date(groupName, gosDate, vcrDate);
-        additionalEntity = new Date("asd", gosDate, vcrDate);
+        defaultEntity = new Date(dateId, groupId, groupName, gosDate, vcrDate);
+        additionalEntity = new Date(3, groupId, groupName, gosDate, vcrDate);
 
     }
 
@@ -71,12 +75,72 @@ public class DateDaoTest {
         dao.create(defaultEntity);
 
         verify(connection).prepareStatement(DateDao.SQL_CREATE);
-        verify(statement).setString(1, groupName);
-        verify(statement).setDate(2, parsedGos);
-        verify(statement).setDate(3, parsedVcr);
+        verify(statement).setInt(1, groupId);
+        verify(statement).setString(2, groupName);
+        verify(statement).setDate(3, parsedGos);
+        verify(statement).setDate(4, parsedVcr);
         verify(statement).executeUpdate();
         verify(statement).close();
 
+    }
+
+    @Test
+    public void whenReadByGroupNameExistingRowsThenAllRight() throws Exception {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(connection.prepareStatement(DateDao.SQL_READ_BY_GROUP_NAME)).thenReturn(statement);
+        when(statement.executeQuery()).thenReturn(resultSet);
+
+        adjustResultSet(resultSet, false);
+
+        List<Date> entities = dao.readByGroupName(groupName);
+
+        verifyQuery(DateDao.SQL_READ_BY_GROUP_NAME, resultSet, 2, true);
+        verify(resultSet).close();
+        verify(statement).close();
+
+        Date actual1 = entities.get(0);
+        Date actual2 = entities.get(1);
+        assertEquals(defaultEntity, actual1);
+        assertEquals(additionalEntity, actual2);
+
+    }
+
+    @Test
+    public void whenReadByGroupNameAndGroupIdExistingRowThenAllRight() throws Exception {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(connection.prepareStatement(DateDao.SQL_READ_BY_GROUP_NAME_AND_GROUP_ID)).thenReturn(statement);
+        when(statement.executeQuery()).thenReturn(resultSet);
+
+        when(resultSet.next())
+                .thenReturn(true)
+                .thenReturn(false);
+
+        when(resultSet.getInt(DateDao.TABLE_DATE_ID)).thenReturn(dateId);
+
+        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
+        java.sql.Date parsedGos = new java.sql.Date(parser.parse(gosDate).getTime());
+        java.sql.Date parsedVcr = new java.sql.Date(parser.parse(vcrDate).getTime());
+
+        when(resultSet.getInt(DateDao.TABLE_GROUP_ID)).thenReturn(groupId);
+        when(resultSet.getString(DateDao.TABLE_GROUP_NAME)).thenReturn(groupName);
+        when(resultSet.getDate(DateDao.TABLE_DATE_GOS)).thenReturn(parsedGos);
+        when(resultSet.getDate(DateDao.TABLE_DATE_VCR)).thenReturn(parsedVcr);
+
+        Date entity = dao.readByGroupNameAndGroupId(groupName, groupId);
+
+        verify(statement).setString(1, groupName);
+        verify(statement).setInt(2, groupId);
+        verify(statement).executeQuery();
+        verify(resultSet, times(2)).next();
+        verify(resultSet).getInt(DateDao.TABLE_DATE_ID);
+        verify(resultSet).getInt(DateDao.TABLE_GROUP_ID);
+        verify(resultSet).getString(DateDao.TABLE_GROUP_NAME);
+        verify(resultSet).getDate(DateDao.TABLE_DATE_GOS);
+        verify(resultSet).getDate(DateDao.TABLE_DATE_VCR);
+        verify(resultSet).close();
+        verify(statement).close();
+
+        assertEquals(defaultEntity, entity);
     }
 
     @Test
@@ -87,7 +151,7 @@ public class DateDaoTest {
 
         adjustResultSet(resultSet, true);
 
-        Date entity = dao.read(groupName);
+        Date entity = dao.read(dateId);
 
         verifyQuery(DateDao.SQL_READ_BY_PK, resultSet, 1, true);
         verify(resultSet).close();
@@ -110,7 +174,7 @@ public class DateDaoTest {
         when(resultSet.getDate(DateDao.TABLE_DATE_GOS)).thenReturn(null);
         when(resultSet.getDate(DateDao.TABLE_DATE_VCR)).thenReturn(null);
 
-        Date entity = dao.read(groupName);
+        Date entity = dao.read(dateId);
 
         verifyQuery(DateDao.SQL_READ_BY_PK, resultSet, 1, true);
         verify(resultSet).close();
@@ -147,12 +211,14 @@ public class DateDaoTest {
         java.sql.Date parsedGos = new java.sql.Date(parser.parse(defaultEntity.getGosDate()).getTime());
         java.sql.Date parsedVcr = new java.sql.Date(parser.parse(defaultEntity.getVcrDate()).getTime());
 
-        dao.update(groupName, additionalEntity);
+        dao.update(dateId, additionalEntity);
 
         verify(connection).prepareStatement(DateDao.SQL_UPDATE);
-        verify(statement).setString(1, "asd");
-        verify(statement).setDate(2, parsedGos);
-        verify(statement).setDate(3, parsedVcr);
+        verify(statement).setInt(1, groupId);
+        verify(statement).setString(2, groupName);
+        verify(statement).setDate(3, parsedGos);
+        verify(statement).setDate(4, parsedVcr);
+        verify(statement).setInt(5, dateId);
         verify(statement).executeUpdate();
         verify(statement).close();
 
@@ -162,10 +228,10 @@ public class DateDaoTest {
     public void whenDeleteByPkThenAllStepsPerformed() throws Exception {
         when(connection.prepareStatement(DateDao.SQL_DELETE_BY_PK)).thenReturn(statement);
 
-        dao.delete(groupName);
+        dao.delete(dateId);
 
         verify(connection).prepareStatement(DateDao.SQL_DELETE_BY_PK);
-        verify(statement).setString(1, groupName);
+        verify(statement).setInt(1, dateId);
         verify(statement).executeUpdate();
         verify(statement).close();
 
@@ -192,9 +258,10 @@ public class DateDaoTest {
         dao.create(entityEmpty);
 
         verify(connection).prepareStatement(DateDao.SQL_CREATE);
-        verify(statement).setString(1, groupName);
-        verify(statement).setDate(2, null);
+        verify(statement).setInt(1, 0);
+        verify(statement).setString(2, groupName);
         verify(statement).setDate(3, null);
+        verify(statement).setDate(4, null);
         verify(statement).executeUpdate();
         verify(statement).close();
     }
@@ -205,12 +272,14 @@ public class DateDaoTest {
 
         Date entityEmpty = new Date(groupName);
 
-        dao.update(groupName, entityEmpty);
+        dao.update(dateId, entityEmpty);
 
         verify(connection).prepareStatement(DateDao.SQL_UPDATE);
-        verify(statement).setString(1, groupName);
-        verify(statement).setDate(2, null);
+        verify(statement).setInt(1, 0);
+        verify(statement).setString(2, groupName);
         verify(statement).setDate(3, null);
+        verify(statement).setDate(4, null);
+        verify(statement).setInt(5, dateId);
         verify(statement).executeUpdate();
         verify(statement).close();
 
@@ -224,9 +293,28 @@ public class DateDaoTest {
         when(statement.executeQuery()).thenReturn(resultSet);
         when(resultSet.next()).thenReturn(false);
 
-        Date entity = dao.read(groupName);
+        Date entity = dao.read(dateId);
 
         verify(connection).prepareStatement(DateDao.SQL_READ_BY_PK);
+        verify(statement).setString(1, groupName);
+        verify(statement).executeQuery();
+        verify(resultSet).next();
+        verify(resultSet).close();
+        verify(statement).close();
+
+        assertNull(entity);
+    }
+
+    @Test(expected = NoSuchEntityException.class)
+    public void whenReadByGroupNameAndGroupIdNonExistingRowThenException() throws Exception {
+        ResultSet resultSet = mock(ResultSet.class);
+        when(connection.prepareStatement(DateDao.SQL_READ_BY_GROUP_NAME_AND_GROUP_ID)).thenReturn(statement);
+        when(statement.executeQuery()).thenReturn(resultSet);
+        when(resultSet.next()).thenReturn(false);
+
+        Date entity = dao.readByGroupNameAndGroupId(groupName, groupId);
+
+        verify(connection).prepareStatement(DateDao.SQL_READ_BY_GROUP_NAME_AND_GROUP_ID);
         verify(statement).setString(1, groupName);
         verify(statement).executeQuery();
         verify(resultSet).next();
@@ -249,7 +337,7 @@ public class DateDaoTest {
         when(connection.prepareStatement(DateDao.SQL_READ_BY_PK)).thenReturn(statement);
         when(statement.executeQuery()).thenThrow(SQLException.class);
 
-        dao.read(groupName);
+        dao.read(dateId);
     }
 
     @Test(expected = DaoSystemException.class)
@@ -265,7 +353,7 @@ public class DateDaoTest {
         when(connection.prepareStatement(DateDao.SQL_UPDATE)).thenReturn(statement);
         when(statement.executeUpdate()).thenThrow(SQLException.class);
 
-        dao.update(groupName, defaultEntity);
+        dao.update(dateId, defaultEntity);
     }
 
     @Test(expected = DaoSystemException.class)
@@ -273,7 +361,7 @@ public class DateDaoTest {
         when(connection.prepareStatement(DateDao.SQL_DELETE_BY_PK)).thenReturn(statement);
         when(statement.executeUpdate()).thenThrow(SQLException.class);
 
-        dao.delete(groupName);
+        dao.delete(dateId);
     }
 
     @Test(expected = DaoSystemException.class)
@@ -292,7 +380,7 @@ public class DateDaoTest {
         when(resultSet.next()).thenThrow(SQLException.class);
 
         try {
-            dao.read(groupName);
+            dao.read(dateId);
         } catch (DaoSystemException e) {}
 
         verify(resultSet).close();
@@ -332,7 +420,7 @@ public class DateDaoTest {
         when(statement.executeUpdate()).thenThrow(SQLException.class);
 
         try {
-            dao.update(groupName, defaultEntity);
+            dao.update(dateId, defaultEntity);
         } catch (DaoSystemException e) {}
 
         verify(statement).close();
@@ -344,7 +432,7 @@ public class DateDaoTest {
         when(statement.executeUpdate()).thenThrow(SQLException.class);
 
         try {
-            dao.delete(groupName);
+            dao.delete(dateId);
         } catch (DaoSystemException e) {}
 
         verify(statement).close();
@@ -389,7 +477,7 @@ public class DateDaoTest {
         java.sql.Date parsedVcr = new java.sql.Date(parser.parse(defaultEntity.getVcrDate()).getTime());
         when(connection.prepareStatement(DateDao.SQL_UPDATE)).thenReturn(statement);
         when(statement.executeUpdate()).thenThrow(new SQLException(EXCEPTION_ALREADY_EXISTS));
-        dao.update(groupName, defaultEntity);
+        dao.update(dateId, defaultEntity);
 
         verify(connection).prepareStatement(DateDao.SQL_UPDATE);
         verify(statement).setString(1, "asd");
@@ -408,25 +496,26 @@ public class DateDaoTest {
                     .thenReturn(true)
                     .thenReturn(false);
 
-            when(resultSet.getString(DateDao.TABLE_GROUP_NAME)).thenReturn(groupName);
+            when(resultSet.getInt(DateDao.TABLE_DATE_ID)).thenReturn(dateId);
         } else {    // pk many(at least 2)
             when(resultSet.next())
                     .thenReturn(true)
                     .thenReturn(true)
                     .thenReturn(false);
 
-            when(resultSet.getString(DateDao.TABLE_GROUP_NAME))
-                    .thenReturn(groupName)
-                    .thenReturn(additionalEntity.getGroupName()); // second id, second entity
+            when(resultSet.getInt(DateDao.TABLE_DATE_ID))
+                    .thenReturn(dateId)
+                    .thenReturn(additionalEntity.getDateId()); // second id, second entity
         }
 
         SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
         java.sql.Date parsedGos = new java.sql.Date(parser.parse(gosDate).getTime());
         java.sql.Date parsedVcr = new java.sql.Date(parser.parse(vcrDate).getTime());
 
+        when(resultSet.getInt(DateDao.TABLE_GROUP_ID)).thenReturn(groupId);
+        when(resultSet.getString(DateDao.TABLE_GROUP_NAME)).thenReturn(groupName);
         when(resultSet.getDate(DateDao.TABLE_DATE_GOS)).thenReturn(parsedGos);
         when(resultSet.getDate(DateDao.TABLE_DATE_VCR)).thenReturn(parsedVcr);
-
     }
 
     private void verifyQuery(String sql, ResultSet resultSet, int times, boolean byPrimaryKey) throws Exception {
@@ -434,7 +523,7 @@ public class DateDaoTest {
 
         // if by pk
         if(times == 1 && byPrimaryKey) {
-            verify(statement).setString(1, groupName);
+            verify(statement).setInt(1, dateId);
         } else if(times == 1 && !byPrimaryKey) {
             // intentionally blank, does not have foreign key
         }
@@ -442,6 +531,8 @@ public class DateDaoTest {
 
         int resultSetNextTimes = times + 1; // because there would be last, that returns false
         verify(resultSet, times(resultSetNextTimes)).next();
+        verify(resultSet, times(times)).getInt(DateDao.TABLE_DATE_ID);
+        verify(resultSet, times(times)).getInt(DateDao.TABLE_GROUP_ID);
         verify(resultSet, times(times)).getString(DateDao.TABLE_GROUP_NAME);
         verify(resultSet, times(times)).getDate(DateDao.TABLE_DATE_GOS);
         verify(resultSet, times(times)).getDate(DateDao.TABLE_DATE_VCR);
