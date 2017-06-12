@@ -12,7 +12,7 @@ import java.util.List;
  * @param <T> specifies dataset
  * @param <K> specifies type of primary key
  */
-public interface Dao<T, K> {
+public interface DefaultDaoCRUD<T, K> {
 
 	int create(T dataset) throws DaoSystemException, AlreadyExistingException;
 
