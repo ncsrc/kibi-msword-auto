@@ -7,7 +7,7 @@
     <parent>
         <groupId>ru.tstu</groupId>
         <artifactId>msword-auto</artifactId>
-        <version>0.8</version>
+        <version>0.9</version>
     </parent>
 
     <artifactId>dao</artifactId>
