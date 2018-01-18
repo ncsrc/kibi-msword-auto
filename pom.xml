@@ -56,8 +56,9 @@
     </dependencies>
 
     <build>
+        <finalName>msauto</finalName>
         <plugins>
-            <!--DEPLOY CONFIG-->
+            <!--LOCAL DEPLOY CONFIG-->
             <plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
@@ -67,7 +68,7 @@
                     <server>TomcatServer</server>
                     <username>admin</username>
                     <password>admin</password>
-                    <path>/webapp-0.9.1</path>
+                    <path>/msauto</path>
                 </configuration>
             </plugin>
         </plugins>
