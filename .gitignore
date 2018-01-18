@@ -1,2 +1,6 @@
 .idea/*
 *.iml
+todo-list
+automation/*
+dao/*
+webapp/*
