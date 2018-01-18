@@ -1,0 +1,28 @@
+#datetable {
+    margin-bottom: 13px;
+}
+
+#GekTable {
+    margin-bottom: 13px;
+}
+
+#StudentsTable {
+    margin-bottom: 13px;
+}
+
+body {
+    background-color: rgba(247, 247, 247, 0.7);
+}
+
+.wrapper {
+    width: 750px;
+    margin:auto;
+
+}
+
+.header {
+    padding: 10px;
+    margin-top: -8px;
+    margin-bottom: 5px;
+    background-color: #2d89ef;
+}
