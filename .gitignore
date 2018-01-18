@@ -1,6 +1,3 @@
-.idea/*
-*.iml
 target/*
 src/*/resourses/*
 doc_examples/*
-create_tables.sql
