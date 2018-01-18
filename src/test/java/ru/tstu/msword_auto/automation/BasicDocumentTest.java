@@ -15,6 +15,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import static org.junit.Assert.*;
 
 
+@Ignore // TODO: change integration test to unit test, use mocks
 public class BasicDocumentTest {
 	private static final String DOC_NAME = "testing_doc.docx";
 	private static final String DOC_CONTENT = "asdf";
